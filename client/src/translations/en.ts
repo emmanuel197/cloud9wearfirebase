@@ -96,6 +96,29 @@ const translations = {
       title: "Bank Transfer",
       description: "Direct bank transfer to our account",
       badge: "Secure Transfer"
+    },
+    
+    success: {
+      title: "Payment Successful!",
+      description: "Your payment has been processed successfully",
+      order_number: "Order Number",
+      confirmation_email: "We've sent a confirmation email with your order details",
+      view_order: "View Order",
+      continue_shopping: "Continue Shopping"
+    },
+    
+    error: {
+      title: "Payment Failed",
+      description: "There was a problem processing your payment",
+      try_again: "Please try again or choose a different payment method",
+      go_to_checkout: "Return to Checkout",
+      go_to_home: "Return to Home"
+    },
+    
+    verifying: {
+      title: "Verifying Payment",
+      description: "Please wait while we verify your payment",
+      please_wait: "This may take a few moments"
     }
   },
   
