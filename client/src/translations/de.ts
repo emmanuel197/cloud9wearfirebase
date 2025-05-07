@@ -120,7 +120,7 @@ const translations = {
       contact: "Kontakt"
     },
     
-    support: {
+    supportLinks: {
       faq: "FAQ",
       shipping: "Versand & Rückgabe",
       returns: "Größenführer",
