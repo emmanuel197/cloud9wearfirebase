@@ -37,9 +37,6 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 
-// Import logo 
-import logoImg from "@/assets/cloud9-logo.jpg";
-
 export default function Header() {
   const { t } = useLanguage();
   const { user, logoutMutation } = useAuth();
@@ -74,45 +71,39 @@ export default function Header() {
   
   return (
     <header className={`sticky top-0 z-50 w-full transition-all duration-200 ${
-      scrolled ? "bg-black shadow-sm" : "bg-black"
+      scrolled ? "bg-white shadow-sm" : "bg-white"
     }`}>
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center py-2">
+        <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/">
-              <a className="flex items-center">
-                <img 
-                  src={logoImg} 
-                  alt="Cloud9 Wear Logo" 
-                  className="h-12 w-auto"
-                />
-              </a>
+              <a className="text-primary text-xl sm:text-2xl font-bold truncate">Cloud9wear</a>
             </Link>
           </div>
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-4 lg:space-x-8">
             <Link href="/">
-              <a className={`font-medium ${location === "/" ? "text-white" : "text-gray-300 hover:text-white"} transition-colors`}>
+              <a className={`font-medium ${location === "/" ? "text-primary" : "text-gray-600 hover:text-primary"} transition-colors`}>
                 {t("navigation.home")}
               </a>
             </Link>
             <Link href="/products">
-              <a className={`font-medium ${location === "/products" ? "text-white" : "text-gray-300 hover:text-white"} transition-colors`}>
+              <a className={`font-medium ${location === "/products" ? "text-primary" : "text-gray-600 hover:text-primary"} transition-colors`}>
                 {t("navigation.products")}
               </a>
             </Link>
             {user?.role === "admin" && (
               <Link href="/admin">
-                <a className={`font-medium ${location.startsWith("/admin") ? "text-white" : "text-gray-300 hover:text-white"} transition-colors`}>
+                <a className={`font-medium ${location.startsWith("/admin") ? "text-primary" : "text-gray-600 hover:text-primary"} transition-colors`}>
                   {t("navigation.admin")}
                 </a>
               </Link>
             )}
             {user?.role === "supplier" && (
               <Link href="/supplier">
-                <a className={`font-medium ${location.startsWith("/supplier") ? "text-white" : "text-gray-300 hover:text-white"} transition-colors`}>
+                <a className={`font-medium ${location.startsWith("/supplier") ? "text-primary" : "text-gray-600 hover:text-primary"} transition-colors`}>
                   {t("navigation.supplier")}
                 </a>
               </Link>
@@ -131,17 +122,17 @@ export default function Header() {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full text-white">
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-white text-black">
+                        <AvatarFallback className="bg-primary text-primary-foreground">
                           {getInitials(user.fullName || user.username || '')}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="bg-black text-white border border-white">
+                  <DropdownMenuContent align="end">
                     <DropdownMenuLabel>{user.fullName || user.username}</DropdownMenuLabel>
-                    <DropdownMenuLabel className="text-xs text-gray-400 font-normal">
+                    <DropdownMenuLabel className="text-xs text-gray-500 font-normal">
                       {user.role}
                     </DropdownMenuLabel>
                     <DropdownMenuSeparator />
@@ -178,7 +169,7 @@ export default function Header() {
                 </DropdownMenu>
               ) : (
                 <Link href="/auth">
-                  <Button variant="ghost" className="flex items-center text-white hover:text-gray-300">
+                  <Button variant="ghost" className="flex items-center">
                     <User className="mr-2 h-4 w-4" />
                     <span>{t("navigation.login")}</span>
                   </Button>
@@ -189,10 +180,10 @@ export default function Header() {
             {/* Cart - Show on all screen sizes for customers */}
             {user?.role === "customer" && (
               <Link href="/cart">
-                <Button variant="ghost" className="relative p-2 text-white hover:text-gray-300">
+                <Button variant="ghost" className="relative p-2">
                   <ShoppingCart className="h-5 w-5" />
                   {cart.items.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-white text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {cart.items.length}
                     </span>
                   )}
@@ -203,21 +194,15 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden text-white hover:text-gray-300">
+                <Button variant="ghost" size="icon" className="md:hidden">
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
               </SheetTrigger>
-              <SheetContent side="right" className="bg-black text-white">
+              <SheetContent side="right">
                 <SheetHeader>
-                  <SheetTitle className="flex items-center">
-                    <img 
-                      src={logoImg} 
-                      alt="Cloud9 Wear Logo" 
-                      className="h-10 w-auto mr-2"
-                    />
-                  </SheetTitle>
-                  <SheetDescription className="text-gray-300">
+                  <SheetTitle>Cloud9wear</SheetTitle>
+                  <SheetDescription>
                     {t("navigation.mobileMenuDescription")}
                   </SheetDescription>
                 </SheetHeader>
@@ -225,7 +210,7 @@ export default function Header() {
                   <nav className="flex flex-col space-y-4">
                     <SheetClose asChild>
                       <Link href="/">
-                        <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                        <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
                           <Home className="mr-2 h-4 w-4" />
                           {t("navigation.home")}
                         </a>
@@ -233,7 +218,7 @@ export default function Header() {
                     </SheetClose>
                     <SheetClose asChild>
                       <Link href="/products">
-                        <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                        <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
                           <ShoppingBag className="mr-2 h-4 w-4" />
                           {t("navigation.products")}
                         </a>
@@ -244,7 +229,7 @@ export default function Header() {
                     {user?.role === "admin" && (
                       <SheetClose asChild>
                         <Link href="/admin">
-                          <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                          <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
                             <LayoutDashboard className="mr-2 h-4 w-4" />
                             {t("navigation.adminDashboard")}
                           </a>
@@ -254,7 +239,7 @@ export default function Header() {
                     {user?.role === "supplier" && (
                       <SheetClose asChild>
                         <Link href="/supplier">
-                          <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                          <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
                             <Package className="mr-2 h-4 w-4" />
                             {t("navigation.supplierDashboard")}
                           </a>
@@ -264,7 +249,7 @@ export default function Header() {
                     {user?.role === "customer" && (
                       <SheetClose asChild>
                         <Link href="/cart">
-                          <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                          <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
                             <ShoppingCart className="mr-2 h-4 w-4" />
                             {t("navigation.cart")}
                           </a>
@@ -275,7 +260,7 @@ export default function Header() {
                     {/* Auth */}
                     {user ? (
                       <a 
-                        className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors cursor-pointer"
+                        className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
                           handleLogout();
                         }}
@@ -286,7 +271,7 @@ export default function Header() {
                     ) : (
                       <SheetClose asChild>
                         <Link href="/auth">
-                          <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                          <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
                             <LogIn className="mr-2 h-4 w-4" />
                             {t("navigation.login")}
                           </a>

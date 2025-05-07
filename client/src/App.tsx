@@ -100,7 +100,7 @@ function Router() {
 
 function App() {
   return (
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
+    <ThemeProvider attribute="class">
       <TooltipProvider>
         <div className="min-h-screen flex flex-col">
           <Header />
