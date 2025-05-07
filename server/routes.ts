@@ -318,6 +318,98 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin users management
+  app.get("/api/admin/customers", requireRole(["admin"]), async (req, res) => {
+    try {
+      const customers = await storage.getUsersByRole("customer");
+      
+      // Add metadata like order count if needed
+      const customersWithMetadata = await Promise.all(
+        customers.map(async (customer) => {
+          const customerOrders = await storage.getOrders({ customerId: customer.id });
+          return {
+            ...customer,
+            orderCount: customerOrders.length,
+          };
+        })
+      );
+      
+      res.json(customersWithMetadata);
+    } catch (error) {
+      console.error("Error fetching customers:", error);
+      res.status(500).json({ message: "Failed to fetch customers" });
+    }
+  });
+  
+  app.get("/api/admin/suppliers", requireRole(["admin"]), async (req, res) => {
+    try {
+      const suppliers = await storage.getUsersByRole("supplier");
+      
+      // Add metadata like product count
+      const suppliersWithMetadata = await Promise.all(
+        suppliers.map(async (supplier) => {
+          const supplierProducts = await storage.getProducts({ supplierId: supplier.id });
+          return {
+            ...supplier,
+            productCount: supplierProducts.length,
+          };
+        })
+      );
+      
+      res.json(suppliersWithMetadata);
+    } catch (error) {
+      console.error("Error fetching suppliers:", error);
+      res.status(500).json({ message: "Failed to fetch suppliers" });
+    }
+  });
+  
+  // Get supplier inventory details
+  app.get("/api/supplier/inventory/:supplierId", requireRole(["admin", "supplier"]), async (req, res) => {
+    try {
+      const supplierId = parseInt(req.params.supplierId);
+      
+      // Check if the user has permission to access this data
+      if (req.user?.role !== "admin" && req.user?.id !== supplierId) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+      
+      const inventory = await storage.getInventory(supplierId);
+      
+      // Fetch product details for each inventory item
+      const inventoryWithProductDetails = await Promise.all(
+        inventory.map(async (item) => {
+          const product = await storage.getProduct(item.productId);
+          return {
+            ...item,
+            product
+          };
+        })
+      );
+      
+      res.json(inventoryWithProductDetails);
+    } catch (error) {
+      console.error("Error fetching inventory:", error);
+      res.status(500).json({ message: "Failed to fetch inventory" });
+    }
+  });
+
+  // Get individual user details
+  app.get("/api/users/:id", requireRole(["admin"]), async (req, res) => {
+    try {
+      const userId = parseInt(req.params.id);
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+      
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
   // Admin dashboard stats
   app.get("/api/admin/stats", requireRole(["admin"]), async (req, res) => {
     try {

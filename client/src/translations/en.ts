@@ -325,9 +325,58 @@ const translations = {
       orders: "Orders",
       products: "Products",
       customers: "Customers",
+      suppliers: "Suppliers",
       settings: "Settings",
       storefront: "Visit Store",
       logout: "Logout"
+    },
+    
+    customers: {
+      title: "Customer Management",
+      description: "View and manage customer accounts",
+      customerDetails: "Customer Details",
+      view: "View Details",
+      memberSince: "Member since {date}",
+      noCustomers: "No customers found",
+      noCustomersDesc: "There are no customer accounts registered yet.",
+      fetchError: "Error fetching customer data",
+      
+      table: {
+        id: "ID",
+        name: "Name",
+        email: "Email",
+        joined: "Joined",
+        orders: "Orders",
+        actions: "Actions"
+      }
+    },
+    
+    suppliers: {
+      title: "Supplier Management",
+      description: "View and manage supplier accounts",
+      supplierDetails: "Supplier Details",
+      view: "View Details",
+      memberSince: "Member since {date}",
+      product: "Product",
+      products: "Products",
+      noSuppliers: "No suppliers found",
+      noSuppliersDesc: "There are no supplier accounts registered yet.",
+      fetchError: "Error fetching supplier data",
+      inventory: "Inventory",
+      inventoryDescription: "Current product stock levels",
+      noInventory: "No inventory data",
+      noInventoryDesc: "This supplier hasn't added any products to their inventory yet.",
+      stock: "Stock",
+      unknownCategory: "Uncategorized",
+      
+      table: {
+        id: "ID",
+        name: "Name",
+        email: "Email",
+        products: "Products",
+        joined: "Joined",
+        actions: "Actions"
+      }
     },
     
     dashboard: {
