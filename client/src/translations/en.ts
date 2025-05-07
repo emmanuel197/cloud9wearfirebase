@@ -120,10 +120,10 @@ const translations = {
       contact: "Contact"
     },
     
-    support: {
+    supportLinks: {
       faq: "FAQs",
       shipping: "Shipping & Returns",
-      returns: "Size Guide",
+      returns: "Size Guide", 
       privacy: "Privacy Policy",
       terms: "Terms of Service"
     }

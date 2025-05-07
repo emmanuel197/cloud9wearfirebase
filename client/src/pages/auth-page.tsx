@@ -50,18 +50,7 @@ export default function AuthPage() {
   const { t } = useLanguage();
   const { user, loginMutation, registerMutation } = useAuth();
   const [activeTab, setActiveTab] = useState<string>("login");
-
-  // Redirect if already logged in
-  if (user) {
-    if (user.role === "admin") {
-      return <Redirect to="/admin" />;
-    } else if (user.role === "supplier") {
-      return <Redirect to="/supplier" />;
-    } else {
-      return <Redirect to="/" />;
-    }
-  }
-
+  
   // Login form
   const loginForm = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -82,6 +71,17 @@ export default function AuthPage() {
       role: "customer",
     },
   });
+  
+  // Redirect if already logged in - IMPORTANT: Must be after all hook calls
+  if (user) {
+    if (user.role === "admin") {
+      return <Redirect to="/admin" />;
+    } else if (user.role === "supplier") {
+      return <Redirect to="/supplier" />;
+    } else {
+      return <Redirect to="/" />;
+    }
+  }
 
   // Form submission handlers
   const onLoginSubmit = (values: LoginValues) => {
