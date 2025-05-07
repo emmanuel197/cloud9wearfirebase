@@ -461,6 +461,14 @@ const translations = {
       updateError: "Failed to update order",
       fetchError: "Failed to fetch order details",
       trackingRequired: "Tracking code is required to mark as shipped",
+      clearOrders: "Clear Orders",
+      clearOrdersConfirmTitle: "Clear All Orders?",
+      clearOrdersConfirmDesc: "This action will permanently delete all orders from the system. This action cannot be undone.",
+      cancel: "Cancel",
+      confirmClear: "Yes, Clear All",
+      clearSuccess: "Orders cleared successfully",
+      clearSuccessDescription: "All orders have been removed from the system",
+      clearError: "Failed to clear orders",
       
       statuses: {
         pending: "Pending",
