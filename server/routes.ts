@@ -10,6 +10,7 @@ import {
   CartItem
 } from "@shared/schema";
 import { ZodError } from "zod";
+import Paystack from "paystack-node";
 
 declare global {
   namespace Express {
@@ -22,6 +23,9 @@ declare global {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
+  
+  // Initialize Paystack API client
+  const paystackClient = new Paystack(process.env.PAYSTACK_SECRET_KEY);
 
   // Role-based authorization middleware
   const requireRole = (roles: string[]) => {
