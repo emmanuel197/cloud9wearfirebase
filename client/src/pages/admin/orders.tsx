@@ -43,14 +43,14 @@ export default function AdminOrders() {
   
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
   const [trackingCode, setTrackingCode] = useState("");
-  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   
   // Fetch orders
   const { data: orders, isLoading, refetch } = useQuery({
     queryKey: ["/api/orders", statusFilter],
     queryFn: () => {
       const url = new URL("/api/orders", window.location.origin);
-      if (statusFilter) {
+      if (statusFilter && statusFilter !== "all") {
         url.searchParams.append("status", statusFilter);
       }
       return fetch(url.toString()).then(res => res.json());
@@ -356,7 +356,7 @@ export default function AdminOrders() {
                 <SelectValue placeholder={t("admin.orders.filterByStatus")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">{t("admin.orders.allOrders")}</SelectItem>
+                <SelectItem value="all">{t("admin.orders.allOrders")}</SelectItem>
                 <SelectItem value="pending">{t("admin.orders.statuses.pending")}</SelectItem>
                 <SelectItem value="processing">{t("admin.orders.statuses.processing")}</SelectItem>
                 <SelectItem value="shipped">{t("admin.orders.statuses.shipped")}</SelectItem>
