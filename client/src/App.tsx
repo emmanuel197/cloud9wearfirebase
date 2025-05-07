@@ -42,6 +42,11 @@ function Router() {
         </ProtectedRoute>
       </Route>
       
+      {/* Payment success page */}
+      <Route path="/payment-success">
+        <PaymentSuccessPage />
+      </Route>
+      
       {/* Protected admin routes */}
       <Route path="/admin">
         <ProtectedRoute roles={["admin"]}>

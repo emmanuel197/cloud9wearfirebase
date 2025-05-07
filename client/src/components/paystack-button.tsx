@@ -1,9 +1,20 @@
-import { useState } from 'react';
+import { useState, ReactNode } from 'react';
 import { PaystackButton as ReactPaystackButton } from 'react-paystack';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/hooks/use-language';
+
+// Define custom Paystack metadata interface
+interface PaystackMetadata {
+  paymentMethod: string;
+  custom_fields?: Array<{
+    display_name: string;
+    variable_name: string;
+    value: string;
+  }>;
+  [key: string]: any;
+}
 
 interface PaystackButtonProps {
   amount: number;
@@ -33,11 +44,24 @@ export function PaystackButton({
   const [isLoading, setIsLoading] = useState(false);
 
   // Paystack config
-  const publicKey = import.meta.env.PAYSTACK_PUBLIC_KEY || '';
+  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
   
   // Convert amount to kobo (smallest currency unit)
   // 100 kobo = 1 GHS
   const amountInKobo = Math.floor(amount * 100);
+
+  // Create Paystack metadata with required fields
+  const paystackMetadata: PaystackMetadata = {
+    paymentMethod,
+    custom_fields: [
+      {
+        display_name: "Payment Method",
+        variable_name: "payment_method",
+        value: paymentMethod
+      }
+    ],
+    ...metadata
+  };
 
   // Handle payment success
   const handleSuccess = (reference: { reference: string }) => {
@@ -60,19 +84,15 @@ export function PaystackButton({
     if (onClose) onClose();
   };
 
+  // Create button text as a string instead of React element
+  const buttonText = isLoading 
+    ? t('checkout.processingPayment')
+    : t('checkout.payNow');
+
   return (
     <div className={className}>
       <ReactPaystackButton
-        text={
-          isLoading ? (
-            <div className="flex items-center">
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              {t('checkout.processingPayment')}
-            </div>
-          ) : (
-            t('checkout.payNow')
-          )
-        }
+        text={buttonText}
         className="w-full"
         onSuccess={handleSuccess}
         onClose={handleClose}
@@ -80,10 +100,7 @@ export function PaystackButton({
         email={email}
         amount={amountInKobo}
         publicKey={publicKey}
-        metadata={{
-          paymentMethod,
-          ...metadata,
-        }}
+        metadata={paystackMetadata}
         callback={(response: { reference: string }) => {
           handleSuccess(response);
         }}
