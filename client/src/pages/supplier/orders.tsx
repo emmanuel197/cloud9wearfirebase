@@ -1,0 +1,326 @@
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useLanguage } from "@/hooks/use-language";
+import { useAuth } from "@/hooks/use-auth";
+import SupplierSidebar from "@/components/supplier/sidebar";
+import { DataTable } from "@/components/ui/data-table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Loader2, Filter, Truck, Package, Clock } from "lucide-react";
+import PriceDisplay from "@/components/price-display";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { toast } from "@/hooks/use-toast";
+import { OrderStatus } from "@shared/schema";
+
+export default function SupplierOrders() {
+  const { t } = useLanguage();
+  const { user } = useAuth();
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("all");
+
+  // Fetch all orders
+  const { data: orders, isLoading } = useQuery({
+    queryKey: ["/api/orders"],
+  });
+
+  if (!user || user.role !== "supplier") {
+    return null; // Protected by ProtectedRoute component
+  }
+
+  // Function to update order status
+  const updateOrderStatus = async (orderId: number, status: OrderStatus) => {
+    try {
+      await apiRequest("PATCH", `/api/orders/${orderId}`, { status });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({
+        title: t("supplier.orders.statusUpdateSuccess"),
+        description: t("supplier.orders.statusUpdateSuccessDesc"),
+      });
+    } catch (error) {
+      toast({
+        title: t("supplier.orders.statusUpdateError"),
+        description: t("supplier.orders.statusUpdateErrorDesc"),
+        variant: "destructive",
+      });
+    }
+  };
+
+  // Filter orders by status
+  const filteredOrders = orders
+    ? orders.filter((order: any) => {
+        if (!statusFilter) return true;
+        return order.status === statusFilter;
+      })
+    : [];
+
+  // Columns for orders table
+  const orderColumns = [
+    {
+      accessorKey: "id",
+      header: t("supplier.orders.table.id"),
+      size: 60,
+    },
+    {
+      accessorKey: "customerName",
+      header: t("supplier.orders.table.customer"),
+      cell: ({ row }: any) => {
+        const customerId = row.original.customerId;
+        const customerEmail = row.original.customerEmail || "N/A";
+        return (
+          <div>
+            <div className="font-medium">{customerEmail}</div>
+            <div className="text-xs text-muted-foreground">ID: {customerId}</div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "orderDate",
+      header: t("supplier.orders.table.date"),
+      cell: ({ row }: any) => {
+        const date = new Date(row.original.orderDate);
+        return date.toLocaleDateString();
+      },
+    },
+    {
+      accessorKey: "totalAmount",
+      header: t("supplier.orders.table.amount"),
+      cell: ({ row }: any) => {
+        return <PriceDisplay amount={row.original.totalAmount} />;
+      },
+    },
+    {
+      accessorKey: "status",
+      header: t("supplier.orders.table.status"),
+      cell: ({ row }: any) => {
+        const status = row.original.status;
+        let color;
+        switch (status) {
+          case "pending":
+            color = "bg-yellow-100 text-yellow-800";
+            break;
+          case "processing":
+            color = "bg-blue-100 text-blue-800";
+            break;
+          case "shipped":
+            color = "bg-purple-100 text-purple-800";
+            break;
+          case "delivered":
+            color = "bg-green-100 text-green-800";
+            break;
+          case "cancelled":
+            color = "bg-red-100 text-red-800";
+            break;
+          default:
+            color = "bg-gray-100 text-gray-800";
+        }
+
+        return (
+          <Badge className={color} variant="outline">
+            {t(`supplier.orders.status.${status}`)}
+          </Badge>
+        );
+      },
+    },
+    {
+      accessorKey: "paymentStatus",
+      header: t("supplier.orders.table.payment"),
+      cell: ({ row }: any) => {
+        const paymentStatus = row.original.paymentStatus;
+        let color;
+        switch (paymentStatus) {
+          case "paid":
+            color = "bg-green-100 text-green-800";
+            break;
+          case "pending":
+            color = "bg-yellow-100 text-yellow-800";
+            break;
+          case "failed":
+            color = "bg-red-100 text-red-800";
+            break;
+          default:
+            color = "bg-gray-100 text-gray-800";
+        }
+
+        return (
+          <Badge className={color} variant="outline">
+            {t(`supplier.orders.payment.${paymentStatus}`)}
+          </Badge>
+        );
+      },
+    },
+    {
+      id: "actions",
+      header: t("supplier.orders.table.actions"),
+      cell: ({ row }: any) => {
+        const order = row.original;
+        const isPaid = order.paymentStatus === "paid";
+        const isCancelled = order.status === "cancelled";
+        const isDelivered = order.status === "delivered";
+
+        // Can't update if cancelled or delivered
+        if (isCancelled || isDelivered) {
+          return (
+            <span className="text-sm text-gray-500">
+              {t("supplier.orders.noActionsAvailable")}
+            </span>
+          );
+        }
+
+        // Different actions based on current status
+        if (order.status === "pending" && isPaid) {
+          return (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => updateOrderStatus(order.id, "processing")}
+            >
+              <Package className="mr-1 h-4 w-4" />
+              {t("supplier.orders.actions.startProcessing")}
+            </Button>
+          );
+        }
+
+        if (order.status === "processing") {
+          return (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => updateOrderStatus(order.id, "shipped")}
+            >
+              <Truck className="mr-1 h-4 w-4" />
+              {t("supplier.orders.actions.markShipped")}
+            </Button>
+          );
+        }
+
+        if (order.status === "shipped") {
+          return (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => updateOrderStatus(order.id, "delivered")}
+            >
+              <Clock className="mr-1 h-4 w-4" />
+              {t("supplier.orders.actions.markDelivered")}
+            </Button>
+          );
+        }
+
+        return (
+          <span className="text-sm text-gray-500">
+            {t("supplier.orders.waitingForPayment")}
+          </span>
+        );
+      },
+    },
+  ];
+
+  // Create tabs for different order statuses
+  const tabContent = (status: string | null) => {
+    const filteredByStatus = orders
+      ? orders.filter((order: any) => {
+          if (!status || status === "all") return true;
+          return order.status === status;
+        })
+      : [];
+
+    return (
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex items-center justify-between">
+            <CardTitle>
+              {status === "all"
+                ? t("supplier.orders.allOrders")
+                : t(`supplier.orders.status.${status}Orders`)}
+            </CardTitle>
+            <div className="flex items-center space-x-2">
+              <Filter className="h-4 w-4 text-gray-500" />
+              <Select
+                onValueChange={(value) => setStatusFilter(value !== "all" ? value : null)}
+                defaultValue="all"
+              >
+                <SelectTrigger className="h-8 w-[180px]">
+                  <SelectValue placeholder={t("supplier.orders.filterByStatus")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">{t("supplier.orders.allStatuses")}</SelectItem>
+                  <SelectItem value="pending">{t("supplier.orders.status.pending")}</SelectItem>
+                  <SelectItem value="processing">{t("supplier.orders.status.processing")}</SelectItem>
+                  <SelectItem value="shipped">{t("supplier.orders.status.shipped")}</SelectItem>
+                  <SelectItem value="delivered">{t("supplier.orders.status.delivered")}</SelectItem>
+                  <SelectItem value="cancelled">{t("supplier.orders.status.cancelled")}</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          <CardDescription>
+            {status === "all"
+              ? t("supplier.orders.viewAllOrders")
+              : t(`supplier.orders.view${status.charAt(0).toUpperCase() + status.slice(1)}Orders`)}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="flex justify-center py-8">
+              <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+          ) : filteredByStatus.length > 0 ? (
+            <DataTable columns={orderColumns} data={filteredByStatus} />
+          ) : (
+            <div className="text-center py-10">
+              <div className="inline-block p-3 bg-gray-100 rounded-full mb-4">
+                <Package className="h-6 w-6 text-gray-500" />
+              </div>
+              <h3 className="text-lg font-medium text-gray-900">
+                {t("supplier.orders.noOrdersFound")}
+              </h3>
+              <p className="mt-1 text-gray-500">{t("supplier.orders.noOrdersFoundDesc")}</p>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
+  };
+
+  return (
+    <div className="flex">
+      <SupplierSidebar />
+      <div className="flex-1 p-8">
+        <div className="flex items-center justify-between mb-8">
+          <h1 className="text-3xl font-bold">{t("supplier.orders.title")}</h1>
+        </div>
+
+        <Tabs defaultValue="all" onValueChange={setActiveTab} className="mb-8">
+          <TabsList className="grid w-full grid-cols-5">
+            <TabsTrigger value="all">{t("supplier.orders.all")}</TabsTrigger>
+            <TabsTrigger value="pending">{t("supplier.orders.status.pending")}</TabsTrigger>
+            <TabsTrigger value="processing">{t("supplier.orders.status.processing")}</TabsTrigger>
+            <TabsTrigger value="shipped">{t("supplier.orders.status.shipped")}</TabsTrigger>
+            <TabsTrigger value="delivered">{t("supplier.orders.status.delivered")}</TabsTrigger>
+          </TabsList>
+          <TabsContent value="all">{tabContent("all")}</TabsContent>
+          <TabsContent value="pending">{tabContent("pending")}</TabsContent>
+          <TabsContent value="processing">{tabContent("processing")}</TabsContent>
+          <TabsContent value="shipped">{tabContent("shipped")}</TabsContent>
+          <TabsContent value="delivered">{tabContent("delivered")}</TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}

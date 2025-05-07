@@ -45,6 +45,11 @@ export default function SupplierSidebar() {
       href: "/supplier/inventory",
       label: t("supplier.sidebar.inventory"),
       icon: <Package className="h-5 w-5 mr-2" />
+    },
+    {
+      href: "/supplier/orders",
+      label: t("supplier.sidebar.orders"),
+      icon: <ShoppingBag className="h-5 w-5 mr-2" />
     }
   ];
 

@@ -1,9 +1,9 @@
-import { useState, ReactNode } from 'react';
-import { PaystackButton as ReactPaystackButton } from 'react-paystack';
-import { Button } from '@/components/ui/button';
-import { Loader2 } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
-import { useLanguage } from '@/hooks/use-language';
+import { useState, ReactNode } from "react";
+import { PaystackButton as ReactPaystackButton } from "react-paystack";
+import { Button } from "@/components/ui/button";
+import { Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { useLanguage } from "@/hooks/use-language";
 
 // Define custom Paystack metadata interface
 interface PaystackMetadata {
@@ -33,7 +33,7 @@ export function PaystackButton({
   email,
   onSuccess,
   onClose,
-  className = '',
+  className = "",
   paymentMethod,
   metadata = {},
   reference,
@@ -44,8 +44,8 @@ export function PaystackButton({
   const [isLoading, setIsLoading] = useState(false);
 
   // Paystack config
-  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
-  
+  const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || "";
+
   // Convert amount to kobo (smallest currency unit)
   // 100 kobo = 1 NGN (Nigerian Naira)
   // Note: We display prices in GHS but process payments in NGN for Paystack compatibility
@@ -58,18 +58,18 @@ export function PaystackButton({
       {
         display_name: "Payment Method",
         variable_name: "payment_method",
-        value: paymentMethod
-      }
+        value: paymentMethod,
+      },
     ],
-    ...metadata
+    ...metadata,
   };
 
   // Handle payment success
   const handleSuccess = (reference: { reference: string }) => {
     setIsLoading(false);
     toast({
-      title: t('checkout.payment.success'),
-      description: t('checkout.payment.successDetail'),
+      title: t("checkout.payment.success"),
+      description: t("checkout.payment.successDetail"),
     });
     onSuccess(reference.reference);
   };
@@ -78,17 +78,17 @@ export function PaystackButton({
   const handleClose = () => {
     setIsLoading(false);
     toast({
-      title: t('checkout.payment.cancelled'),
-      description: t('checkout.payment.cancelledDetail'),
-      variant: 'destructive',
+      title: t("checkout.payment.cancelled"),
+      description: t("checkout.payment.cancelledDetail"),
+      variant: "destructive",
     });
     if (onClose) onClose();
   };
 
   // Create button text as a string instead of React element
-  const buttonText = isLoading 
-    ? t('checkout.processingPayment')
-    : t('checkout.payNow');
+  const buttonText = isLoading
+    ? t("checkout.processingPayment")
+    : t("checkout.payNow");
 
   return (
     <div className={className}>
@@ -97,11 +97,11 @@ export function PaystackButton({
         className="w-full"
         onSuccess={handleSuccess}
         onClose={handleClose}
-        reference={reference || ''}
+        reference={reference || ""}
         email={email}
         amount={amountInKobo}
         publicKey={publicKey}
-        currency="NGN"
+        currency="GHS"
         metadata={paystackMetadata}
         callback={(response: { reference: string }) => {
           handleSuccess(response);
@@ -120,10 +120,10 @@ export function PaystackButton({
             {isLoading ? (
               <div className="flex items-center justify-center">
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t('checkout.processingPayment')}
+                {t("checkout.processingPayment")}
               </div>
             ) : (
-              t('checkout.payNow')
+              t("checkout.payNow")
             )}
           </Button>
         )}

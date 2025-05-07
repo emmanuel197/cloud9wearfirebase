@@ -17,6 +17,7 @@ import AdminCustomers from "@/pages/admin/customers";
 import AdminSuppliers from "@/pages/admin/suppliers";
 import SupplierDashboard from "@/pages/supplier/dashboard";
 import SupplierInventory from "@/pages/supplier/inventory";
+import SupplierOrders from "@/pages/supplier/orders";
 import { ProtectedRoute } from "@/lib/protected-route";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";

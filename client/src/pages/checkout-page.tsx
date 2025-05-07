@@ -41,9 +41,12 @@ import { PaystackButton } from "@/components/paystack-button";
 const checkoutFormSchema = z.object({
   shippingAddress: z.string().min(5, "Shipping address is required"),
   contactPhone: z.string().min(5, "Contact phone is required"),
-  paymentMethod: z.enum(["credit_card", "mtn_mobile", "telecel", "bank_transfer"], {
-    required_error: "Please select a payment method",
-  }),
+  paymentMethod: z.enum(
+    ["credit_card", "mtn_mobile", "telecel", "bank_transfer"],
+    {
+      required_error: "Please select a payment method",
+    },
+  ),
   customerEmail: z.string().email("Valid email is required for payment"),
 });
 
@@ -59,18 +62,18 @@ export default function CheckoutPage() {
   const [paymentInitialized, setPaymentInitialized] = useState(false);
   const [paymentReference, setPaymentReference] = useState<string | null>(null);
   const [paymentData, setPaymentData] = useState<any>(null);
-  
+
   // Redirect to cart if cart is empty
   if (cart.items.length === 0 && !orderComplete && !paymentInitialized) {
     return <Redirect to="/cart" />;
   }
-  
+
   // Calculate totals
-  const shippingCost = 5.00;
+  const shippingCost = 5.0;
   const taxRate = 0.1;
   const taxAmount = total * taxRate;
   const grandTotal = total + shippingCost + taxAmount;
-  
+
   // Form setup
   const form = useForm<CheckoutFormValues>({
     resolver: zodResolver(checkoutFormSchema),
@@ -81,18 +84,18 @@ export default function CheckoutPage() {
       customerEmail: user?.email || "",
     },
   });
-  
+
   // Create order mutation
   const createOrderMutation = useMutation({
     mutationFn: async (data: CheckoutFormValues) => {
-      const orderItems = cart.items.map(item => ({
+      const orderItems = cart.items.map((item) => ({
         productId: item.productId,
         quantity: item.quantity,
         size: item.size,
         color: item.color,
         priceAtPurchase: item.product.price,
       }));
-      
+
       const orderData = {
         ...data,
         totalAmount: grandTotal,
@@ -100,7 +103,7 @@ export default function CheckoutPage() {
         paymentStatus: "pending",
         items: orderItems,
       };
-      
+
       const res = await apiRequest("POST", "/api/orders", orderData);
       return await res.json();
     },
@@ -117,10 +120,15 @@ export default function CheckoutPage() {
       });
     },
   });
-  
+
   // Initialize payment with Paystack
   const initializePaymentMutation = useMutation({
-    mutationFn: async ({ amount, email, paymentMethod, orderId }: { 
+    mutationFn: async ({
+      amount,
+      email,
+      paymentMethod,
+      orderId,
+    }: {
       amount: number;
       email: string;
       paymentMethod: string;
@@ -132,6 +140,7 @@ export default function CheckoutPage() {
         paymentMethod,
         orderId,
       });
+      console.log("yeah");
       return await res.json();
     },
     onSuccess: (data) => {
@@ -147,7 +156,7 @@ export default function CheckoutPage() {
       });
     },
   });
-  
+
   // Verify payment status
   const verifyPaymentMutation = useMutation({
     mutationFn: async (reference: string) => {
@@ -178,7 +187,7 @@ export default function CheckoutPage() {
       });
     },
   });
-  
+
   const initializePayment = (orderId: number) => {
     const formValues = form.getValues();
     initializePaymentMutation.mutate({
@@ -188,27 +197,33 @@ export default function CheckoutPage() {
       orderId,
     });
   };
-  
+
   const handlePaymentSuccess = (reference: string) => {
     verifyPaymentMutation.mutate(reference);
   };
-  
+
   const onSubmit = (data: CheckoutFormValues) => {
     createOrderMutation.mutate(data);
   };
-  
+
   // Payment view
   if (paymentInitialized && !orderComplete) {
     return (
       <div className="container mx-auto px-4 py-16 max-w-4xl">
         <Card>
           <CardHeader>
-            <CardTitle className="text-2xl">{t("checkout.payment.title")}</CardTitle>
-            <CardDescription>{t("checkout.payment.description")}</CardDescription>
+            <CardTitle className="text-2xl">
+              {t("checkout.payment.title")}
+            </CardTitle>
+            <CardDescription>
+              {t("checkout.payment.description")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="mb-6 p-4 bg-gray-50 rounded-md">
-              <h3 className="font-semibold mb-2">{t("checkout.orderSummary")}</h3>
+              <h3 className="font-semibold mb-2">
+                {t("checkout.orderSummary")}
+              </h3>
               <div className="flex justify-between mb-2">
                 <span>{t("checkout.subtotal")}</span>
                 <PriceDisplay amount={total} />
@@ -227,7 +242,7 @@ export default function CheckoutPage() {
                 <PriceDisplay amount={grandTotal} className="text-lg" />
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <PaystackButton
                 amount={grandTotal}
@@ -240,11 +255,11 @@ export default function CheckoutPage() {
                 }}
                 className="mt-6"
               />
-              
+
               <div className="text-center mt-4">
-                <Button 
-                  variant="outline" 
-                  onClick={() => setPaymentInitialized(false)} 
+                <Button
+                  variant="outline"
+                  onClick={() => setPaymentInitialized(false)}
                   className="mt-4"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
@@ -257,7 +272,7 @@ export default function CheckoutPage() {
       </div>
     );
   }
-  
+
   // Order success view
   if (orderComplete) {
     return (
@@ -267,12 +282,21 @@ export default function CheckoutPage() {
             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="h-6 w-6 text-green-600" />
             </div>
-            <CardTitle className="text-2xl">{t("checkout.orderSuccess.title")}</CardTitle>
-            <CardDescription>{t("checkout.orderSuccess.description")}</CardDescription>
+            <CardTitle className="text-2xl">
+              {t("checkout.orderSuccess.title")}
+            </CardTitle>
+            <CardDescription>
+              {t("checkout.orderSuccess.description")}
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="mb-4">{t("checkout.orderSuccess.orderNumber")}: <span className="font-semibold">#{orderId}</span></p>
-            <p className="mb-6">{t("checkout.orderSuccess.confirmationEmail")}</p>
+            <p className="mb-4">
+              {t("checkout.orderSuccess.orderNumber")}:{" "}
+              <span className="font-semibold">#{orderId}</span>
+            </p>
+            <p className="mb-6">
+              {t("checkout.orderSuccess.confirmationEmail")}
+            </p>
             <div className="flex justify-center space-x-4">
               <Link href="/">
                 <Button variant="outline">
@@ -285,11 +309,11 @@ export default function CheckoutPage() {
       </div>
     );
   }
-  
+
   return (
     <div className="container mx-auto px-4 py-10 max-w-6xl">
       <h1 className="text-3xl font-bold mb-8">{t("checkout.title")}</h1>
-      
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Checkout Form */}
         <div className="lg:col-span-2">
@@ -307,7 +331,11 @@ export default function CheckoutPage() {
                       <FormItem>
                         <FormLabel>{t("checkout.form.email")}</FormLabel>
                         <FormControl>
-                          <Input type="email" placeholder={t("checkout.form.emailPlaceholder")} {...field} />
+                          <Input
+                            type="email"
+                            placeholder={t("checkout.form.emailPlaceholder")}
+                            {...field}
+                          />
                         </FormControl>
                         <FormDescription>
                           {t("checkout.form.emailDescription")}
@@ -318,7 +346,7 @@ export default function CheckoutPage() {
                   />
                 </CardContent>
               </Card>
-            
+
               <Card>
                 <CardHeader>
                   <CardTitle>{t("checkout.shippingDetails")}</CardTitle>
@@ -331,13 +359,16 @@ export default function CheckoutPage() {
                       <FormItem>
                         <FormLabel>{t("checkout.form.address")}</FormLabel>
                         <FormControl>
-                          <Textarea placeholder={t("checkout.form.addressPlaceholder")} {...field} />
+                          <Textarea
+                            placeholder={t("checkout.form.addressPlaceholder")}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="contactPhone"
@@ -345,7 +376,10 @@ export default function CheckoutPage() {
                       <FormItem>
                         <FormLabel>{t("checkout.form.phone")}</FormLabel>
                         <FormControl>
-                          <Input placeholder={t("checkout.form.phonePlaceholder")} {...field} />
+                          <Input
+                            placeholder={t("checkout.form.phonePlaceholder")}
+                            {...field}
+                          />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -353,7 +387,7 @@ export default function CheckoutPage() {
                   />
                 </CardContent>
               </Card>
-              
+
               <Card>
                 <CardHeader>
                   <CardTitle>{t("checkout.paymentMethod")}</CardTitle>
@@ -376,7 +410,7 @@ export default function CheckoutPage() {
                   />
                 </CardContent>
               </Card>
-              
+
               <div className="flex justify-between">
                 <Link href="/cart">
                   <Button variant="outline" type="button">
@@ -384,13 +418,17 @@ export default function CheckoutPage() {
                     {t("checkout.backToCart")}
                   </Button>
                 </Link>
-                
-                <Button 
-                  type="submit" 
-                  disabled={createOrderMutation.isPending || initializePaymentMutation.isPending}
+
+                <Button
+                  type="submit"
+                  disabled={
+                    createOrderMutation.isPending ||
+                    initializePaymentMutation.isPending
+                  }
                   className="min-w-[150px]"
                 >
-                  {(createOrderMutation.isPending || initializePaymentMutation.isPending) ? (
+                  {createOrderMutation.isPending ||
+                  initializePaymentMutation.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       {t("checkout.processing")}
@@ -403,7 +441,7 @@ export default function CheckoutPage() {
             </form>
           </Form>
         </div>
-        
+
         {/* Order Summary */}
         <div>
           <Card className="sticky top-4">
@@ -414,31 +452,38 @@ export default function CheckoutPage() {
               {/* Order items summary */}
               <div className="space-y-3 mb-6">
                 {cart.items.map((item) => (
-                  <div key={`${item.productId}-${item.size}-${item.color}`} className="flex justify-between">
+                  <div
+                    key={`${item.productId}-${item.size}-${item.color}`}
+                    className="flex justify-between"
+                  >
                     <div>
                       <p className="font-medium">{item.product.name}</p>
                       <p className="text-sm text-gray-500">
                         {item.size}, {item.color} × {item.quantity}
                       </p>
                     </div>
-                    <PriceDisplay 
-                      amount={item.product.price * item.quantity} 
+                    <PriceDisplay
+                      amount={item.product.price * item.quantity}
                       className="font-medium"
                     />
                   </div>
                 ))}
               </div>
-              
+
               <Separator className="my-4" />
-              
+
               {/* Totals */}
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">{t("checkout.subtotal")}</span>
+                  <span className="text-gray-600">
+                    {t("checkout.subtotal")}
+                  </span>
                   <PriceDisplay amount={total} />
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">{t("checkout.shipping")}</span>
+                  <span className="text-gray-600">
+                    {t("checkout.shipping")}
+                  </span>
                   <PriceDisplay amount={shippingCost} />
                 </div>
                 <div className="flex justify-between">
@@ -449,15 +494,6 @@ export default function CheckoutPage() {
                 <div className="flex justify-between font-semibold">
                   <span>{t("checkout.total")}</span>
                   <PriceDisplay amount={grandTotal} className="text-lg" />
-                </div>
-                
-                <div className="mt-4 text-sm text-gray-500 border-t pt-4">
-                  <p className="flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1 text-amber-500" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clipRule="evenodd" />
-                    </svg>
-                    Note: Prices are displayed in Ghana Cedis (GHS) but payment will be processed in Nigerian Naira (NGN) to ensure payment compatibility.
-                  </p>
                 </div>
               </div>
             </CardContent>
