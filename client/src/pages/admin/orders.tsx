@@ -122,6 +122,29 @@ export default function AdminOrders() {
     }
   };
   
+  // Clear all orders mutation
+  const clearOrdersMutation = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("DELETE", "/api/admin/orders");
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({
+        title: t("admin.orders.clearSuccess"),
+        description: t("admin.orders.clearSuccessDescription"),
+      });
+      refetch();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t("admin.orders.clearError"),
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
   // Order status colors
   const orderStatusColors: Record<string, string> = {
     "pending": "bg-amber-100 text-amber-800",
@@ -182,13 +205,16 @@ export default function AdminOrders() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => handleViewOrder(order.id)}
+                  onClick={(e) => {
+                    e.preventDefault(); // Prevent the dialog from opening immediately
+                    handleViewOrder(order.id);
+                  }}
                 >
                   <Eye className="h-4 w-4 mr-1" />
                   {t("admin.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent className="max-w-3xl" onPointerDownOutside={(e) => e.preventDefault()}>
                 {selectedOrder ? (
                   <>
                     <DialogHeader>
@@ -372,9 +398,56 @@ export default function AdminOrders() {
         </div>
         
         <Card>
-          <CardHeader>
-            <CardTitle>{t("admin.orders.title")}</CardTitle>
-            <CardDescription>{t("admin.orders.description")}</CardDescription>
+          <CardHeader className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div>
+              <CardTitle>{t("admin.orders.title")}</CardTitle>
+              <CardDescription>{t("admin.orders.description")}</CardDescription>
+            </div>
+            <div>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <Button 
+                    variant="destructive" 
+                    size="sm"
+                    disabled={!orders || orders.length === 0 || clearOrdersMutation.isPending}
+                  >
+                    {clearOrdersMutation.isPending ? (
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4 mr-2" />
+                    )}
+                    {t("admin.orders.clearOrders")}
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>{t("admin.orders.clearOrdersConfirmTitle")}</DialogTitle>
+                    <DialogDescription>
+                      {t("admin.orders.clearOrdersConfirmDesc")}
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex justify-end space-x-2 mt-4">
+                    <DialogClose asChild>
+                      <Button variant="outline">{t("admin.orders.cancel")}</Button>
+                    </DialogClose>
+                    <Button 
+                      variant="destructive" 
+                      onClick={() => {
+                        clearOrdersMutation.mutate();
+                      }}
+                      disabled={clearOrdersMutation.isPending}
+                    >
+                      {clearOrdersMutation.isPending ? (
+                        <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                      ) : (
+                        <AlertTriangle className="h-4 w-4 mr-2" />
+                      )}
+                      {t("admin.orders.confirmClear")}
+                    </Button>
+                  </div>
+                </DialogContent>
+              </Dialog>
+            </div>
           </CardHeader>
           <CardContent>
             {isLoading ? (

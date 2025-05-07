@@ -40,6 +40,7 @@ export interface IStorage {
   }): Promise<Order[]>;
   createOrder(order: InsertOrder): Promise<Order>;
   updateOrder(id: number, order: Partial<Order>): Promise<Order | undefined>;
+  deleteOrder(id: number): Promise<boolean>;
   getOrderItems(orderId: number): Promise<OrderItem[]>;
   addOrderItem(orderItem: InsertOrderItem): Promise<OrderItem>;
 
@@ -207,6 +208,17 @@ export class MemStorage implements IStorage {
     const updatedOrder = { ...existingOrder, ...order };
     this.orders.set(id, updatedOrder);
     return updatedOrder;
+  }
+  
+  async deleteOrder(id: number): Promise<boolean> {
+    // Delete order items associated with this order first
+    const orderItems = await this.getOrderItems(id);
+    for (const item of orderItems) {
+      this.orderItems.delete(item.id);
+    }
+    
+    // Then delete the order itself
+    return this.orders.delete(id);
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
@@ -507,6 +519,24 @@ export class DatabaseStorage implements IStorage {
       .where(eq(orders.id, id))
       .returning();
     return updatedOrder || undefined;
+  }
+  
+  async deleteOrder(id: number): Promise<boolean> {
+    try {
+      // Delete all order items first
+      await db.delete(orderItems).where(eq(orderItems.orderId, id));
+      
+      // Then delete the order itself
+      const [deleted] = await db
+        .delete(orders)
+        .where(eq(orders.id, id))
+        .returning();
+        
+      return !!deleted;
+    } catch (error) {
+      console.error("Error deleting order:", error);
+      return false;
+    }
   }
 
   async getOrderItems(orderId: number): Promise<OrderItem[]> {
