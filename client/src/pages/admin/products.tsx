@@ -137,7 +137,7 @@ export default function AdminProducts() {
   });
   
   // Reset form when editProduct changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (editProduct) {
       form.reset({
         name: editProduct.name,
