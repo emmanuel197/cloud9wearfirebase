@@ -224,40 +224,50 @@ export default function Header() {
                 <div className="py-4">
                   <nav className="flex flex-col space-y-4">
                     <SheetClose asChild>
-                      <Link href="/" className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
-                        <Home className="mr-2 h-4 w-4" />
-                        {t("navigation.home")}
+                      <Link href="/">
+                        <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                          <Home className="mr-2 h-4 w-4" />
+                          {t("navigation.home")}
+                        </a>
                       </Link>
                     </SheetClose>
                     <SheetClose asChild>
-                      <Link href="/products" className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
-                        <ShoppingBag className="mr-2 h-4 w-4" />
-                        {t("navigation.products")}
+                      <Link href="/products">
+                        <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                          <ShoppingBag className="mr-2 h-4 w-4" />
+                          {t("navigation.products")}
+                        </a>
                       </Link>
                     </SheetClose>
                     
                     {/* Role-specific links */}
                     {user?.role === "admin" && (
                       <SheetClose asChild>
-                        <Link href="/admin" className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
-                          <LayoutDashboard className="mr-2 h-4 w-4" />
-                          {t("navigation.adminDashboard")}
+                        <Link href="/admin">
+                          <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                            <LayoutDashboard className="mr-2 h-4 w-4" />
+                            {t("navigation.adminDashboard")}
+                          </a>
                         </Link>
                       </SheetClose>
                     )}
                     {user?.role === "supplier" && (
                       <SheetClose asChild>
-                        <Link href="/supplier" className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
-                          <Package className="mr-2 h-4 w-4" />
-                          {t("navigation.supplierDashboard")}
+                        <Link href="/supplier">
+                          <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                            <Package className="mr-2 h-4 w-4" />
+                            {t("navigation.supplierDashboard")}
+                          </a>
                         </Link>
                       </SheetClose>
                     )}
                     {user?.role === "customer" && (
                       <SheetClose asChild>
-                        <Link href="/cart" className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
-                          <ShoppingCart className="mr-2 h-4 w-4" />
-                          {t("navigation.cart")}
+                        <Link href="/cart">
+                          <a className="flex items-center py-2 px-3 rounded-lg bg-black text-white hover:bg-white hover:text-black transition-colors">
+                            <ShoppingCart className="mr-2 h-4 w-4" />
+                            {t("navigation.cart")}
+                          </a>
                         </Link>
                       </SheetClose>
                     )}
