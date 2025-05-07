@@ -35,6 +35,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link } from "wouter";
 import PaymentMethodSelector from "@/components/payment-method-selector";
 import PriceDisplay from "@/components/price-display";
+import { PaystackButton } from "@/components/paystack-button";
 
 // Extend the order schema for the checkout form
 const checkoutFormSchema = z.object({
@@ -43,6 +44,7 @@ const checkoutFormSchema = z.object({
   paymentMethod: z.enum(["credit_card", "mtn_mobile", "telecel", "bank_transfer"], {
     required_error: "Please select a payment method",
   }),
+  customerEmail: z.string().email("Valid email is required for payment"),
 });
 
 type CheckoutFormValues = z.infer<typeof checkoutFormSchema>;
@@ -54,9 +56,12 @@ export default function CheckoutPage() {
   const { toast } = useToast();
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState<number | null>(null);
+  const [paymentInitialized, setPaymentInitialized] = useState(false);
+  const [paymentReference, setPaymentReference] = useState<string | null>(null);
+  const [paymentData, setPaymentData] = useState<any>(null);
   
   // Redirect to cart if cart is empty
-  if (cart.items.length === 0 && !orderComplete) {
+  if (cart.items.length === 0 && !orderComplete && !paymentInitialized) {
     return <Redirect to="/cart" />;
   }
   
@@ -73,6 +78,7 @@ export default function CheckoutPage() {
       shippingAddress: "",
       contactPhone: "",
       paymentMethod: "credit_card",
+      customerEmail: user?.email || "",
     },
   });
   
@@ -100,12 +106,8 @@ export default function CheckoutPage() {
     },
     onSuccess: (data) => {
       setOrderId(data.id);
-      setOrderComplete(true);
-      clearCart();
-      toast({
-        title: t("checkout.orderSuccess.title"),
-        description: t("checkout.orderSuccess.description"),
-      });
+      // Instead of completing the order immediately, initiate payment
+      initializePayment(data.id);
     },
     onError: (error: Error) => {
       toast({
@@ -116,9 +118,145 @@ export default function CheckoutPage() {
     },
   });
   
+  // Initialize payment with Paystack
+  const initializePaymentMutation = useMutation({
+    mutationFn: async ({ amount, email, paymentMethod, orderId }: { 
+      amount: number;
+      email: string;
+      paymentMethod: string;
+      orderId: number;
+    }) => {
+      const res = await apiRequest("POST", "/api/payments/initialize", {
+        amount,
+        email,
+        paymentMethod,
+        orderId,
+      });
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      setPaymentReference(data.reference);
+      setPaymentData(data);
+      setPaymentInitialized(true);
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t("checkout.paymentError.title"),
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  // Verify payment status
+  const verifyPaymentMutation = useMutation({
+    mutationFn: async (reference: string) => {
+      const res = await apiRequest("GET", `/api/payments/verify/${reference}`);
+      return await res.json();
+    },
+    onSuccess: (data) => {
+      if (data.success) {
+        setOrderComplete(true);
+        clearCart();
+        toast({
+          title: t("checkout.orderSuccess.title"),
+          description: t("checkout.orderSuccess.description"),
+        });
+      } else {
+        toast({
+          title: t("checkout.paymentError.title"),
+          description: data.message,
+          variant: "destructive",
+        });
+      }
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t("checkout.paymentError.title"),
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
+  const initializePayment = (orderId: number) => {
+    const formValues = form.getValues();
+    initializePaymentMutation.mutate({
+      amount: grandTotal,
+      email: formValues.customerEmail,
+      paymentMethod: formValues.paymentMethod,
+      orderId,
+    });
+  };
+  
+  const handlePaymentSuccess = (reference: string) => {
+    verifyPaymentMutation.mutate(reference);
+  };
+  
   const onSubmit = (data: CheckoutFormValues) => {
     createOrderMutation.mutate(data);
   };
+  
+  // Payment view
+  if (paymentInitialized && !orderComplete) {
+    return (
+      <div className="container mx-auto px-4 py-16 max-w-4xl">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-2xl">{t("checkout.payment.title")}</CardTitle>
+            <CardDescription>{t("checkout.payment.description")}</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-6 p-4 bg-gray-50 rounded-md">
+              <h3 className="font-semibold mb-2">{t("checkout.orderSummary")}</h3>
+              <div className="flex justify-between mb-2">
+                <span>{t("checkout.subtotal")}</span>
+                <PriceDisplay amount={total} />
+              </div>
+              <div className="flex justify-between mb-2">
+                <span>{t("checkout.shipping")}</span>
+                <PriceDisplay amount={shippingCost} />
+              </div>
+              <div className="flex justify-between mb-2">
+                <span>{t("checkout.tax")}</span>
+                <PriceDisplay amount={taxAmount} />
+              </div>
+              <Separator className="my-2" />
+              <div className="flex justify-between font-semibold">
+                <span>{t("checkout.total")}</span>
+                <PriceDisplay amount={grandTotal} className="text-lg" />
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <PaystackButton
+                amount={grandTotal}
+                email={form.getValues().customerEmail}
+                onSuccess={handlePaymentSuccess}
+                paymentMethod={form.getValues().paymentMethod}
+                metadata={{
+                  orderId: orderId,
+                  cartItems: cart.items.length,
+                }}
+                className="mt-6"
+              />
+              
+              <div className="text-center mt-4">
+                <Button 
+                  variant="outline" 
+                  onClick={() => setPaymentInitialized(false)} 
+                  className="mt-4"
+                >
+                  <ArrowLeft className="mr-2 h-4 w-4" />
+                  {t("checkout.backToCheckout")}
+                </Button>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
   
   // Order success view
   if (orderComplete) {
@@ -157,6 +295,30 @@ export default function CheckoutPage() {
         <div className="lg:col-span-2">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>{t("checkout.customerDetails")}</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="customerEmail"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("checkout.form.email")}</FormLabel>
+                        <FormControl>
+                          <Input type="email" placeholder={t("checkout.form.emailPlaceholder")} {...field} />
+                        </FormControl>
+                        <FormDescription>
+                          {t("checkout.form.emailDescription")}
+                        </FormDescription>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            
               <Card>
                 <CardHeader>
                   <CardTitle>{t("checkout.shippingDetails")}</CardTitle>
@@ -225,16 +387,16 @@ export default function CheckoutPage() {
                 
                 <Button 
                   type="submit" 
-                  disabled={createOrderMutation.isPending}
+                  disabled={createOrderMutation.isPending || initializePaymentMutation.isPending}
                   className="min-w-[150px]"
                 >
-                  {createOrderMutation.isPending ? (
+                  {(createOrderMutation.isPending || initializePaymentMutation.isPending) ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       {t("checkout.processing")}
                     </>
                   ) : (
-                    t("checkout.placeOrder")
+                    t("checkout.proceedToPayment")
                   )}
                 </Button>
               </div>

@@ -414,6 +414,129 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Paystack Payment Integration
+  app.post("/api/payments/initialize", requireRole(["customer"]), async (req, res) => {
+    try {
+      const { amount, email, paymentMethod, orderId, callbackUrl } = req.body;
+      
+      if (!amount || !email || !paymentMethod) {
+        return res.status(400).json({ message: "Missing required payment details" });
+      }
+      
+      // Format amount to kobo (smallest currency unit in Ghana - 100 kobo = 1 GHS)
+      const amountInKobo = Math.floor(amount * 100);
+      
+      // Create payment reference
+      const reference = `order_${orderId || 'temp'}_${Date.now()}`;
+      
+      // Prepare channels based on selected payment method
+      let channels: string[] = [];
+      
+      switch (paymentMethod) {
+        case 'credit_card':
+          channels = ['card'];
+          break;
+        case 'mtn_mobile':
+          channels = ['mobile_money'];
+          break;
+        case 'telecel':
+          channels = ['mobile_money'];
+          break;
+        case 'bank_transfer':
+          channels = ['bank_transfer'];
+          break;
+        default:
+          channels = ['card', 'mobile_money', 'bank_transfer']; 
+      }
+      
+      // Initialize transaction
+      try {
+        const initResult = await paystackClient.transaction.initialize({
+          amount: amountInKobo, 
+          email,
+          reference,
+          callback_url: callbackUrl || `${req.protocol}://${req.get('host')}/payment-success`,
+          channels,
+          metadata: {
+            orderId,
+            userId: req.user?.id,
+            paymentMethod
+          }
+        });
+        
+        if (initResult.body.status) {
+          // Return authorization URL to the client
+          return res.json({
+            success: true,
+            authorizationUrl: initResult.body.data.authorization_url,
+            reference: initResult.body.data.reference
+          });
+        } else {
+          return res.status(400).json({
+            success: false,
+            message: initResult.body.message
+          });
+        }
+      } catch (error) {
+        console.error("Paystack initialization error:", error);
+        return res.status(500).json({
+          success: false,
+          message: "Failed to initialize payment"
+        });
+      }
+    } catch (error) {
+      console.error("Payment initialization error:", error);
+      res.status(500).json({ message: "Failed to initialize payment" });
+    }
+  });
+  
+  // Verify Paystack payment
+  app.get("/api/payments/verify/:reference", async (req, res) => {
+    try {
+      const { reference } = req.params;
+      
+      if (!reference) {
+        return res.status(400).json({ message: "Payment reference is required" });
+      }
+      
+      const verifyResult = await paystackClient.transaction.verify({ reference });
+      
+      if (verifyResult.body.status && verifyResult.body.data.status === "success") {
+        const metadata = verifyResult.body.data.metadata;
+        
+        // If this is associated with an order, update the order payment status
+        if (metadata && metadata.orderId) {
+          const orderId = parseInt(metadata.orderId);
+          const order = await storage.getOrder(orderId);
+          
+          if (order) {
+            await storage.updateOrder(orderId, { 
+              paymentStatus: "paid",
+              status: "processing" 
+            });
+          }
+        }
+        
+        return res.json({
+          success: true,
+          data: verifyResult.body.data
+        });
+      } else {
+        return res.status(400).json({
+          success: false,
+          message: "Payment verification failed",
+          data: verifyResult.body.data
+        });
+      }
+    } catch (error) {
+      console.error("Payment verification error:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Failed to verify payment" 
+      });
+    }
+  });
+  
   // Admin dashboard stats
   app.get("/api/admin/stats", requireRole(["admin"]), async (req, res) => {
     try {
