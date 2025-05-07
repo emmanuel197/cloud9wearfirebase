@@ -76,14 +76,14 @@ export default function Header() {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center">
             <Link href="/">
-              <a className="text-primary text-2xl font-bold">Cloud9wear</a>
+              <a className="text-primary text-xl sm:text-2xl font-bold truncate">Cloud9wear</a>
             </Link>
           </div>
           
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex space-x-8">
+          <nav className="hidden md:flex space-x-4 lg:space-x-8">
             <Link href="/">
               <a className={`font-medium ${location === "/" ? "text-primary" : "text-gray-600 hover:text-primary"} transition-colors`}>
                 {t("navigation.home")}
@@ -111,7 +111,7 @@ export default function Header() {
           </nav>
           
           {/* Actions */}
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-2 sm:space-x-6">
             {/* Language Selector */}
             <div className="hidden sm:block">
               <LanguageSwitcher />
@@ -125,13 +125,13 @@ export default function Header() {
                     <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                       <Avatar className="h-8 w-8">
                         <AvatarFallback className="bg-primary text-primary-foreground">
-                          {getInitials(user.fullName)}
+                          {getInitials(user.fullName || user.username || '')}
                         </AvatarFallback>
                       </Avatar>
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>{user.fullName}</DropdownMenuLabel>
+                    <DropdownMenuLabel>{user.fullName || user.username}</DropdownMenuLabel>
                     <DropdownMenuLabel className="text-xs text-gray-500 font-normal">
                       {user.role}
                     </DropdownMenuLabel>
@@ -177,10 +177,10 @@ export default function Header() {
               )}
             </div>
             
-            {/* Cart */}
+            {/* Cart - Show on all screen sizes for customers */}
             {user?.role === "customer" && (
               <Link href="/cart">
-                <Button variant="ghost" className="relative">
+                <Button variant="ghost" className="relative p-2">
                   <ShoppingCart className="h-5 w-5" />
                   {cart.items.length > 0 && (
                     <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
@@ -201,7 +201,7 @@ export default function Header() {
               </SheetTrigger>
               <SheetContent side="right">
                 <SheetHeader>
-                  <SheetTitle>ExclusiveWear</SheetTitle>
+                  <SheetTitle>Cloud9wear</SheetTitle>
                   <SheetDescription>
                     {t("navigation.mobileMenuDescription")}
                   </SheetDescription>

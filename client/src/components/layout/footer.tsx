@@ -15,35 +15,38 @@ export default function Footer() {
   const { t } = useLanguage();
   
   return (
-    <footer className="bg-gray-800 text-white pt-16 pb-8">
+    <footer className="bg-gray-800 text-white pt-10 md:pt-16 pb-6 md:pb-8">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          <div>
-            <h3 className="text-xl font-bold mb-4">ExclusiveWear</h3>
-            <p className="text-gray-400 mb-4">{t("footer.description")}</p>
+        {/* Mobile accordion version could be added here for even better mobile UX */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-8 md:mb-12">
+          {/* Company Info */}
+          <div className="col-span-2 sm:col-span-2 md:col-span-1 mb-6 md:mb-0">
+            <h3 className="text-xl font-bold mb-3 md:mb-4">Cloud9wear</h3>
+            <p className="text-gray-400 mb-4 text-sm md:text-base">{t("footer.description")}</p>
             <div className="flex space-x-4">
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Facebook size={18} />
+                <Facebook size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="sr-only">Facebook</span>
               </a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Twitter size={18} />
+                <Twitter size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="sr-only">Twitter</span>
               </a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Instagram size={18} />
+                <Instagram size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="sr-only">Instagram</span>
               </a>
               <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Youtube size={18} />
+                <Youtube size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="sr-only">YouTube</span>
               </a>
             </div>
           </div>
           
+          {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold mb-4">{t("footer.quickLinks")}</h4>
-            <ul className="space-y-2">
+            <h4 className="text-base md:text-lg font-semibold mb-2 md:mb-4">{t("footer.quickLinks")}</h4>
+            <ul className="space-y-1 md:space-y-2 text-sm md:text-base">
               <li>
                 <Link href="/">
                   <a className="text-gray-400 hover:text-white transition-colors">
@@ -75,9 +78,10 @@ export default function Footer() {
             </ul>
           </div>
           
-          <div>
-            <h4 className="text-lg font-semibold mb-4">{t("footer.support")}</h4>
-            <ul className="space-y-2">
+          {/* Support */}
+          <div className="col-span-1">
+            <h4 className="text-base md:text-lg font-semibold mb-2 md:mb-4">{t("footer.support")}</h4>
+            <ul className="space-y-1 md:space-y-2 text-sm md:text-base">
               <li>
                 <Link href="/">
                   <a className="text-gray-400 hover:text-white transition-colors">
@@ -106,43 +110,38 @@ export default function Footer() {
                   </a>
                 </Link>
               </li>
-              <li>
-                <Link href="/">
-                  <a className="text-gray-400 hover:text-white transition-colors">
-                    {t("footer.support.terms")}
-                  </a>
-                </Link>
-              </li>
             </ul>
           </div>
           
-          <div>
-            <h4 className="text-lg font-semibold mb-4">{t("footer.contact")}</h4>
-            <ul className="space-y-2">
+          {/* Contact Info - Full width on mobile, normal on desktop */}
+          <div className="col-span-2 sm:col-span-2 md:col-span-1 mt-6 md:mt-0">
+            <h4 className="text-base md:text-lg font-semibold mb-2 md:mb-4">{t("footer.contact")}</h4>
+            <ul className="space-y-2 text-sm md:text-base">
               <li className="flex items-start">
-                <MapPin className="h-5 w-5 mr-3 text-gray-400 flex-shrink-0 mt-0.5" />
+                <MapPin className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-gray-400 flex-shrink-0 mt-0.5" />
                 <span className="text-gray-400">
                   123 Fashion Street, Style City, SC 12345
                 </span>
               </li>
               <li className="flex items-center">
-                <Phone className="h-5 w-5 mr-3 text-gray-400" />
+                <Phone className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-gray-400" />
                 <span className="text-gray-400">+1 (123) 456-7890</span>
               </li>
               <li className="flex items-center">
-                <Mail className="h-5 w-5 mr-3 text-gray-400" />
-                <span className="text-gray-400">info@exclusivewear.com</span>
+                <Mail className="h-4 w-4 md:h-5 md:w-5 mr-2 md:mr-3 text-gray-400" />
+                <span className="text-gray-400">info@cloud9wear.com</span>
               </li>
             </ul>
           </div>
         </div>
         
-        <div className="pt-8 border-t border-gray-700 text-center text-gray-500">
+        {/* Footer Bottom Section */}
+        <div className="pt-6 md:pt-8 border-t border-gray-700 text-center text-gray-500 text-sm">
           <div className="flex justify-center space-x-4 mb-4">
             <LanguageSwitcher />
           </div>
           <p>
-            &copy; {new Date().getFullYear()} ExclusiveWear. {t("footer.rights")}
+            &copy; {new Date().getFullYear()} Cloud9wear. {t("footer.rights")}
           </p>
         </div>
       </div>
