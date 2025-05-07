@@ -1,6 +1,5 @@
 import React, { createContext, useState, useContext, useEffect, ReactNode } from "react";
 import { useToast } from "@/hooks/use-toast";
-import { useLanguage } from "@/hooks/use-language";
 import { Product } from "@shared/schema";
 
 interface CartItem {
@@ -32,7 +31,11 @@ interface CartProviderProps {
 
 export function CartProvider({ children }: CartProviderProps) {
   const { toast } = useToast();
-  const { t } = useLanguage();
+  // Use a simpler approach without dependencies that might cause circular references
+  const [t] = useState<(key: string) => string>((key: string) => {
+    // Simple fallback translation function
+    return key;
+  });
   
   // Initialize cart from localStorage
   const [cart, setCart] = useState<Cart>(() => {
