@@ -169,9 +169,10 @@ export default function AdminOrders() {
       accessorKey: "totalAmount",
       header: t("admin.orders.table.amount"),
       cell: ({ row }: any) => (
-        <span className="font-medium">
-          ${Number(row.getValue("totalAmount")).toFixed(2)}
-        </span>
+        <PriceDisplay 
+          amount={Number(row.getValue("totalAmount"))}
+          className="font-medium"
+        />
       ),
     },
     {
@@ -206,7 +207,8 @@ export default function AdminOrders() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     // Directly fetch the order data when the button is clicked
                     handleViewOrder(order.id);
                   }}
@@ -215,7 +217,7 @@ export default function AdminOrders() {
                   {t("admin.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
                 {selectedOrder ? (
                   <>
                     <DialogHeader>
@@ -264,13 +266,16 @@ export default function AdminOrders() {
                               {item.size}, {item.color} × {item.quantity}
                             </p>
                           </div>
-                          <p className="font-medium">${item.priceAtPurchase * item.quantity}</p>
+                          <PriceDisplay 
+                            amount={item.priceAtPurchase * item.quantity}
+                            className="font-medium" 
+                          />
                         </div>
                       ))}
                       
                       <div className="flex justify-between mt-4 font-semibold">
                         <span>{t("admin.orders.total")}</span>
-                        <span>${selectedOrder.totalAmount}</span>
+                        <PriceDisplay amount={selectedOrder.totalAmount} className="font-semibold" />
                       </div>
                     </div>
                     

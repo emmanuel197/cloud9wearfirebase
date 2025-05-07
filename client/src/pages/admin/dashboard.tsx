@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { DataTable } from "@/components/ui/data-table";
 import { BarChart3, ShoppingBag, Users, Truck, DollarSign } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import PriceDisplay from "@/components/price-display";
 
 export default function AdminDashboard() {
   const { t } = useLanguage();
@@ -49,9 +50,10 @@ export default function AdminDashboard() {
       accessorKey: "totalAmount",
       header: t("admin.dashboard.orders.amount"),
       cell: ({ row }: any) => (
-        <span className="font-medium">
-          ${Number(row.getValue("totalAmount")).toFixed(2)}
-        </span>
+        <PriceDisplay 
+          amount={Number(row.getValue("totalAmount"))}
+          className="font-medium"
+        />
       ),
     },
     {
@@ -101,7 +103,13 @@ export default function AdminDashboard() {
             <>
               <StatCard 
                 title={t("admin.dashboard.stats.sales")}
-                value={`$${stats?.totalSales.toFixed(2)}`}
+                value={stats?.totalSales ? 
+                  new Intl.NumberFormat('en-GH', {
+                    style: 'currency',
+                    currency: 'GHS',
+                    minimumFractionDigits: 2,
+                  }).format(stats.totalSales) : "GHS 0.00"
+                }
                 icon={<DollarSign className="h-8 w-8 text-primary" />}
               />
               <StatCard 
