@@ -10,11 +10,11 @@ import { queryClient } from "@/lib/queryClient";
 createRoot(document.getElementById("root")!).render(
   <QueryClientProvider client={queryClient}>
     <LanguageProvider>
-      <AuthProvider>
-        <CartProvider>
+      <CartProvider>
+        <AuthProvider>
           <App />
-        </CartProvider>
-      </AuthProvider>
+        </AuthProvider>
+      </CartProvider>
     </LanguageProvider>
   </QueryClientProvider>
 );

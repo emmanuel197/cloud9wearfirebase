@@ -104,7 +104,7 @@ export function CartProvider({ children }: CartProviderProps) {
     }));
     
     toast({
-      title: t("cart.notifications.removed"),
+      title: translations.removed,
     });
   };
   
@@ -136,7 +136,7 @@ export function CartProvider({ children }: CartProviderProps) {
     setCart({ items: [] });
     
     toast({
-      title: t("cart.notifications.cleared"),
+      title: translations.cleared,
     });
   };
   
