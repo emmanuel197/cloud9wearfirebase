@@ -2,13 +2,17 @@ import {
   User, InsertUser, Product, InsertProduct, 
   Order, InsertOrder, OrderItem, InsertOrderItem,
   Cart, InsertCart, SupplierInventory, InsertSupplierInventory,
-  CartItem, UserRole
+  CartItem, UserRole,
+  users, products, orders, orderItems, carts, supplierInventory
 } from "@shared/schema";
-import MemoryStore from "memorystore";
+import { db } from "./db";
+import { eq, and } from 'drizzle-orm';
 import session from "express-session";
+import connectPg from "connect-pg-simple";
+import { pool } from "./db";
 
-// Create memory store for sessions
-const SessionStore = MemoryStore(session);
+// Create PostgreSQL session store
+const PostgresSessionStore = connectPg(session);
 
 export interface IStorage {
   // User management
@@ -83,7 +87,9 @@ export class MemStorage implements IStorage {
     this.cartIdCounter = 1;
     this.inventoryIdCounter = 1;
     
-    this.sessionStore = new SessionStore({
+    // Create memory store for sessions
+    const MemoryStore = require("memorystore")(session);
+    this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // 24 hours
     });
     
@@ -376,4 +382,317 @@ export class MemStorage implements IStorage {
   }
 }
 
-export const storage = new MemStorage();
+export class DatabaseStorage implements IStorage {
+  sessionStore: session.Store;
+
+  constructor() {
+    this.sessionStore = new PostgresSessionStore({ 
+      pool, 
+      createTableIfMissing: true 
+    });
+  }
+
+  // User management
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user || undefined;
+  }
+
+  async getUsersByRole(role: UserRole): Promise<User[]> {
+    return await db.select().from(users).where(eq(users.role, role));
+  }
+
+  async createUser(insertUser: InsertUser): Promise<User> {
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
+    return user;
+  }
+
+  // Product management
+  async getProduct(id: number): Promise<Product | undefined> {
+    const [product] = await db.select().from(products).where(eq(products.id, id));
+    return product || undefined;
+  }
+
+  async getProducts(filters?: {
+    category?: string;
+    supplierId?: number;
+    isActive?: boolean;
+  }): Promise<Product[]> {
+    let query = db.select().from(products);
+    
+    if (filters) {
+      if (filters.category) {
+        query = query.where(eq(products.category, filters.category));
+      }
+      if (filters.supplierId) {
+        query = query.where(eq(products.supplierId, filters.supplierId));
+      }
+      if (filters.isActive !== undefined) {
+        query = query.where(eq(products.isActive, filters.isActive));
+      }
+    }
+    
+    return await query;
+  }
+
+  async createProduct(product: InsertProduct): Promise<Product> {
+    const [newProduct] = await db
+      .insert(products)
+      .values(product)
+      .returning();
+    return newProduct;
+  }
+
+  async updateProduct(id: number, product: Partial<Product>): Promise<Product | undefined> {
+    const [updatedProduct] = await db
+      .update(products)
+      .set(product)
+      .where(eq(products.id, id))
+      .returning();
+    return updatedProduct || undefined;
+  }
+
+  async deleteProduct(id: number): Promise<boolean> {
+    const [deleted] = await db
+      .delete(products)
+      .where(eq(products.id, id))
+      .returning();
+    return !!deleted;
+  }
+
+  // Order management
+  async getOrder(id: number): Promise<Order | undefined> {
+    const [order] = await db.select().from(orders).where(eq(orders.id, id));
+    return order || undefined;
+  }
+
+  async getOrders(filters?: {
+    customerId?: number;
+    status?: string;
+  }): Promise<Order[]> {
+    let query = db.select().from(orders);
+    
+    if (filters) {
+      if (filters.customerId) {
+        query = query.where(eq(orders.customerId, filters.customerId));
+      }
+      if (filters.status) {
+        query = query.where(eq(orders.status, filters.status));
+      }
+    }
+    
+    return await query;
+  }
+
+  async createOrder(order: InsertOrder): Promise<Order> {
+    const [newOrder] = await db
+      .insert(orders)
+      .values(order)
+      .returning();
+    return newOrder;
+  }
+
+  async updateOrder(id: number, order: Partial<Order>): Promise<Order | undefined> {
+    const [updatedOrder] = await db
+      .update(orders)
+      .set(order)
+      .where(eq(orders.id, id))
+      .returning();
+    return updatedOrder || undefined;
+  }
+
+  async getOrderItems(orderId: number): Promise<OrderItem[]> {
+    return await db.select().from(orderItems).where(eq(orderItems.orderId, orderId));
+  }
+
+  async addOrderItem(orderItem: InsertOrderItem): Promise<OrderItem> {
+    const [newOrderItem] = await db
+      .insert(orderItems)
+      .values(orderItem)
+      .returning();
+    return newOrderItem;
+  }
+
+  // Cart management
+  async getCart(userId: number): Promise<Cart | undefined> {
+    const [cart] = await db.select().from(carts).where(eq(carts.userId, userId));
+    return cart || undefined;
+  }
+
+  async updateCart(userId: number, items: CartItem[]): Promise<Cart> {
+    const [existingCart] = await db.select().from(carts).where(eq(carts.userId, userId));
+    
+    if (!existingCart) {
+      const [newCart] = await db
+        .insert(carts)
+        .values({
+          userId,
+          items,
+          updatedAt: new Date()
+        })
+        .returning();
+      return newCart;
+    } else {
+      const [updatedCart] = await db
+        .update(carts)
+        .set({
+          items,
+          updatedAt: new Date()
+        })
+        .where(eq(carts.userId, userId))
+        .returning();
+      return updatedCart;
+    }
+  }
+
+  // Supplier inventory management
+  async getInventory(supplierId: number): Promise<SupplierInventory[]> {
+    return await db.select().from(supplierInventory).where(eq(supplierInventory.supplierId, supplierId));
+  }
+
+  async updateInventory(supplierId: number, productId: number, stock: number): Promise<SupplierInventory | undefined> {
+    const [existingInventory] = await db
+      .select()
+      .from(supplierInventory)
+      .where(
+        and(
+          eq(supplierInventory.supplierId, supplierId),
+          eq(supplierInventory.productId, productId)
+        )
+      );
+
+    if (!existingInventory) {
+      const [newInventory] = await db
+        .insert(supplierInventory)
+        .values({
+          supplierId,
+          productId,
+          availableStock: stock,
+          updatedAt: new Date()
+        })
+        .returning();
+        
+      // Update product stock
+      await this.updateProduct(productId, { stock });
+        
+      return newInventory;
+    } else {
+      const [updatedInventory] = await db
+        .update(supplierInventory)
+        .set({
+          availableStock: stock,
+          updatedAt: new Date()
+        })
+        .where(
+          and(
+            eq(supplierInventory.supplierId, supplierId),
+            eq(supplierInventory.productId, productId)
+          )
+        )
+        .returning();
+        
+      // Update product stock
+      await this.updateProduct(productId, { stock });
+        
+      return updatedInventory || undefined;
+    }
+  }
+
+  // Initialize demo data for development
+  async initializeDemoData() {
+    // Create demo users
+    await this.createUser({
+      username: "admin",
+      password: "password123", // Will be hashed in auth.ts
+      email: "admin@example.com",
+      fullName: "Admin User",
+      role: "admin"
+    });
+
+    await this.createUser({
+      username: "supplier",
+      password: "password123", // Will be hashed in auth.ts
+      email: "supplier@example.com",
+      fullName: "Supplier User",
+      role: "supplier"
+    });
+
+    await this.createUser({
+      username: "customer",
+      password: "password123", // Will be hashed in auth.ts
+      email: "customer@example.com",
+      fullName: "Customer User",
+      role: "customer"
+    });
+
+    // Create initial products
+    const tShirt1 = await this.createProduct({
+      name: "Urban Art Tee",
+      description: "Premium cotton tee with exclusive urban art design",
+      price: 29.99,
+      category: "t-shirts",
+      imageUrls: ["https://images.unsplash.com/photo-1503341733017-1901578f9f1e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
+      availableSizes: ["S", "M", "L", "XL"],
+      availableColors: ["Black", "Blue", "Red"],
+      supplierId: 2,
+      stock: 100,
+      isActive: true
+    });
+
+    const tShirt2 = await this.createProduct({
+      name: "Graphic Designer Tee",
+      description: "Limited edition graphic design inspired tee",
+      price: 34.99,
+      category: "t-shirts",
+      imageUrls: ["https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
+      availableSizes: ["S", "M", "L", "XL"],
+      availableColors: ["Gray", "White"],
+      supplierId: 2,
+      stock: 80,
+      isActive: true
+    });
+
+    const tShirt3 = await this.createProduct({
+      name: "Vintage Pattern Collection",
+      description: "Classic patterns with a modern twist",
+      price: 39.99,
+      category: "t-shirts",
+      imageUrls: ["https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
+      availableSizes: ["S", "M", "L", "XL"],
+      availableColors: ["Brown", "Green"],
+      supplierId: 2,
+      stock: 60,
+      isActive: true
+    });
+
+    const tShirt4 = await this.createProduct({
+      name: "Premium Essentials Pack",
+      description: "Bundle of 3 premium basic tees - subscriber exclusive",
+      price: 79.99,
+      category: "t-shirts",
+      imageUrls: ["https://images.unsplash.com/photo-1508427953056-b00b8d78ebf5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
+      availableSizes: ["S", "M", "L", "XL"],
+      availableColors: ["Black", "White", "Gray"],
+      supplierId: 2,
+      stock: 40,
+      isActive: true
+    });
+
+    // Initialize supplier inventory
+    await this.updateInventory(2, tShirt1.id, 100);
+    await this.updateInventory(2, tShirt2.id, 80);
+    await this.updateInventory(2, tShirt3.id, 60);
+    await this.updateInventory(2, tShirt4.id, 40);
+  }
+}
+
+// Change from MemStorage to DatabaseStorage
+export const storage = new DatabaseStorage();
