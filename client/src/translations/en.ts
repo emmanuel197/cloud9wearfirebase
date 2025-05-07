@@ -555,9 +555,69 @@ const translations = {
       supplierPanel: "Supplier",
       dashboard: "Dashboard",
       inventory: "Inventory",
+      orders: "Orders",
       analytics: "Analytics",
       storefront: "Visit Store",
       logout: "Logout"
+    },
+    
+    orders: {
+      title: "Orders Management",
+      allOrders: "All Orders",
+      viewAllOrders: "View and manage all your orders in one place",
+      filterByStatus: "Filter by Status",
+      allStatuses: "All Statuses",
+      noOrdersFound: "No Orders Found",
+      noOrdersFoundDesc: "There are no orders matching your filter criteria",
+      waitingForPayment: "Waiting for payment",
+      noActionsAvailable: "No actions available",
+      all: "All Orders",
+      
+      status: {
+        pending: "Pending",
+        pendingOrders: "Pending Orders",
+        viewPendingOrders: "View orders awaiting processing",
+        processing: "Processing",
+        processingOrders: "Processing Orders",
+        viewProcessingOrders: "View orders being prepared",
+        shipped: "Shipped",
+        shippedOrders: "Shipped Orders",
+        viewShippedOrders: "View orders in transit",
+        delivered: "Delivered",
+        deliveredOrders: "Delivered Orders",
+        viewDeliveredOrders: "View completed orders",
+        cancelled: "Cancelled",
+        cancelledOrders: "Cancelled Orders"
+      },
+      
+      payment: {
+        paid: "Paid",
+        pending: "Pending",
+        failed: "Failed",
+        refunded: "Refunded"
+      },
+      
+      actions: {
+        startProcessing: "Start Processing",
+        markShipped: "Mark Shipped",
+        markDelivered: "Mark Delivered",
+        cancelOrder: "Cancel Order"
+      },
+      
+      table: {
+        id: "Order ID",
+        customer: "Customer",
+        date: "Date",
+        amount: "Amount",
+        status: "Status",
+        payment: "Payment",
+        actions: "Actions"
+      },
+      
+      statusUpdateSuccess: "Order Status Updated",
+      statusUpdateSuccessDesc: "The order status has been successfully updated",
+      statusUpdateError: "Update Failed",
+      statusUpdateErrorDesc: "There was a problem updating the order status"
     },
     
     dashboard: {

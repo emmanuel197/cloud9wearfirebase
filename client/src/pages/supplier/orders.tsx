@@ -34,7 +34,7 @@ export default function SupplierOrders() {
   const [activeTab, setActiveTab] = useState("all");
 
   // Fetch all orders
-  const { data: orders, isLoading } = useQuery({
+  const { data: orders = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/orders"],
   });
 
@@ -61,12 +61,10 @@ export default function SupplierOrders() {
   };
 
   // Filter orders by status
-  const filteredOrders = orders
-    ? orders.filter((order: any) => {
-        if (!statusFilter) return true;
-        return order.status === statusFilter;
-      })
-    : [];
+  const filteredOrders = orders.filter((order: any) => {
+    if (!statusFilter) return true;
+    return order.status === statusFilter;
+  });
 
   // Columns for orders table
   const orderColumns = [
@@ -232,22 +230,20 @@ export default function SupplierOrders() {
   ];
 
   // Create tabs for different order statuses
-  const tabContent = (status: string | null) => {
-    const filteredByStatus = orders
-      ? orders.filter((order: any) => {
-          if (!status || status === "all") return true;
-          return order.status === status;
-        })
-      : [];
+  const tabContent = (tabStatus: string) => {
+    const filteredByStatus = orders.filter((order: any) => {
+      if (!tabStatus || tabStatus === "all") return true;
+      return order.status === tabStatus;
+    });
 
     return (
       <Card>
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between">
             <CardTitle>
-              {status === "all"
+              {tabStatus === "all"
                 ? t("supplier.orders.allOrders")
-                : t(`supplier.orders.status.${status}Orders`)}
+                : t(`supplier.orders.status.${tabStatus}Orders`)}
             </CardTitle>
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-500" />
@@ -270,9 +266,9 @@ export default function SupplierOrders() {
             </div>
           </div>
           <CardDescription>
-            {status === "all"
+            {tabStatus === "all"
               ? t("supplier.orders.viewAllOrders")
-              : t(`supplier.orders.view${status.charAt(0).toUpperCase() + status.slice(1)}Orders`)}
+              : t(`supplier.orders.view${tabStatus.charAt(0).toUpperCase() + tabStatus.slice(1)}Orders`)}
           </CardDescription>
         </CardHeader>
         <CardContent>

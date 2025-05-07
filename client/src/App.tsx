@@ -86,6 +86,11 @@ function Router() {
           <SupplierInventory />
         </ProtectedRoute>
       </Route>
+      <Route path="/supplier/orders">
+        <ProtectedRoute roles={["supplier"]}>
+          <SupplierOrders />
+        </ProtectedRoute>
+      </Route>
       
       {/* Fallback to 404 */}
       <Route component={NotFound} />
