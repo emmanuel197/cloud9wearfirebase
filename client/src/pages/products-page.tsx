@@ -23,7 +23,7 @@ import { Search, Filter, ChevronDown } from "lucide-react";
 
 export default function ProductsPage() {
   const { t } = useLanguage();
-  const [category, setCategory] = useState<string>("");
+  const [category, setCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
   
   // Fetch all products
@@ -31,7 +31,7 @@ export default function ProductsPage() {
     queryKey: ["/api/products", category],
     queryFn: () => {
       const url = new URL("/api/products", window.location.origin);
-      if (category) {
+      if (category && category !== "all") {
         url.searchParams.append("category", category);
       }
       return fetch(url.toString()).then(res => res.json());
@@ -74,7 +74,7 @@ export default function ProductsPage() {
               <SelectValue placeholder={t("products.categoryFilter")} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">{t("products.allCategories")}</SelectItem>
+              <SelectItem value="all">{t("products.allCategories")}</SelectItem>
               <SelectItem value="t-shirts">T-Shirts</SelectItem>
               <SelectItem value="hoodies">Hoodies</SelectItem>
               <SelectItem value="pants">Pants</SelectItem>

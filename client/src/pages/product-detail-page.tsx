@@ -168,9 +168,11 @@ export default function ProductDetailPage() {
                 <SelectValue placeholder={t("productDetail.selectSize")} />
               </SelectTrigger>
               <SelectContent>
-                {product.availableSizes.map((size) => (
-                  <SelectItem key={size} value={size}>{size}</SelectItem>
-                ))}
+                {product.availableSizes
+                  .filter(size => size.trim() !== '')
+                  .map((size) => (
+                    <SelectItem key={size} value={size}>{size}</SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
@@ -183,9 +185,11 @@ export default function ProductDetailPage() {
                 <SelectValue placeholder={t("productDetail.selectColor")} />
               </SelectTrigger>
               <SelectContent>
-                {product.availableColors.map((color) => (
-                  <SelectItem key={color} value={color}>{color}</SelectItem>
-                ))}
+                {product.availableColors
+                  .filter(color => color.trim() !== '')
+                  .map((color) => (
+                    <SelectItem key={color} value={color}>{color}</SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
