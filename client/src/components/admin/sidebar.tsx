@@ -50,6 +50,16 @@ export default function AdminSidebar() {
       href: "/admin/products",
       label: t("admin.sidebar.products"),
       icon: <Package className="h-5 w-5 mr-2" />
+    },
+    {
+      href: "/admin/customers",
+      label: t("admin.sidebar.customers"),
+      icon: <Users className="h-5 w-5 mr-2" />
+    },
+    {
+      href: "/admin/suppliers",
+      label: t("admin.sidebar.suppliers"),
+      icon: <Users className="h-5 w-5 mr-2" />
     }
   ];
 

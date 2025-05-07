@@ -12,6 +12,8 @@ import CheckoutPage from "@/pages/checkout-page";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminOrders from "@/pages/admin/orders";
 import AdminProducts from "@/pages/admin/products";
+import AdminCustomers from "@/pages/admin/customers";
+import AdminSuppliers from "@/pages/admin/suppliers";
 import SupplierDashboard from "@/pages/supplier/dashboard";
 import SupplierInventory from "@/pages/supplier/inventory";
 import { ProtectedRoute } from "@/lib/protected-route";
@@ -53,6 +55,16 @@ function Router() {
       <Route path="/admin/products">
         <ProtectedRoute roles={["admin"]}>
           <AdminProducts />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/customers">
+        <ProtectedRoute roles={["admin"]}>
+          <AdminCustomers />
+        </ProtectedRoute>
+      </Route>
+      <Route path="/admin/suppliers">
+        <ProtectedRoute roles={["admin"]}>
+          <AdminSuppliers />
         </ProtectedRoute>
       </Route>
       
