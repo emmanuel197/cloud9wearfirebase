@@ -114,7 +114,7 @@ export function PaystackButton({
               setIsLoading(true);
               props.onClick();
             }}
-            className="w-full"
+            className="w-full bg-black text-white hover:bg-white hover:text-black border border-white transition-colors"
             disabled={disabled || isLoading}
           >
             {isLoading ? (

@@ -178,7 +178,7 @@ export default function Header() {
                 </DropdownMenu>
               ) : (
                 <Link href="/auth">
-                  <Button variant="ghost" className="flex items-center">
+                  <Button variant="ghost" className="flex items-center text-white hover:text-gray-300">
                     <User className="mr-2 h-4 w-4" />
                     <span>{t("navigation.login")}</span>
                   </Button>
@@ -189,10 +189,10 @@ export default function Header() {
             {/* Cart - Show on all screen sizes for customers */}
             {user?.role === "customer" && (
               <Link href="/cart">
-                <Button variant="ghost" className="relative p-2">
+                <Button variant="ghost" className="relative p-2 text-white hover:text-gray-300">
                   <ShoppingCart className="h-5 w-5" />
                   {cart.items.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-2 -right-2 bg-white text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {cart.items.length}
                     </span>
                   )}
@@ -203,7 +203,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button variant="ghost" size="icon" className="md:hidden text-white hover:text-gray-300">
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>
