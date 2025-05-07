@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/use-auth";
 import SupplierSidebar from "@/components/supplier/sidebar";
@@ -18,10 +18,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Loader2, Filter, Truck, Package, Clock } from "lucide-react";
+import { Loader2, Filter, Truck, Package, Clock, Eye } from "lucide-react";
 import PriceDisplay from "@/components/price-display";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { toast } from "@/hooks/use-toast";
@@ -32,11 +40,28 @@ export default function SupplierOrders() {
   const { user } = useAuth();
   const [statusFilter, setStatusFilter] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("all");
+  const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   // Fetch all orders
   const { data: orders = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/orders"],
   });
+  
+  // Function to fetch a specific order
+  const handleViewOrder = async (orderId: number) => {
+    try {
+      const response = await apiRequest("GET", `/api/orders/${orderId}`);
+      const orderData = await response.json();
+      setSelectedOrder(orderData);
+    } catch (error) {
+      console.error("Error fetching order details:", error);
+      toast({
+        title: t("supplier.orders.fetchError"),
+        description: t("supplier.orders.fetchErrorDesc"),
+        variant: "destructive",
+      });
+    }
+  };
 
   if (!user || user.role !== "supplier") {
     return null; // Protected by ProtectedRoute component
@@ -171,59 +196,188 @@ export default function SupplierOrders() {
         const isCancelled = order.status === "cancelled";
         const isDelivered = order.status === "delivered";
 
-        // Can't update if cancelled or delivered
-        if (isCancelled || isDelivered) {
-          return (
-            <span className="text-sm text-gray-500">
-              {t("supplier.orders.noActionsAvailable")}
-            </span>
-          );
-        }
-
-        // Different actions based on current status
-        if (order.status === "pending" && isPaid) {
-          return (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => updateOrderStatus(order.id, "processing")}
-            >
-              <Package className="mr-1 h-4 w-4" />
-              {t("supplier.orders.actions.startProcessing")}
-            </Button>
-          );
-        }
-
-        if (order.status === "processing") {
-          return (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => updateOrderStatus(order.id, "shipped")}
-            >
-              <Truck className="mr-1 h-4 w-4" />
-              {t("supplier.orders.actions.markShipped")}
-            </Button>
-          );
-        }
-
-        if (order.status === "shipped") {
-          return (
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={() => updateOrderStatus(order.id, "delivered")}
-            >
-              <Clock className="mr-1 h-4 w-4" />
-              {t("supplier.orders.actions.markDelivered")}
-            </Button>
-          );
-        }
-
         return (
-          <span className="text-sm text-gray-500">
-            {t("supplier.orders.waitingForPayment")}
-          </span>
+          <div className="flex items-center space-x-2">
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleViewOrder(order.id);
+                  }}
+                >
+                  <Eye className="h-4 w-4 mr-1" />
+                  {t("supplier.orders.view")}
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
+                <DialogHeader>
+                  <DialogTitle>{t("supplier.orders.orderDetails", { id: selectedOrder?.id })}</DialogTitle>
+                  <DialogDescription>
+                    {selectedOrder && new Date(selectedOrder.orderDate).toLocaleDateString()}
+                  </DialogDescription>
+                </DialogHeader>
+                
+                {selectedOrder ? (
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                      <div>
+                        <h3 className="font-medium mb-1">{t("supplier.orders.customerInfo")}</h3>
+                        <p>ID: {selectedOrder.customerId}</p>
+                        <p>{t("supplier.orders.address")}: {selectedOrder.shippingAddress}</p>
+                        <p>{t("supplier.orders.phone")}: {selectedOrder.contactPhone}</p>
+                      </div>
+                      <div>
+                        <h3 className="font-medium mb-1">{t("supplier.orders.orderInfo")}</h3>
+                        <p>
+                          {t("supplier.orders.status")}: 
+                          <Badge className={`ml-2 ${
+                            selectedOrder.status === "pending" ? "bg-yellow-100 text-yellow-800" :
+                            selectedOrder.status === "processing" ? "bg-blue-100 text-blue-800" :
+                            selectedOrder.status === "shipped" ? "bg-purple-100 text-purple-800" :
+                            selectedOrder.status === "delivered" ? "bg-green-100 text-green-800" :
+                            selectedOrder.status === "cancelled" ? "bg-red-100 text-red-800" :
+                            "bg-gray-100 text-gray-800"
+                          }`} variant="outline">
+                            {selectedOrder.status}
+                          </Badge>
+                        </p>
+                        <p>{t("supplier.orders.payment")}: {selectedOrder.paymentMethod}</p>
+                        <p>
+                          {t("supplier.orders.paymentStatus")}: 
+                          <Badge className={`ml-2 ${
+                            selectedOrder.paymentStatus === "paid" ? "bg-green-100 text-green-800" :
+                            selectedOrder.paymentStatus === "pending" ? "bg-yellow-100 text-yellow-800" :
+                            "bg-red-100 text-red-800"
+                          }`} variant="outline">
+                            {selectedOrder.paymentStatus}
+                          </Badge>
+                        </p>
+                      </div>
+                    </div>
+                    
+                    <div className="mb-4">
+                      <h3 className="font-medium mb-2">{t("supplier.orders.items")}</h3>
+                      {selectedOrder.items?.map((item: any, index: number) => (
+                        <div key={index} className="flex justify-between py-2 border-b">
+                          <div>
+                            <p className="font-medium">Product ID: {item.productId}</p>
+                            <p className="text-sm text-gray-500">
+                              {item.size}, {item.color} × {item.quantity}
+                            </p>
+                          </div>
+                          <PriceDisplay 
+                            amount={item.priceAtPurchase * item.quantity}
+                            className="font-medium" 
+                          />
+                        </div>
+                      ))}
+                      
+                      <div className="flex justify-between mt-4 font-semibold">
+                        <span>{t("supplier.orders.total")}</span>
+                        <PriceDisplay amount={selectedOrder.totalAmount} className="font-semibold" />
+                      </div>
+                    </div>
+                    
+                    {!isCancelled && !isDelivered && (
+                      <div className="space-y-4">
+                        <div>
+                          <h3 className="font-medium mb-2">{t("supplier.orders.updateStatus")}</h3>
+                          <div className="flex space-x-2">
+                            {order.status === "pending" && isPaid && (
+                              <Button
+                                size="sm"
+                                onClick={() => updateOrderStatus(order.id, "processing")}
+                              >
+                                <Package className="mr-1 h-4 w-4" />
+                                {t("supplier.orders.actions.startProcessing")}
+                              </Button>
+                            )}
+                            
+                            {order.status === "processing" && (
+                              <Button
+                                size="sm"
+                                onClick={() => updateOrderStatus(order.id, "shipped")}
+                              >
+                                <Truck className="mr-1 h-4 w-4" />
+                                {t("supplier.orders.actions.markShipped")}
+                              </Button>
+                            )}
+                            
+                            {order.status === "shipped" && (
+                              <Button
+                                size="sm"
+                                onClick={() => updateOrderStatus(order.id, "delivered")}
+                              >
+                                <Clock className="mr-1 h-4 w-4" />
+                                {t("supplier.orders.actions.markDelivered")}
+                              </Button>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <div className="flex items-center justify-center p-6">
+                    <Loader2 className="h-6 w-6 animate-spin" />
+                  </div>
+                )}
+              </DialogContent>
+            </Dialog>
+            
+            {/* Status update buttons */}
+            {!isCancelled && !isDelivered && (
+              <>
+                {order.status === "pending" && isPaid && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => updateOrderStatus(order.id, "processing")}
+                  >
+                    <Package className="mr-1 h-4 w-4" />
+                    {t("supplier.orders.actions.startProcessing")}
+                  </Button>
+                )}
+                
+                {order.status === "processing" && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => updateOrderStatus(order.id, "shipped")}
+                  >
+                    <Truck className="mr-1 h-4 w-4" />
+                    {t("supplier.orders.actions.markShipped")}
+                  </Button>
+                )}
+                
+                {order.status === "shipped" && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => updateOrderStatus(order.id, "delivered")}
+                  >
+                    <Clock className="mr-1 h-4 w-4" />
+                    {t("supplier.orders.actions.markDelivered")}
+                  </Button>
+                )}
+                
+                {order.status === "pending" && !isPaid && (
+                  <span className="text-sm text-gray-500">
+                    {t("supplier.orders.waitingForPayment")}
+                  </span>
+                )}
+              </>
+            )}
+            
+            {(isCancelled || isDelivered) && (
+              <span className="text-sm text-gray-500">
+                {t("supplier.orders.noActionsAvailable")}
+              </span>
+            )}
+          </div>
         );
       },
     },
