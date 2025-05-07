@@ -9,6 +9,8 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { ShoppingCart, ShoppingBag, ArrowRight, AlertCircle } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAuth } from "@/hooks/use-auth";
+import { formatCurrency } from "@/lib/utils";
+import PriceDisplay from "@/components/price-display";
 
 export default function CartPage() {
   const { cart, clearCart, total } = useCart();
@@ -76,20 +78,20 @@ export default function CartPage() {
               <div className="space-y-2">
                 <div className="flex justify-between">
                   <span className="text-gray-600">{t("cart.subtotal")}</span>
-                  <span>${total.toFixed(2)}</span>
+                  <PriceDisplay amount={total} />
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">{t("cart.shipping")}</span>
-                  <span>$5.00</span>
+                  <PriceDisplay amount={5} />
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">{t("cart.tax")}</span>
-                  <span>${(total * 0.1).toFixed(2)}</span>
+                  <PriceDisplay amount={total * 0.1} />
                 </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between font-semibold">
                   <span>{t("cart.total")}</span>
-                  <span>${(total + 5 + total * 0.1).toFixed(2)}</span>
+                  <PriceDisplay amount={total + 5 + total * 0.1} />
                 </div>
               </div>
             </CardContent>
@@ -108,7 +110,7 @@ export default function CartPage() {
             <AlertCircle className="h-4 w-4" />
             <AlertTitle>{t("cart.promoAlert.title")}</AlertTitle>
             <AlertDescription>
-              {t("cart.promoAlert.description")}
+              {t("cart.promoAlert.description").replace("$50", formatCurrency(50))}
             </AlertDescription>
           </Alert>
         </div>
