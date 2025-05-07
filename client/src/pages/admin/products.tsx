@@ -112,7 +112,7 @@ export default function AdminProducts() {
     queryKey: ["/api/products", categoryFilter],
     queryFn: () => {
       const url = new URL("/api/products", window.location.origin);
-      if (categoryFilter) {
+      if (categoryFilter && categoryFilter !== "all") {
         url.searchParams.append("category", categoryFilter);
       }
       return fetch(url.toString()).then(res => res.json());
@@ -389,7 +389,7 @@ export default function AdminProducts() {
                 <SelectValue placeholder={t("admin.products.filterByCategory")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="">{t("admin.products.allCategories")}</SelectItem>
+                <SelectItem value="all">{t("admin.products.allCategories")}</SelectItem>
                 <SelectItem value="t-shirts">T-Shirts</SelectItem>
                 <SelectItem value="hoodies">Hoodies</SelectItem>
                 <SelectItem value="pants">Pants</SelectItem>
