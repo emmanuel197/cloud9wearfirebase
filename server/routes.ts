@@ -431,8 +431,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Missing required payment details" });
       }
       
-      // Format amount to kobo (smallest currency unit in Ghana - 100 kobo = 1 GHS)
-      const amountInKobo = Math.floor(amount * 100);
+      // Format amount to pesewas (smallest currency unit in Ghana - 100 pesewas = 1 GHS)
+      const amountInPesewas = Math.floor(amount * 100);
+      
+      // Set currency to Ghana Cedis
+      const currency = "GHS";
       
       // Create payment reference
       const reference = `order_${orderId || 'temp'}_${Date.now()}`;
@@ -480,9 +483,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       /* Uncomment this for actual Paystack integration
       try {
         const initResult = await paystackClient.transaction.initialize({
-          amount: amountInKobo, 
+          amount: amountInPesewas, 
           email,
           reference,
+          currency,
           callback_url: callbackUrl || `${req.protocol}://${req.get('host')}/payment-success`,
           channels,
           metadata: {
