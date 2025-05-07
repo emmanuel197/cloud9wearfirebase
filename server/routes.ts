@@ -773,6 +773,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin-only: Clear all orders
+  app.delete("/api/admin/orders", requireRole(["admin"]), async (req, res) => {
+    try {
+      // Get all orders
+      const orders = await storage.getOrders();
+      
+      // Delete each order
+      for (const order of orders) {
+        await storage.deleteOrder(order.id);
+      }
+      
+      res.json({ success: true, message: "All orders have been deleted" });
+    } catch (error) {
+      console.error("Error clearing orders:", error);
+      res.status(500).json({ error: "Failed to clear orders" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -206,8 +206,8 @@ export default function AdminOrders() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={(e) => {
-                    e.preventDefault(); // Prevent the dialog from opening immediately
+                  onClick={() => {
+                    // Directly fetch the order data when the button is clicked
                     handleViewOrder(order.id);
                   }}
                 >
@@ -215,7 +215,7 @@ export default function AdminOrders() {
                   {t("admin.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl" onPointerDownOutside={(e) => e.preventDefault()}>
+              <DialogContent className="max-w-3xl">
                 {selectedOrder ? (
                   <>
                     <DialogHeader>
