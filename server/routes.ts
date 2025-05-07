@@ -163,7 +163,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Orders API
-  app.get("/api/orders", requireRole(["admin", "customer"]), async (req, res) => {
+  app.get("/api/orders", requireRole(["admin", "customer", "supplier"]), async (req, res) => {
     try {
       const filters: any = {};
       
@@ -179,6 +179,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       const orders = await storage.getOrders(filters);
+      
+      // If supplier, filter orders that contain products they supply
+      if (req.user.role === "supplier") {
+        // Get all products by the supplier
+        const supplierProducts = await storage.getProducts({ supplierId: req.user.id });
+        const supplierProductIds = supplierProducts.map(product => product.id);
+        
+        // For each order, get the items and check if any product is supplied by this supplier
+        const supplierOrders = await Promise.all(
+          orders.map(async (order) => {
+            const orderItems = await storage.getOrderItems(order.id);
+            const hasSupplierItems = orderItems.some(item => 
+              supplierProductIds.includes(item.productId)
+            );
+            
+            if (hasSupplierItems) {
+              return {
+                ...order,
+                items: orderItems.filter(item => supplierProductIds.includes(item.productId))
+              };
+            }
+            return null;
+          })
+        );
+        
+        // Filter out null values (orders without supplier items)
+        const filteredOrders = supplierOrders.filter(order => order !== null);
+        return res.json(filteredOrders);
+      }
+      
       res.json(orders);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -186,7 +216,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get("/api/orders/:id", requireRole(["admin", "customer"]), async (req, res) => {
+  app.get("/api/orders/:id", requireRole(["admin", "customer", "supplier"]), async (req, res) => {
     try {
       const orderId = parseInt(req.params.id);
       const order = await storage.getOrder(orderId);
@@ -202,6 +232,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get order items
       const orderItems = await storage.getOrderItems(orderId);
+      
+      // Suppliers can only view orders containing their products
+      if (req.user.role === "supplier") {
+        // Get all products by the supplier
+        const supplierProducts = await storage.getProducts({ supplierId: req.user.id });
+        const supplierProductIds = supplierProducts.map(product => product.id);
+        
+        // Check if any order item is from this supplier
+        const hasSupplierItems = orderItems.some(item => 
+          supplierProductIds.includes(item.productId)
+        );
+        
+        if (!hasSupplierItems) {
+          return res.status(403).json({ message: "You can only view orders containing your products" });
+        }
+        
+        // Filter order items to only include supplier's products
+        const filteredItems = orderItems.filter(item => 
+          supplierProductIds.includes(item.productId)
+        );
+        
+        return res.json({ ...order, items: filteredItems });
+      }
       
       res.json({ ...order, items: orderItems });
     } catch (error) {
@@ -262,6 +315,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating order:", error);
       res.status(500).json({ message: "Failed to update order" });
+    }
+  });
+  
+  // PATCH endpoint for suppliers to update order status
+  app.patch("/api/orders/:id", requireRole(["admin", "supplier"]), async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.id);
+      const order = await storage.getOrder(orderId);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Only allow updating order status
+      if (!req.body.status) {
+        return res.status(400).json({ message: "Order status is required" });
+      }
+      
+      // Validate order status
+      const validStatuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
+      if (!validStatuses.includes(req.body.status)) {
+        return res.status(400).json({ message: "Invalid order status" });
+      }
+      
+      // For suppliers, we need to check if this order contains their products
+      if (req.user?.role === "supplier") {
+        const orderItems = await storage.getOrderItems(orderId);
+        const supplierProducts = await storage.getProducts({ supplierId: req.user.id });
+        const supplierProductIds = supplierProducts.map(product => product.id);
+        
+        // Check if any order item is from this supplier
+        const hasSupplierItems = orderItems.some(item => 
+          supplierProductIds.includes(item.productId)
+        );
+        
+        if (!hasSupplierItems) {
+          return res.status(403).json({ message: "You can only update orders containing your products" });
+        }
+      }
+      
+      const updatedOrder = await storage.updateOrder(orderId, { status: req.body.status });
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error("Error updating order status:", error);
+      res.status(500).json({ message: "Failed to update order status" });
     }
   });
 

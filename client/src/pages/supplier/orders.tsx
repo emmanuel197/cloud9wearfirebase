@@ -236,6 +236,18 @@ export default function SupplierOrders() {
       return order.status === tabStatus;
     });
 
+    // Function to capitalize first letter safely
+    const capitalizeFirst = (str: string): string => {
+      if (!str) return "";
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    };
+
+    // Generate view description key
+    const getViewDescription = (status: string): string => {
+      if (status === "all") return "supplier.orders.viewAllOrders";
+      return `supplier.orders.view${capitalizeFirst(status)}Orders`;
+    };
+
     return (
       <Card>
         <CardHeader className="pb-3">
@@ -266,9 +278,7 @@ export default function SupplierOrders() {
             </div>
           </div>
           <CardDescription>
-            {tabStatus === "all"
-              ? t("supplier.orders.viewAllOrders")
-              : t(`supplier.orders.view${tabStatus.charAt(0).toUpperCase() + tabStatus.slice(1)}Orders`)}
+            {t(getViewDescription(tabStatus))}
           </CardDescription>
         </CardHeader>
         <CardContent>
