@@ -46,7 +46,7 @@ export default function SupplierOrders() {
   const { data: orders = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/orders"],
   });
-  
+
   // Function to fetch a specific order
   const handleViewOrder = async (orderId: number) => {
     try {
@@ -107,7 +107,9 @@ export default function SupplierOrders() {
         return (
           <div>
             <div className="font-medium">{customerEmail}</div>
-            <div className="text-xs text-muted-foreground">ID: {customerId}</div>
+            <div className="text-xs text-muted-foreground">
+              ID: {customerId}
+            </div>
           </div>
         );
       },
@@ -200,8 +202,8 @@ export default function SupplierOrders() {
           <div className="flex items-center space-x-2">
             <Dialog>
               <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
@@ -212,104 +214,153 @@ export default function SupplierOrders() {
                   {t("supplier.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
+              <DialogContent className="max-w-3xl">
                 <DialogHeader>
-                  <DialogTitle>{t("supplier.orders.orderDetails", { id: selectedOrder?.id })}</DialogTitle>
+                  <DialogTitle>
+                    {t("supplier.orders.orderDetails", {
+                      id: selectedOrder?.id,
+                    })}
+                  </DialogTitle>
                   <DialogDescription>
-                    {selectedOrder && new Date(selectedOrder.orderDate).toLocaleDateString()}
+                    {selectedOrder &&
+                      new Date(selectedOrder.orderDate).toLocaleDateString()}
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 {selectedOrder ? (
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div>
-                        <h3 className="font-medium mb-1">{t("supplier.orders.customerInfo")}</h3>
+                        <h3 className="font-medium mb-1">
+                          {t("supplier.orders.customerInfo")}
+                        </h3>
                         <p>ID: {selectedOrder.customerId}</p>
-                        <p>{t("supplier.orders.address")}: {selectedOrder.shippingAddress}</p>
-                        <p>{t("supplier.orders.phone")}: {selectedOrder.contactPhone}</p>
+                        <p>
+                          {t("supplier.orders.address")}:{" "}
+                          {selectedOrder.shippingAddress}
+                        </p>
+                        <p>
+                          {t("supplier.orders.phone")}:{" "}
+                          {selectedOrder.contactPhone}
+                        </p>
                       </div>
                       <div>
-                        <h3 className="font-medium mb-1">{t("supplier.orders.orderInfo")}</h3>
+                        <h3 className="font-medium mb-1">
+                          {t("supplier.orders.orderInfo")}
+                        </h3>
                         <p>
-                          {t("supplier.orders.status")}: 
-                          <Badge className={`ml-2 ${
-                            selectedOrder.status === "pending" ? "bg-yellow-100 text-yellow-800" :
-                            selectedOrder.status === "processing" ? "bg-blue-100 text-blue-800" :
-                            selectedOrder.status === "shipped" ? "bg-purple-100 text-purple-800" :
-                            selectedOrder.status === "delivered" ? "bg-green-100 text-green-800" :
-                            selectedOrder.status === "cancelled" ? "bg-red-100 text-red-800" :
-                            "bg-gray-100 text-gray-800"
-                          }`} variant="outline">
+                          {t("supplier.orders.status")}:
+                          <Badge
+                            className={`ml-2 ${
+                              selectedOrder.status === "pending"
+                                ? "bg-yellow-100 text-yellow-800"
+                                : selectedOrder.status === "processing"
+                                  ? "bg-blue-100 text-blue-800"
+                                  : selectedOrder.status === "shipped"
+                                    ? "bg-purple-100 text-purple-800"
+                                    : selectedOrder.status === "delivered"
+                                      ? "bg-green-100 text-green-800"
+                                      : selectedOrder.status === "cancelled"
+                                        ? "bg-red-100 text-red-800"
+                                        : "bg-gray-100 text-gray-800"
+                            }`}
+                            variant="outline"
+                          >
                             {selectedOrder.status}
                           </Badge>
                         </p>
-                        <p>{t("supplier.orders.payment")}: {selectedOrder.paymentMethod}</p>
                         <p>
-                          {t("supplier.orders.paymentStatus")}: 
-                          <Badge className={`ml-2 ${
-                            selectedOrder.paymentStatus === "paid" ? "bg-green-100 text-green-800" :
-                            selectedOrder.paymentStatus === "pending" ? "bg-yellow-100 text-yellow-800" :
-                            "bg-red-100 text-red-800"
-                          }`} variant="outline">
+                          {t("supplier.orders.payment")}:{" "}
+                          {selectedOrder.paymentMethod}
+                        </p>
+                        <p>
+                          {t("supplier.orders.paymentStatus")}:
+                          <Badge
+                            className={`ml-2 ${
+                              selectedOrder.paymentStatus === "paid"
+                                ? "bg-green-100 text-green-800"
+                                : selectedOrder.paymentStatus === "pending"
+                                  ? "bg-yellow-100 text-yellow-800"
+                                  : "bg-red-100 text-red-800"
+                            }`}
+                            variant="outline"
+                          >
                             {selectedOrder.paymentStatus}
                           </Badge>
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="mb-4">
-                      <h3 className="font-medium mb-2">{t("supplier.orders.items")}</h3>
+                      <h3 className="font-medium mb-2">
+                        {t("supplier.orders.items")}
+                      </h3>
                       {selectedOrder.items?.map((item: any, index: number) => (
-                        <div key={index} className="flex justify-between py-2 border-b">
+                        <div
+                          key={index}
+                          className="flex justify-between py-2 border-b"
+                        >
                           <div>
-                            <p className="font-medium">Product ID: {item.productId}</p>
+                            <p className="font-medium">
+                              Product ID: {item.productId}
+                            </p>
                             <p className="text-sm text-gray-500">
                               {item.size}, {item.color} × {item.quantity}
                             </p>
                           </div>
-                          <PriceDisplay 
+                          <PriceDisplay
                             amount={item.priceAtPurchase * item.quantity}
-                            className="font-medium" 
+                            className="font-medium"
                           />
                         </div>
                       ))}
-                      
+
                       <div className="flex justify-between mt-4 font-semibold">
                         <span>{t("supplier.orders.total")}</span>
-                        <PriceDisplay amount={selectedOrder.totalAmount} className="font-semibold" />
+                        <PriceDisplay
+                          amount={selectedOrder.totalAmount}
+                          className="font-semibold"
+                        />
                       </div>
                     </div>
-                    
+
                     {!isCancelled && !isDelivered && (
                       <div className="space-y-4">
                         <div>
-                          <h3 className="font-medium mb-2">{t("supplier.orders.updateStatus")}</h3>
+                          <h3 className="font-medium mb-2">
+                            {t("supplier.orders.updateStatus")}
+                          </h3>
                           <div className="flex space-x-2">
                             {order.status === "pending" && isPaid && (
                               <Button
                                 size="sm"
-                                onClick={() => updateOrderStatus(order.id, "processing")}
+                                onClick={() =>
+                                  updateOrderStatus(order.id, "processing")
+                                }
                               >
                                 <Package className="mr-1 h-4 w-4" />
                                 {t("supplier.orders.actions.startProcessing")}
                               </Button>
                             )}
-                            
+
                             {order.status === "processing" && (
                               <Button
                                 size="sm"
-                                onClick={() => updateOrderStatus(order.id, "shipped")}
+                                onClick={() =>
+                                  updateOrderStatus(order.id, "shipped")
+                                }
                               >
                                 <Truck className="mr-1 h-4 w-4" />
                                 {t("supplier.orders.actions.markShipped")}
                               </Button>
                             )}
-                            
+
                             {order.status === "shipped" && (
                               <Button
                                 size="sm"
-                                onClick={() => updateOrderStatus(order.id, "delivered")}
+                                onClick={() =>
+                                  updateOrderStatus(order.id, "delivered")
+                                }
                               >
                                 <Clock className="mr-1 h-4 w-4" />
                                 {t("supplier.orders.actions.markDelivered")}
@@ -327,7 +378,7 @@ export default function SupplierOrders() {
                 )}
               </DialogContent>
             </Dialog>
-            
+
             {/* Status update buttons */}
             {!isCancelled && !isDelivered && (
               <>
@@ -341,7 +392,7 @@ export default function SupplierOrders() {
                     {t("supplier.orders.actions.startProcessing")}
                   </Button>
                 )}
-                
+
                 {order.status === "processing" && (
                   <Button
                     size="sm"
@@ -352,7 +403,7 @@ export default function SupplierOrders() {
                     {t("supplier.orders.actions.markShipped")}
                   </Button>
                 )}
-                
+
                 {order.status === "shipped" && (
                   <Button
                     size="sm"
@@ -363,7 +414,7 @@ export default function SupplierOrders() {
                     {t("supplier.orders.actions.markDelivered")}
                   </Button>
                 )}
-                
+
                 {order.status === "pending" && !isPaid && (
                   <span className="text-sm text-gray-500">
                     {t("supplier.orders.waitingForPayment")}
@@ -371,7 +422,7 @@ export default function SupplierOrders() {
                 )}
               </>
             )}
-            
+
             {(isCancelled || isDelivered) && (
               <span className="text-sm text-gray-500">
                 {t("supplier.orders.noActionsAvailable")}
@@ -414,26 +465,40 @@ export default function SupplierOrders() {
             <div className="flex items-center space-x-2">
               <Filter className="h-4 w-4 text-gray-500" />
               <Select
-                onValueChange={(value) => setStatusFilter(value !== "all" ? value : null)}
+                onValueChange={(value) =>
+                  setStatusFilter(value !== "all" ? value : null)
+                }
                 defaultValue="all"
               >
                 <SelectTrigger className="h-8 w-[180px]">
-                  <SelectValue placeholder={t("supplier.orders.filterByStatus")} />
+                  <SelectValue
+                    placeholder={t("supplier.orders.filterByStatus")}
+                  />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">{t("supplier.orders.allStatuses")}</SelectItem>
-                  <SelectItem value="pending">{t("supplier.orders.status.pending")}</SelectItem>
-                  <SelectItem value="processing">{t("supplier.orders.status.processing")}</SelectItem>
-                  <SelectItem value="shipped">{t("supplier.orders.status.shipped")}</SelectItem>
-                  <SelectItem value="delivered">{t("supplier.orders.status.delivered")}</SelectItem>
-                  <SelectItem value="cancelled">{t("supplier.orders.status.cancelled")}</SelectItem>
+                  <SelectItem value="all">
+                    {t("supplier.orders.allStatuses")}
+                  </SelectItem>
+                  <SelectItem value="pending">
+                    {t("supplier.orders.status.pending")}
+                  </SelectItem>
+                  <SelectItem value="processing">
+                    {t("supplier.orders.status.processing")}
+                  </SelectItem>
+                  <SelectItem value="shipped">
+                    {t("supplier.orders.status.shipped")}
+                  </SelectItem>
+                  <SelectItem value="delivered">
+                    {t("supplier.orders.status.delivered")}
+                  </SelectItem>
+                  <SelectItem value="cancelled">
+                    {t("supplier.orders.status.cancelled")}
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
-          <CardDescription>
-            {t(getViewDescription(tabStatus))}
-          </CardDescription>
+          <CardDescription>{t(getViewDescription(tabStatus))}</CardDescription>
         </CardHeader>
         <CardContent>
           {isLoading ? (
@@ -450,7 +515,9 @@ export default function SupplierOrders() {
               <h3 className="text-lg font-medium text-gray-900">
                 {t("supplier.orders.noOrdersFound")}
               </h3>
-              <p className="mt-1 text-gray-500">{t("supplier.orders.noOrdersFoundDesc")}</p>
+              <p className="mt-1 text-gray-500">
+                {t("supplier.orders.noOrdersFoundDesc")}
+              </p>
             </div>
           )}
         </CardContent>
@@ -469,14 +536,24 @@ export default function SupplierOrders() {
         <Tabs defaultValue="all" onValueChange={setActiveTab} className="mb-8">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="all">{t("supplier.orders.all")}</TabsTrigger>
-            <TabsTrigger value="pending">{t("supplier.orders.status.pending")}</TabsTrigger>
-            <TabsTrigger value="processing">{t("supplier.orders.status.processing")}</TabsTrigger>
-            <TabsTrigger value="shipped">{t("supplier.orders.status.shipped")}</TabsTrigger>
-            <TabsTrigger value="delivered">{t("supplier.orders.status.delivered")}</TabsTrigger>
+            <TabsTrigger value="pending">
+              {t("supplier.orders.status.pending")}
+            </TabsTrigger>
+            <TabsTrigger value="processing">
+              {t("supplier.orders.status.processing")}
+            </TabsTrigger>
+            <TabsTrigger value="shipped">
+              {t("supplier.orders.status.shipped")}
+            </TabsTrigger>
+            <TabsTrigger value="delivered">
+              {t("supplier.orders.status.delivered")}
+            </TabsTrigger>
           </TabsList>
           <TabsContent value="all">{tabContent("all")}</TabsContent>
           <TabsContent value="pending">{tabContent("pending")}</TabsContent>
-          <TabsContent value="processing">{tabContent("processing")}</TabsContent>
+          <TabsContent value="processing">
+            {tabContent("processing")}
+          </TabsContent>
           <TabsContent value="shipped">{tabContent("shipped")}</TabsContent>
           <TabsContent value="delivered">{tabContent("delivered")}</TabsContent>
         </Tabs>
