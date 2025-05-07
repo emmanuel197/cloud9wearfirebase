@@ -47,7 +47,8 @@ export function PaystackButton({
   const publicKey = import.meta.env.VITE_PAYSTACK_PUBLIC_KEY || '';
   
   // Convert amount to kobo (smallest currency unit)
-  // 100 kobo = 1 GHS
+  // 100 kobo = 1 NGN (Nigerian Naira)
+  // Note: We display prices in GHS but process payments in NGN for Paystack compatibility
   const amountInKobo = Math.floor(amount * 100);
 
   // Create Paystack metadata with required fields
@@ -100,6 +101,7 @@ export function PaystackButton({
         email={email}
         amount={amountInKobo}
         publicKey={publicKey}
+        currency="NGN"
         metadata={paystackMetadata}
         callback={(response: { reference: string }) => {
           handleSuccess(response);
