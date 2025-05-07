@@ -31,11 +31,13 @@ interface CartProviderProps {
 
 export function CartProvider({ children }: CartProviderProps) {
   const { toast } = useToast();
-  // Use a simpler approach without dependencies that might cause circular references
-  const [t] = useState<(key: string) => string>((key: string) => {
-    // Simple fallback translation function
-    return key;
-  });
+  
+  // Define direct hardcoded translations to avoid circular dependencies
+  const translations = {
+    added: "Item added to cart",
+    removed: "Item removed from cart",
+    cleared: "Cart has been cleared"
+  };
   
   // Initialize cart from localStorage
   const [cart, setCart] = useState<Cart>(() => {
@@ -84,7 +86,7 @@ export function CartProvider({ children }: CartProviderProps) {
     });
     
     toast({
-      title: t("cart.notifications.added"),
+      title: translations.added,
       description: `${newItem.product.name} (${newItem.size}, ${newItem.color})`,
     });
   };
