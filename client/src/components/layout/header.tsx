@@ -78,7 +78,7 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center space-x-2">
             <Link href="/">
-              <a className="text-primary text-2xl font-bold">ExclusiveWear</a>
+              <a className="text-primary text-2xl font-bold">Cloud9wear</a>
             </Link>
           </div>
           
