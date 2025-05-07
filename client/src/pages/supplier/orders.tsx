@@ -204,6 +204,7 @@ export default function SupplierOrders() {
                   variant="outline" 
                   size="sm"
                   onClick={(e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     handleViewOrder(order.id);
                   }}
