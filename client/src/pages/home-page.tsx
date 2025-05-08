@@ -9,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import heroImage from "../assets/hero-image.jpeg";
 import ProductCard from "@/components/product-card";
 import { AlertCircle, Clock } from "lucide-react";
+import { normalizeImageUrl } from "@/lib/imageUtils";
 
 export default function HomePage() {
   const { t } = useLanguage();

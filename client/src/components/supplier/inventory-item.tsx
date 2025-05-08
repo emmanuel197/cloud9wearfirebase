@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Loader2, Save, AlertTriangle } from "lucide-react";
+import { normalizeImageUrl } from "@/lib/imageUtils";
 
 interface InventoryItemProps {
   product: Product;
@@ -42,7 +43,7 @@ export default function InventoryItem({
       <div className="flex items-center mb-4 md:mb-0">
         <div className="h-16 w-16 overflow-hidden rounded-md border flex-shrink-0 mr-4">
           <img
-            src={product.imageUrls[0]}
+            src={normalizeImageUrl(product.imageUrls[0])}
             alt={product.name}
             className="h-full w-full object-cover"
           />
