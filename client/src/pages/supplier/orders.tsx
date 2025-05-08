@@ -46,7 +46,7 @@ export default function SupplierOrders() {
   const { data: orders = [], isLoading } = useQuery<any[]>({
     queryKey: ["/api/orders"],
   });
-  
+
   // Function to fetch a specific order
   const handleViewOrder = async (orderId: number) => {
     try {
@@ -198,12 +198,15 @@ export default function SupplierOrders() {
 
         return (
           <div className="flex items-center space-x-2">
-            <Dialog>
+            <Dialog onOpenChange={(open) => {
+              console.log("[Dialog Debug] Dialog state changed:", open);
+            }}>
               <DialogTrigger asChild>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={(e) => {
+                    console.log("[Dialog Debug] View button clicked");
                     e.stopPropagation();
                     handleViewOrder(order.id);
                   }}
@@ -219,7 +222,7 @@ export default function SupplierOrders() {
                     {selectedOrder && new Date(selectedOrder.orderDate).toLocaleDateString()}
                   </DialogDescription>
                 </DialogHeader>
-                
+
                 {selectedOrder ? (
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
@@ -257,7 +260,7 @@ export default function SupplierOrders() {
                         </p>
                       </div>
                     </div>
-                    
+
                     <div className="mb-4">
                       <h3 className="font-medium mb-2">{t("supplier.orders.items")}</h3>
                       {selectedOrder.items?.map((item: any, index: number) => (
@@ -274,13 +277,13 @@ export default function SupplierOrders() {
                           />
                         </div>
                       ))}
-                      
+
                       <div className="flex justify-between mt-4 font-semibold">
                         <span>{t("supplier.orders.total")}</span>
                         <PriceDisplay amount={selectedOrder.totalAmount} className="font-semibold" />
                       </div>
                     </div>
-                    
+
                     {!isCancelled && !isDelivered && (
                       <div className="space-y-4">
                         <div>
@@ -295,7 +298,7 @@ export default function SupplierOrders() {
                                 {t("supplier.orders.actions.startProcessing")}
                               </Button>
                             )}
-                            
+
                             {order.status === "processing" && (
                               <Button
                                 size="sm"
@@ -305,7 +308,7 @@ export default function SupplierOrders() {
                                 {t("supplier.orders.actions.markShipped")}
                               </Button>
                             )}
-                            
+
                             {order.status === "shipped" && (
                               <Button
                                 size="sm"
@@ -327,7 +330,7 @@ export default function SupplierOrders() {
                 )}
               </DialogContent>
             </Dialog>
-            
+
             {/* Status update buttons */}
             {!isCancelled && !isDelivered && (
               <>
@@ -341,7 +344,7 @@ export default function SupplierOrders() {
                     {t("supplier.orders.actions.startProcessing")}
                   </Button>
                 )}
-                
+
                 {order.status === "processing" && (
                   <Button
                     size="sm"
@@ -352,7 +355,7 @@ export default function SupplierOrders() {
                     {t("supplier.orders.actions.markShipped")}
                   </Button>
                 )}
-                
+
                 {order.status === "shipped" && (
                   <Button
                     size="sm"
@@ -363,7 +366,7 @@ export default function SupplierOrders() {
                     {t("supplier.orders.actions.markDelivered")}
                   </Button>
                 )}
-                
+
                 {order.status === "pending" && !isPaid && (
                   <span className="text-sm text-gray-500">
                     {t("supplier.orders.waitingForPayment")}
@@ -371,7 +374,7 @@ export default function SupplierOrders() {
                 )}
               </>
             )}
-            
+
             {(isCancelled || isDelivered) && (
               <span className="text-sm text-gray-500">
                 {t("supplier.orders.noActionsAvailable")}
