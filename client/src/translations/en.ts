@@ -529,7 +529,69 @@ const translations = {
       inactive: "Inactive",
       actions: "Actions",
       noProducts: "No products found",
-      noProductsDesc: "There are no products in your catalog yet."
+      noProductsDesc: "There are no products in your catalog yet.",
+      addProduct: "Add New Product",
+      editProduct: "Edit Product",
+      addDescription: "Add a new product to your catalog",
+      editDescription: "Update product information",
+      saving: "Saving...",
+      saveButton: "Save Product",
+      updateButton: "Update Product",
+      cancel: "Cancel",
+      confirmDelete: "Delete Product",
+      deleteConfirmTitle: "Delete Product?",
+      deleteConfirmDesc: "This action cannot be undone. This will permanently delete the product from your catalog.",
+      
+      addSuccess: "Product Added Successfully",
+      addSuccessDesc: "The product has been added to your catalog",
+      addError: "Error Adding Product",
+      
+      updateSuccess: "Product Updated Successfully",
+      updateSuccessDesc: "The product has been updated in your catalog",
+      updateError: "Error Updating Product",
+      
+      deleteSuccess: "Product Deleted Successfully",
+      deleteSuccessDesc: "The product has been removed from your catalog",
+      deleteError: "Error Deleting Product",
+      
+      form: {
+        name: "Product Name",
+        price: "Price",
+        discount: "Discount (%)",
+        discountDescription: "Enter percentage discount (0-100)",
+        category: "Category",
+        selectCategory: "Select category",
+        stock: "Stock Quantity",
+        supplier: "Supplier",
+        active: "Product Status",
+        activeDescription: "When disabled, the product won't be visible in the store",
+        description: "Description",
+        images: "Product Images",
+        imageUrl: "Image URL",
+        uploadImage: "Upload Image",
+        addImage: "Add Image",
+        orEnterUrl: "Or enter URL",
+        selectImage: "Select Image",
+        urlTab: "URL",
+        uploadTab: "Upload",
+        uploading: "Uploading...",
+        sizes: "Available Sizes",
+        sizePlaceholder: "Enter size (e.g., S, M, L, XL)",
+        addSize: "Add Size",
+        colors: "Available Colors",
+        colorPlaceholder: "Enter color name or hex code",
+        addColor: "Add Color"
+      },
+      
+      table: {
+        id: "ID",
+        name: "Name",
+        price: "Price",
+        category: "Category",
+        stock: "Stock",
+        status: "Status",
+        actions: "Actions"
+      }
     }
   },
   
