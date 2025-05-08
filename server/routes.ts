@@ -7,7 +7,8 @@ import {
   insertOrderSchema, 
   insertOrderItemSchema,
   loginSchema,
-  CartItem
+  CartItem,
+  insertReviewSchema // Added import for review schema
 } from "@shared/schema";
 import { ZodError } from "zod";
 import Paystack from "paystack-node";
@@ -23,13 +24,13 @@ declare global {
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);
-  
+
   // Initialize Paystack API client
   if (!process.env.PAYSTACK_SECRET_KEY) {
     console.error("Missing PAYSTACK_SECRET_KEY environment variable");
   }
   const paystackClient = new Paystack(process.env.PAYSTACK_SECRET_KEY || "");
-  
+
   // Check if Paystack client is properly initialized
   if (!paystackClient || !paystackClient.transaction) {
     console.error("Failed to initialize Paystack client properly");
@@ -41,11 +42,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!req.isAuthenticated()) {
         return res.status(401).json({ message: "Unauthorized" });
       }
-      
+
       if (!roles.includes(req.user.role)) {
         return res.status(403).json({ message: "Forbidden: Insufficient permissions" });
       }
-      
+
       next();
     };
   };
@@ -58,7 +59,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         errors: error.errors,
       });
     }
-    
+
     console.error("Unexpected error:", error);
     return res.status(500).json({ message: "Internal server error" });
   };
@@ -70,10 +71,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filters: any = {
         isActive: true,
       };
-      
+
       if (category) filters.category = category;
       if (supplierId) filters.supplierId = Number(supplierId);
-      
+
       const products = await storage.getProducts(filters);
       res.json(products);
     } catch (error) {
@@ -86,11 +87,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const productId = parseInt(req.params.id);
       const product = await storage.getProduct(productId);
-      
+
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-      
+
       res.json(product);
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -101,17 +102,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/products", requireRole(["admin", "supplier"]), async (req, res) => {
     try {
       const productData = insertProductSchema.parse(req.body);
-      
+
       // If supplier is creating product, ensure supplierId is their own ID
       if (req.user.role === "supplier") {
         productData.supplierId = req.user.id;
       }
-      
+
       const product = await storage.createProduct(productData);
-      
+
       // Initialize inventory for the supplier
       await storage.updateInventory(product.supplierId, product.id, product.stock);
-      
+
       res.status(201).json(product);
     } catch (error) {
       handleZodError(error, res);
@@ -122,23 +123,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const productId = parseInt(req.params.id);
       const product = await storage.getProduct(productId);
-      
+
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-      
+
       // Suppliers can only update their own products
       if (req.user.role === "supplier" && product.supplierId !== req.user.id) {
         return res.status(403).json({ message: "You can only update your own products" });
       }
-      
+
       const updatedProduct = await storage.updateProduct(productId, req.body);
-      
+
       // Update inventory if stock changed
       if (req.body.stock !== undefined) {
         await storage.updateInventory(product.supplierId, productId, req.body.stock);
       }
-      
+
       res.json(updatedProduct);
     } catch (error) {
       console.error("Error updating product:", error);
@@ -150,11 +151,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const productId = parseInt(req.params.id);
       const deleted = await storage.deleteProduct(productId);
-      
+
       if (!deleted) {
         return res.status(404).json({ message: "Product not found" });
       }
-      
+
       res.status(204).send();
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -166,26 +167,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/orders", requireRole(["admin", "customer", "supplier"]), async (req, res) => {
     try {
       const filters: any = {};
-      
+
       // Customers can only see their own orders
       if (req.user.role === "customer") {
         filters.customerId = req.user.id;
       } else if (req.query.customerId) {
         filters.customerId = Number(req.query.customerId);
       }
-      
+
       if (req.query.status) {
         filters.status = req.query.status;
       }
-      
+
       const orders = await storage.getOrders(filters);
-      
+
       // If supplier, filter orders that contain products they supply
       if (req.user.role === "supplier") {
         // Get all products by the supplier
         const supplierProducts = await storage.getProducts({ supplierId: req.user.id });
         const supplierProductIds = supplierProducts.map(product => product.id);
-        
+
         // For each order, get the items and check if any product is supplied by this supplier
         const supplierOrders = await Promise.all(
           orders.map(async (order) => {
@@ -193,7 +194,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             const hasSupplierItems = orderItems.some(item => 
               supplierProductIds.includes(item.productId)
             );
-            
+
             if (hasSupplierItems) {
               return {
                 ...order,
@@ -203,12 +204,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
             return null;
           })
         );
-        
+
         // Filter out null values (orders without supplier items)
         const filteredOrders = supplierOrders.filter(order => order !== null);
         return res.json(filteredOrders);
       }
-      
+
       res.json(orders);
     } catch (error) {
       console.error("Error fetching orders:", error);
@@ -220,42 +221,42 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orderId = parseInt(req.params.id);
       const order = await storage.getOrder(orderId);
-      
+
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
-      
+
       // Customers can only view their own orders
       if (req.user.role === "customer" && order.customerId !== req.user.id) {
         return res.status(403).json({ message: "You can only view your own orders" });
       }
-      
+
       // Get order items
       const orderItems = await storage.getOrderItems(orderId);
-      
+
       // Suppliers can only view orders containing their products
       if (req.user.role === "supplier") {
         // Get all products by the supplier
         const supplierProducts = await storage.getProducts({ supplierId: req.user.id });
         const supplierProductIds = supplierProducts.map(product => product.id);
-        
+
         // Check if any order item is from this supplier
         const hasSupplierItems = orderItems.some(item => 
           supplierProductIds.includes(item.productId)
         );
-        
+
         if (!hasSupplierItems) {
           return res.status(403).json({ message: "You can only view orders containing your products" });
         }
-        
+
         // Filter order items to only include supplier's products
         const filteredItems = orderItems.filter(item => 
           supplierProductIds.includes(item.productId)
         );
-        
+
         return res.json({ ...order, items: filteredItems });
       }
-      
+
       res.json({ ...order, items: orderItems });
     } catch (error) {
       console.error("Error fetching order:", error);
@@ -269,10 +270,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         ...req.body,
         customerId: req.user.id
       });
-      
+
       // Create the order
       const order = await storage.createOrder(orderData);
-      
+
       // Add order items
       const orderItems = req.body.items || [];
       for (const item of orderItems) {
@@ -280,9 +281,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           ...item,
           orderId: order.id
         });
-        
+
         await storage.addOrderItem(orderItemData);
-        
+
         // Update product stock
         const product = await storage.getProduct(item.productId);
         if (product) {
@@ -291,10 +292,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           await storage.updateInventory(product.supplierId, product.id, newStock);
         }
       }
-      
+
       // Clear user's cart
       await storage.updateCart(req.user.id, []);
-      
+
       res.status(201).json(order);
     } catch (error) {
       handleZodError(error, res);
@@ -305,11 +306,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const orderId = parseInt(req.params.id);
       const order = await storage.getOrder(orderId);
-      
+
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
-      
+
       const updatedOrder = await storage.updateOrder(orderId, req.body);
       res.json(updatedOrder);
     } catch (error) {
@@ -317,44 +318,44 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to update order" });
     }
   });
-  
+
   // PATCH endpoint for suppliers to update order status
   app.patch("/api/orders/:id", requireRole(["admin", "supplier"]), async (req, res) => {
     try {
       const orderId = parseInt(req.params.id);
       const order = await storage.getOrder(orderId);
-      
+
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
-      
+
       // Only allow updating order status
       if (!req.body.status) {
         return res.status(400).json({ message: "Order status is required" });
       }
-      
+
       // Validate order status
       const validStatuses = ["pending", "processing", "shipped", "delivered", "cancelled"];
       if (!validStatuses.includes(req.body.status)) {
         return res.status(400).json({ message: "Invalid order status" });
       }
-      
+
       // For suppliers, we need to check if this order contains their products
       if (req.user?.role === "supplier") {
         const orderItems = await storage.getOrderItems(orderId);
         const supplierProducts = await storage.getProducts({ supplierId: req.user.id });
         const supplierProductIds = supplierProducts.map(product => product.id);
-        
+
         // Check if any order item is from this supplier
         const hasSupplierItems = orderItems.some(item => 
           supplierProductIds.includes(item.productId)
         );
-        
+
         if (!hasSupplierItems) {
           return res.status(403).json({ message: "You can only update orders containing your products" });
         }
       }
-      
+
       const updatedOrder = await storage.updateOrder(orderId, { status: req.body.status });
       res.json(updatedOrder);
     } catch (error) {
@@ -400,27 +401,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const productId = parseInt(req.params.productId);
       const { stock } = req.body;
-      
+
       if (typeof stock !== 'number' || stock < 0) {
         return res.status(400).json({ message: "Invalid stock value" });
       }
-      
+
       const product = await storage.getProduct(productId);
-      
+
       // Check if product exists and belongs to the supplier
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-      
+
       if (product.supplierId !== req.user.id) {
         return res.status(403).json({ message: "You can only update your own inventory" });
       }
-      
+
       const inventory = await storage.updateInventory(req.user.id, productId, stock);
-      
+
       // Also update the product stock
       await storage.updateProduct(productId, { stock });
-      
+
       res.json(inventory);
     } catch (error) {
       console.error("Error updating inventory:", error);
@@ -432,7 +433,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/customers", requireRole(["admin"]), async (req, res) => {
     try {
       const customers = await storage.getUsersByRole("customer");
-      
+
       // Add metadata like order count if needed
       const customersWithMetadata = await Promise.all(
         customers.map(async (customer) => {
@@ -443,18 +444,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         })
       );
-      
+
       res.json(customersWithMetadata);
     } catch (error) {
       console.error("Error fetching customers:", error);
       res.status(500).json({ message: "Failed to fetch customers" });
     }
   });
-  
+
   app.get("/api/admin/suppliers", requireRole(["admin"]), async (req, res) => {
     try {
       const suppliers = await storage.getUsersByRole("supplier");
-      
+
       // Add metadata like product count
       const suppliersWithMetadata = await Promise.all(
         suppliers.map(async (supplier) => {
@@ -465,20 +466,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         })
       );
-      
+
       res.json(suppliersWithMetadata);
     } catch (error) {
       console.error("Error fetching suppliers:", error);
       res.status(500).json({ message: "Failed to fetch suppliers" });
     }
   });
-  
+
   // Endpoint to clear all orders (admin only)
   app.delete("/api/admin/orders", requireRole(["admin"]), async (req, res) => {
     try {
       // Get all orders
       const orders = await storage.getOrders();
-      
+
       // Delete each order
       for (const order of orders) {
         // Delete order items first
@@ -488,30 +489,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Here we would delete the order items, but our storage interface doesn't have this method
           // For now, we'll just continue with the order deletion
         }
-        
+
         // Delete the order
         await storage.deleteOrder(order.id);
       }
-      
+
       res.status(200).json({ message: "All orders have been cleared" });
     } catch (error) {
       console.error("Error clearing orders:", error);
       res.status(500).json({ message: "Failed to clear orders" });
     }
   });
-  
+
   // Get supplier inventory details
   app.get("/api/supplier/inventory/:supplierId", requireRole(["admin", "supplier"]), async (req, res) => {
     try {
       const supplierId = parseInt(req.params.supplierId);
-      
+
       // Check if the user has permission to access this data
       if (req.user?.role !== "admin" && req.user?.id !== supplierId) {
         return res.status(403).json({ message: "Access denied" });
       }
-      
+
       const inventory = await storage.getInventory(supplierId);
-      
+
       // Fetch product details for each inventory item
       const inventoryWithProductDetails = await Promise.all(
         inventory.map(async (item) => {
@@ -522,7 +523,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         })
       );
-      
+
       res.json(inventoryWithProductDetails);
     } catch (error) {
       console.error("Error fetching inventory:", error);
@@ -535,11 +536,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const userId = parseInt(req.params.id);
       const user = await storage.getUser(userId);
-      
+
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      
+
       res.json(user);
     } catch (error) {
       console.error("Error fetching user:", error);
@@ -551,24 +552,24 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/payments/initialize", requireRole(["customer"]), async (req, res) => {
     try {
       const { amount, email, paymentMethod, orderId, callbackUrl } = req.body;
-      
+
       if (!amount || !email || !paymentMethod) {
         return res.status(400).json({ message: "Missing required payment details" });
       }
-      
+
       // Format amount to kobo (smallest currency unit in Nigeria - 100 kobo = 1 NGN)
       // Paystack's default currency is NGN, and we'll use this for payment processing
       const amountInKobo = Math.floor(amount * 100);
-      
+
       // For Paystack processing, we'll use NGN which is widely supported
       const currency = "NGN";
-      
+
       // Create payment reference
       const reference = `order_${orderId || 'temp'}_${Date.now()}`;
-      
+
       // Prepare channels based on selected payment method
       let channels: string[] = [];
-      
+
       switch (paymentMethod) {
         case 'credit_card':
           channels = ['card'];
@@ -585,15 +586,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         default:
           channels = ['card', 'mobile_money', 'bank_transfer']; 
       }
-      
+
       // Check if Paystack client is properly initialized
       if (!paystackClient || !paystackClient.transaction || !paystackClient.transaction.initialize) {
         console.error("Paystack client not properly initialized or missing 'transaction.initialize' method");
-        
+
         // For development/testing, continue with mock implementation
         console.log("Using mock implementation for payment initialization");
       }
-      
+
       // For development/testing, just return a success response with dummy values
       // This allows us to continue testing the flow without actual Paystack integration
       // Remove this in production
@@ -602,10 +603,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         authorizationUrl: `${req.protocol}://${req.get('host')}/payment-success?reference=${reference}`,
         reference: reference
       };
-      
+
       // Return mock response
       return res.json(mockPaystackResponse);
-      
+
       /* Uncomment this for actual Paystack integration
       try {
         const initResult = await paystackClient.transaction.initialize({
@@ -621,7 +622,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             paymentMethod
           }
         });
-        
+
         if (initResult.body.status) {
           // Return authorization URL to the client
           return res.json({
@@ -648,23 +649,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to initialize payment" });
     }
   });
-  
+
   // Verify Paystack payment
   app.get("/api/payments/verify/:reference", async (req, res) => {
     try {
       const { reference } = req.params;
-      
+
       if (!reference) {
         return res.status(400).json({ message: "Payment reference is required" });
       }
-      
+
       // Check if reference contains order ID (format: order_X_timestamp)
       const orderIdMatch = reference.match(/order_(\d+)_/);
       let orderId = null;
-      
+
       if (orderIdMatch && orderIdMatch[1]) {
         orderId = parseInt(orderIdMatch[1]);
-        
+
         // Update order in database if found
         const order = await storage.getOrder(orderId);
         if (order) {
@@ -674,7 +675,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           });
         }
       }
-      
+
       // For development/testing, return a success response with mock data
       return res.json({
         success: true,
@@ -688,7 +689,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           }
         }
       });
-      
+
       /* Uncomment this for actual Paystack integration
       // Check if Paystack client is properly initialized
       if (!paystackClient || !paystackClient.transaction || !paystackClient.transaction.verify) {
@@ -698,17 +699,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Payment service unavailable"
         });
       }
-      
+
       const verifyResult = await paystackClient.transaction.verify({ reference });
-      
+
       if (verifyResult.body.status && verifyResult.body.data.status === "success") {
         const metadata = verifyResult.body.data.metadata;
-        
+
         // If this is associated with an order, update the order payment status
         if (metadata && metadata.orderId) {
           const orderId = parseInt(metadata.orderId);
           const order = await storage.getOrder(orderId);
-          
+
           if (order) {
             await storage.updateOrder(orderId, { 
               paymentStatus: "paid",
@@ -716,7 +717,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
             });
           }
         }
-        
+
         return res.json({
           success: true,
           data: verifyResult.body.data
@@ -737,7 +738,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     }
   });
-  
+
   // Admin dashboard stats
   app.get("/api/admin/stats", requireRole(["admin"]), async (req, res) => {
     try {
@@ -745,19 +746,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const products = await storage.getProducts();
       const customers = await storage.getUsersByRole("customer");
       const suppliers = await storage.getUsersByRole("supplier");
-      
+
       // Calculate total sales
       const totalSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
-      
+
       // Calculate pending orders
       const pendingOrders = orders.filter(order => order.status === "pending").length;
-      
+
       // Group orders by status
       const ordersByStatus = orders.reduce((acc, order) => {
         acc[order.status] = (acc[order.status] || 0) + 1;
         return acc;
       }, {} as Record<string, number>);
-      
+
       res.json({
         totalSales,
         totalOrders: orders.length,
@@ -778,16 +779,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       // Get all orders
       const orders = await storage.getOrders();
-      
+
       // Delete each order
       for (const order of orders) {
         await storage.deleteOrder(order.id);
       }
-      
+
       res.json({ success: true, message: "All orders have been deleted" });
     } catch (error) {
       console.error("Error clearing orders:", error);
       res.status(500).json({ error: "Failed to clear orders" });
+    }
+  });
+
+  // Reviews API
+  app.post("/api/products/:id/reviews", requireRole(["customer"]), async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      const review = insertReviewSchema.parse({
+        ...req.body,
+        productId,
+        customerId: req.user.id,
+      });
+
+      const newReview = await storage.createReview(review);
+      res.status(201).json(newReview);
+    } catch (error) {
+      handleZodError(error, res);
     }
   });
 

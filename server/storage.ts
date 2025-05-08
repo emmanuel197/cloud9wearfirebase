@@ -3,7 +3,8 @@ import {
   Order, InsertOrder, OrderItem, InsertOrderItem,
   Cart, InsertCart, SupplierInventory, InsertSupplierInventory,
   CartItem, UserRole,
-  users, products, orders, orderItems, carts, supplierInventory
+  users, products, orders, orderItems, carts, supplierInventory,
+  review, reviews, InsertReview
 } from "@shared/schema";
 import { db } from "./db";
 import { eq, and } from 'drizzle-orm';
@@ -52,6 +53,9 @@ export interface IStorage {
   getInventory(supplierId: number): Promise<SupplierInventory[]>;
   updateInventory(supplierId: number, productId: number, stock: number): Promise<SupplierInventory | undefined>;
 
+  // Review management
+  createReview(review: InsertReview): Promise<Review>;
+
   // Session store for authentication
   sessionStore: session.Store;
 }
@@ -63,14 +67,16 @@ export class MemStorage implements IStorage {
   private orderItems: Map<number, OrderItem>;
   private carts: Map<number, Cart>;
   private supplierInventories: Map<number, SupplierInventory>;
-  
+  private reviews: Map<number, Review>;
+
   private userIdCounter: number;
   private productIdCounter: number;
   private orderIdCounter: number;
   private orderItemIdCounter: number;
   private cartIdCounter: number;
   private inventoryIdCounter: number;
-  
+  private reviewIdCounter: number;
+
   sessionStore: session.Store;
 
   constructor() {
@@ -80,20 +86,22 @@ export class MemStorage implements IStorage {
     this.orderItems = new Map();
     this.carts = new Map();
     this.supplierInventories = new Map();
-    
+    this.reviews = new Map();
+
     this.userIdCounter = 1;
     this.productIdCounter = 1;
     this.orderIdCounter = 1;
     this.orderItemIdCounter = 1;
     this.cartIdCounter = 1;
     this.inventoryIdCounter = 1;
-    
+    this.reviewIdCounter = 1;
+
     // Create memory store for sessions
     const MemoryStore = require("memorystore")(session);
     this.sessionStore = new MemoryStore({
       checkPeriod: 86400000 // 24 hours
     });
-    
+
     // Initialize with demo data
     this.initializeDemoData();
   }
@@ -134,7 +142,7 @@ export class MemStorage implements IStorage {
     isActive?: boolean;
   }): Promise<Product[]> {
     let products = Array.from(this.products.values());
-    
+
     if (filters) {
       if (filters.category) {
         products = products.filter(p => p.category === filters.category);
@@ -146,7 +154,7 @@ export class MemStorage implements IStorage {
         products = products.filter(p => p.isActive === filters.isActive);
       }
     }
-    
+
     return products;
   }
 
@@ -160,7 +168,7 @@ export class MemStorage implements IStorage {
   async updateProduct(id: number, product: Partial<Product>): Promise<Product | undefined> {
     const existingProduct = this.products.get(id);
     if (!existingProduct) return undefined;
-    
+
     const updatedProduct = { ...existingProduct, ...product };
     this.products.set(id, updatedProduct);
     return updatedProduct;
@@ -180,7 +188,7 @@ export class MemStorage implements IStorage {
     status?: string;
   }): Promise<Order[]> {
     let orders = Array.from(this.orders.values());
-    
+
     if (filters) {
       if (filters.customerId) {
         orders = orders.filter(o => o.customerId === filters.customerId);
@@ -189,7 +197,7 @@ export class MemStorage implements IStorage {
         orders = orders.filter(o => o.status === filters.status);
       }
     }
-    
+
     return orders;
   }
 
@@ -204,19 +212,19 @@ export class MemStorage implements IStorage {
   async updateOrder(id: number, order: Partial<Order>): Promise<Order | undefined> {
     const existingOrder = this.orders.get(id);
     if (!existingOrder) return undefined;
-    
+
     const updatedOrder = { ...existingOrder, ...order };
     this.orders.set(id, updatedOrder);
     return updatedOrder;
   }
-  
+
   async deleteOrder(id: number): Promise<boolean> {
     // Delete order items associated with this order first
     const orderItems = await this.getOrderItems(id);
     for (const item of orderItems) {
       this.orderItems.delete(item.id);
     }
-    
+
     // Then delete the order itself
     return this.orders.delete(id);
   }
@@ -243,7 +251,7 @@ export class MemStorage implements IStorage {
 
   async updateCart(userId: number, items: CartItem[]): Promise<Cart> {
     let cart = await this.getCart(userId);
-    
+
     if (!cart) {
       const id = this.cartIdCounter++;
       cart = {
@@ -259,7 +267,7 @@ export class MemStorage implements IStorage {
         updatedAt: new Date()
       };
     }
-    
+
     this.carts.set(cart.id, cart);
     return cart;
   }
@@ -275,7 +283,7 @@ export class MemStorage implements IStorage {
     const inventory = Array.from(this.supplierInventories.values()).find(
       inv => inv.supplierId === supplierId && inv.productId === productId
     );
-    
+
     if (!inventory) {
       const id = this.inventoryIdCounter++;
       const newInventory: SupplierInventory = {
@@ -288,22 +296,30 @@ export class MemStorage implements IStorage {
       this.supplierInventories.set(id, newInventory);
       return newInventory;
     }
-    
+
     const updatedInventory: SupplierInventory = {
       ...inventory,
       availableStock: stock,
       updatedAt: new Date()
     };
-    
+
     this.supplierInventories.set(inventory.id, updatedInventory);
-    
+
     // Update product stock
     const product = await this.getProduct(productId);
     if (product) {
       await this.updateProduct(productId, { stock });
     }
-    
+
     return updatedInventory;
+  }
+
+  async createReview(review: InsertReview): Promise<Review> {
+    const id = this.reviewIdCounter++;
+    const createdAt = new Date();
+    const newReview: Review = {...review, id, createdAt};
+    this.reviews.set(id, newReview);
+    return newReview;
   }
 
   // Initialize demo data
@@ -391,6 +407,19 @@ export class MemStorage implements IStorage {
     await this.updateInventory(2, tShirt2.id, 80);
     await this.updateInventory(2, tShirt3.id, 60);
     await this.updateInventory(2, tShirt4.id, 40);
+
+    // Add dummy reviews
+    const dummyReviews = [
+      { productId: tShirt1.id, customerId: 3, rating: 5, comment: "Great quality and design!" },
+      { productId: tShirt1.id, customerId: 3, rating: 4, comment: "Fits perfectly, love the material" },
+      { productId: tShirt2.id, customerId: 3, rating: 5, comment: "Amazing graphic design, very unique" },
+      { productId: tShirt3.id, customerId: 3, rating: 4, comment: "Classic patterns, good quality" },
+      { productId: tShirt4.id, customerId: 3, rating: 5, comment: "Perfect essential pack, great value" }
+    ];
+
+    for (const review of dummyReviews) {
+      await this.createReview(review);
+    }
   }
 }
 
@@ -439,7 +468,7 @@ export class DatabaseStorage implements IStorage {
     isActive?: boolean;
   }): Promise<Product[]> {
     let query = db.select().from(products);
-    
+
     if (filters) {
       if (filters.category) {
         query = query.where(eq(products.category, filters.category));
@@ -451,7 +480,7 @@ export class DatabaseStorage implements IStorage {
         query = query.where(eq(products.isActive, filters.isActive));
       }
     }
-    
+
     return await query;
   }
 
@@ -491,7 +520,7 @@ export class DatabaseStorage implements IStorage {
     status?: string;
   }): Promise<Order[]> {
     let query = db.select().from(orders);
-    
+
     if (filters) {
       if (filters.customerId) {
         query = query.where(eq(orders.customerId, filters.customerId));
@@ -500,7 +529,7 @@ export class DatabaseStorage implements IStorage {
         query = query.where(eq(orders.status, filters.status));
       }
     }
-    
+
     return await query;
   }
 
@@ -520,18 +549,18 @@ export class DatabaseStorage implements IStorage {
       .returning();
     return updatedOrder || undefined;
   }
-  
+
   async deleteOrder(id: number): Promise<boolean> {
     try {
       // Delete all order items first
       await db.delete(orderItems).where(eq(orderItems.orderId, id));
-      
+
       // Then delete the order itself
       const [deleted] = await db
         .delete(orders)
         .where(eq(orders.id, id))
         .returning();
-        
+
       return !!deleted;
     } catch (error) {
       console.error("Error deleting order:", error);
@@ -559,7 +588,7 @@ export class DatabaseStorage implements IStorage {
 
   async updateCart(userId: number, items: CartItem[]): Promise<Cart> {
     const [existingCart] = await db.select().from(carts).where(eq(carts.userId, userId));
-    
+
     if (!existingCart) {
       const [newCart] = await db
         .insert(carts)
@@ -609,10 +638,10 @@ export class DatabaseStorage implements IStorage {
           updatedAt: new Date()
         })
         .returning();
-        
+
       // Update product stock
       await this.updateProduct(productId, { stock });
-        
+
       return newInventory;
     } else {
       const [updatedInventory] = await db
@@ -628,13 +657,22 @@ export class DatabaseStorage implements IStorage {
           )
         )
         .returning();
-        
+
       // Update product stock
       await this.updateProduct(productId, { stock });
-        
+
       return updatedInventory || undefined;
     }
   }
+
+  async createReview(review: InsertReview): Promise<Review> {
+    const [newReview] = await db
+      .insert(reviews)
+      .values(review)
+      .returning();
+    return newReview;
+  }
+
 
   // Initialize demo data for development
   async initializeDemoData() {
@@ -721,6 +759,19 @@ export class DatabaseStorage implements IStorage {
     await this.updateInventory(2, tShirt2.id, 80);
     await this.updateInventory(2, tShirt3.id, 60);
     await this.updateInventory(2, tShirt4.id, 40);
+
+    // Add dummy reviews
+    const dummyReviews = [
+      { productId: tShirt1.id, customerId: 3, rating: 5, comment: "Great quality and design!" },
+      { productId: tShirt1.id, customerId: 3, rating: 4, comment: "Fits perfectly, love the material" },
+      { productId: tShirt2.id, customerId: 3, rating: 5, comment: "Amazing graphic design, very unique" },
+      { productId: tShirt3.id, customerId: 3, rating: 4, comment: "Classic patterns, good quality" },
+      { productId: tShirt4.id, customerId: 3, rating: 5, comment: "Perfect essential pack, great value" }
+    ];
+
+    for (const review of dummyReviews) {
+      await this.createReview(review);
+    }
   }
 }
 

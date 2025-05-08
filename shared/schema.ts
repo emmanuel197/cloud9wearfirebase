@@ -119,6 +119,24 @@ export type InsertCart = z.infer<typeof insertCartSchema>;
 export type SupplierInventory = typeof supplierInventory.$inferSelect;
 export type InsertSupplierInventory = z.infer<typeof insertSupplierInventorySchema>;
 
+// Reviews schema
+export const reviews = pgTable("reviews", {
+  id: serial("id").primaryKey(),
+  productId: integer("product_id").notNull(),
+  customerId: integer("customer_id").notNull(),
+  rating: integer("rating").notNull(),
+  comment: text("comment").notNull(),
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const insertReviewSchema = createInsertSchema(reviews).omit({
+  id: true,
+  createdAt: true,
+});
+
+export type Review = typeof reviews.$inferSelect;
+export type InsertReview = z.infer<typeof insertReviewSchema>;
+
 // Additional custom types
 export type CartItem = {
   productId: number;
