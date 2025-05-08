@@ -229,11 +229,11 @@ export default function CheckoutPage() {
                 <PriceDisplay amount={total} />
               </div>
               {/* Show savings from discounts if applicable */}
-              {cart.items.some(item => item.product.discount > 0) && (
+              {cart.items.some(item => item.product.discount && item.product.discount > 0) && (
                 <div className="flex justify-between mb-2 text-green-600">
                   <span>{t("checkout.savings")}</span>
                   <span>-{cart.items.reduce((sum, item) => {
-                    return item.product.discount
+                    return item.product.discount && item.product.discount > 0
                       ? sum + (item.product.price * item.product.discount / 100 * item.quantity)
                       : sum;
                   }, 0).toFixed(2)} GHS</span>

@@ -297,6 +297,7 @@ const translations = {
     subtotal: "Subtotal",
     shipping: "Shipping",
     tax: "Tax (10%)",
+    savings: "Savings",
     total: "Total",
     
     form: {
