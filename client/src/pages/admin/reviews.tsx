@@ -5,7 +5,10 @@ import { useLocation } from "wouter";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/use-auth";
-import { Review, Product, User } from "@shared/schema";
+import { Review, Product, User, insertReviewSchema } from "@shared/schema";
+import { z } from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import AdminSidebar from "@/components/admin/sidebar";
 import { Button } from "@/components/ui/button";
@@ -45,7 +48,8 @@ import {
   Eye, 
   ArrowUpDown, 
   Mail, 
-  User as UserIcon 
+  User as UserIcon,
+  Plus
 } from "lucide-react";
 
 type SortField = 'date' | 'rating' | 'product' | 'customer';
@@ -71,6 +75,7 @@ export default function AdminReviews() {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [, setLocation] = useLocation();
   const [reviewToDelete, setReviewToDelete] = useState<Review | null>(null);
+  const [reviewToAdd, setReviewToAdd] = useState<boolean>(false);
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortOrder, setSortOrder] = useState<SortOrder>('desc');
 
@@ -228,6 +233,13 @@ export default function AdminReviews() {
       <div className="flex-1 p-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">{t("admin.reviews.title")}</h1>
+          <Button 
+            onClick={() => setReviewToAdd(true)}
+            className="bg-primary hover:bg-primary/90"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            {t("admin.reviews.addReview")}
+          </Button>
         </div>
         
         <Card className="mb-8">
