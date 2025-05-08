@@ -3,6 +3,7 @@ import { useLanguage } from "@/hooks/use-language";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import PriceDisplay from "@/components/price-display";
+import { getColorHex } from "@/lib/colorUtils";
 
 interface CartItemProps {
   item: {
@@ -57,10 +58,14 @@ export default function CartItem({ item }: CartItemProps) {
               <PriceDisplay amount={item.product.price * item.quantity} />
             )}
           </div>
-          <p className="mt-1 text-sm text-gray-500">
+          <div className="mt-1 text-sm text-gray-700 flex items-center">
+            <span 
+              className="inline-block w-4 h-4 rounded-full mr-2 border border-gray-200" 
+              style={{ backgroundColor: getColorHex(item.color) }}
+            />
             {item.color}
-          </p>
-          <p className="mt-1 text-sm text-gray-500">
+          </div>
+          <p className="mt-1 text-sm text-gray-700">
             {t("cart.size")}: {item.size}
           </p>
         </div>

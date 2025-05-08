@@ -18,8 +18,8 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-black text-white py-16 w-full max-w-none">
-        <div className="max-w-[1980px] mx-auto px-4 w-full">
+      <section style={{width: "100%"}} className="bg-black text-white py-16 w-full max-w-none">
+        <div className="max-w-[1980px] mx-auto px-16 w-full">
           <div className="flex flex-col md:flex-row items-center w-full">
             <div className="md:w-1/2 mb-10 md:mb-0">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">

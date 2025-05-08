@@ -5,6 +5,8 @@ import { Product, Review } from "@shared/schema";
 import { useLanguage } from "@/hooks/use-language";
 import { useCart } from "@/contexts/CartContext";
 import ProductReview from "@/components/product-review";
+import ColorPalette from "@/components/color-palette";
+import { getColorHex } from "@/lib/colorUtils";
 import { 
   Breadcrumb, 
   BreadcrumbItem, 
@@ -255,20 +257,25 @@ export default function ProductDetailPage() {
           </div>
           
           {/* Color Selector */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium mb-1">{t("productDetail.color")}</label>
-            <Select value={selectedColor} onValueChange={setSelectedColor}>
-              <SelectTrigger className="w-full">
-                <SelectValue placeholder={t("productDetail.selectColor")} />
-              </SelectTrigger>
-              <SelectContent>
-                {product.availableColors
-                  .filter(color => color.trim() !== '')
-                  .map((color) => (
-                    <SelectItem key={color} value={color}>{color}</SelectItem>
-                  ))}
-              </SelectContent>
-            </Select>
+          <div className="mb-6">
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-sm font-medium">{t("productDetail.color")}</label>
+              {selectedColor && (
+                <span className="text-sm text-gray-600 flex items-center">
+                  <span 
+                    className="inline-block w-3 h-3 rounded-full mr-1" 
+                    style={{ backgroundColor: getColorHex(selectedColor) }}
+                  />
+                  {selectedColor}
+                </span>
+              )}
+            </div>
+            
+            <ColorPalette 
+              colors={product.availableColors} 
+              selectedColor={selectedColor} 
+              onColorChange={setSelectedColor} 
+            />
           </div>
           
           {/* Quantity Selector */}
