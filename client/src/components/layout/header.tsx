@@ -5,7 +5,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/hooks/use-language";
 import LanguageSwitcher from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
-import logoImage from "../../assets/cloud9-logo.png";
+import logoImage from "../../assets/photo_2025-05-08_15.42.27-removebg-preview.png";
 import {
   DropdownMenu,
   DropdownMenuContent,
