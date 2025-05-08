@@ -21,14 +21,6 @@ export default function HomePage() {
   const { data: comingSoonProducts, isLoading: isComingSoonLoading } = useQuery<Product[]>({
     queryKey: ["/api/coming-soon-products"],
   });
-  
-  const { data: trendingProducts, isLoading: isTrendingLoading } = useQuery<Product[]>({
-    queryKey: ["/api/trending-products"],
-  });
-  
-  const { data: topSellingProducts, isLoading: isTopSellingLoading } = useQuery<Product[]>({
-    queryKey: ["/api/top-selling-products"],
-  });
 
   return (
     <div>
@@ -118,90 +110,6 @@ export default function HomePage() {
 
 
 
-      {/* Trending Products Section */}
-      {trendingProducts && trendingProducts.length > 0 && (
-        <section className="py-16 bg-gray-100">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-2 text-center text-black">
-              {t("trendingProducts.title")}
-            </h2>
-            <p className="text-gray-700 text-center mb-12">
-              {t("trendingProducts.subtitle")}
-            </p>
-            
-            {isTrendingLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md">
-                    <Skeleton className="w-full h-64" />
-                    <div className="p-4">
-                      <Skeleton className="h-6 w-3/4 mb-2" />
-                      <Skeleton className="h-4 w-full mb-4" />
-                      <div className="flex justify-between items-center">
-                        <Skeleton className="h-6 w-20" />
-                        <Skeleton className="h-10 w-32" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <ProductGrid products={trendingProducts || []} />
-            )}
-            
-            <div className="text-center mt-12">
-              <Link href="/products">
-                <Button variant="outline" className="border-[#ef0c11] text-[#ef0c11] hover:bg-[#ef0c11] hover:text-white">
-                  {t("trendingProducts.viewAllButton")}
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-      
-      {/* Top Selling Products Section */}
-      {topSellingProducts && topSellingProducts.length > 0 && (
-        <section className="py-16 bg-white">
-          <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold mb-2 text-center text-black">
-              {t("topSellingProducts.title")}
-            </h2>
-            <p className="text-gray-700 text-center mb-12">
-              {t("topSellingProducts.subtitle")}
-            </p>
-            
-            {isTopSellingLoading ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md">
-                    <Skeleton className="w-full h-64" />
-                    <div className="p-4">
-                      <Skeleton className="h-6 w-3/4 mb-2" />
-                      <Skeleton className="h-4 w-full mb-4" />
-                      <div className="flex justify-between items-center">
-                        <Skeleton className="h-6 w-20" />
-                        <Skeleton className="h-10 w-32" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <ProductGrid products={topSellingProducts || []} />
-            )}
-            
-            <div className="text-center mt-12">
-              <Link href="/products">
-                <Button variant="outline" className="border-[#ef0c11] text-[#ef0c11] hover:bg-[#ef0c11] hover:text-white">
-                  {t("topSellingProducts.viewAllButton")}
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-      
       {/* Coming Soon Section */}
       <section className="py-16 bg-gray-50">
         <div className="container mx-auto px-4">
