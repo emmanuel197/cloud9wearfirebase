@@ -22,92 +22,37 @@ import { ProtectedRoute } from "@/lib/protected-route";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
 
-function Router() {
-  return (
-    <Switch>
-      {/* Public routes */}
-      <Route path="/" component={HomePage} />
-      <Route path="/auth" component={AuthPage} />
-      <Route path="/products" component={ProductsPage} />
-      <Route path="/products/:id" component={ProductDetailPage} />
-      
-      {/* Protected customer routes */}
-      <Route path="/cart">
-        <ProtectedRoute roles={["customer"]}>
-          <CartPage />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/checkout">
-        <ProtectedRoute roles={["customer"]}>
-          <CheckoutPage />
-        </ProtectedRoute>
-      </Route>
-      
-      {/* Payment success page */}
-      <Route path="/payment-success">
-        <PaymentSuccessPage />
-      </Route>
-      
-      {/* Protected admin routes */}
-      <Route path="/admin">
-        <ProtectedRoute roles={["admin"]}>
-          <AdminDashboard />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin/orders">
-        <ProtectedRoute roles={["admin"]}>
-          <AdminOrders />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin/products">
-        <ProtectedRoute roles={["admin"]}>
-          <AdminProducts />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin/customers">
-        <ProtectedRoute roles={["admin"]}>
-          <AdminCustomers />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/admin/suppliers">
-        <ProtectedRoute roles={["admin"]}>
-          <AdminSuppliers />
-        </ProtectedRoute>
-      </Route>
-      
-      {/* Protected supplier routes */}
-      <Route path="/supplier">
-        <ProtectedRoute roles={["supplier"]}>
-          <SupplierDashboard />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/supplier/inventory">
-        <ProtectedRoute roles={["supplier"]}>
-          <SupplierInventory />
-        </ProtectedRoute>
-      </Route>
-      <Route path="/supplier/orders">
-        <ProtectedRoute roles={["supplier"]}>
-          <SupplierOrders />
-        </ProtectedRoute>
-      </Route>
-      
-      {/* Fallback to 404 */}
-      <Route component={NotFound} />
-    </Switch>
-  );
-}
-
 function App() {
   return (
     <ThemeProvider attribute="class">
       <TooltipProvider>
-        <div className="min-h-screen flex flex-col">
-          <Header />
-          <main className="flex-grow">
-            <Router />
+        <div className="flex flex-col min-h-screen w-full">
+          <div className="w-full">
+            <Header />
+          </div>
+          <main className="flex-grow mx-auto w-full max-w-[1980px] px-[clamp(1rem,3vw,2rem)]">
+            <Switch>
+              <Route path="/" component={HomePage} />
+              <Route path="/auth" component={AuthPage} />
+              <Route path="/products" component={ProductsPage} />
+              <Route path="/product/:id" component={ProductDetailPage} />
+              <Route path="/cart" component={CartPage} />
+              <Route path="/checkout" component={CheckoutPage} />
+              <Route path="/payment-success" component={PaymentSuccessPage} />
+              <Route path="/admin" component={() => <ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/orders" component={() => <ProtectedRoute role="admin"><AdminOrders /></ProtectedRoute>} />
+              <Route path="/admin/products" component={() => <ProtectedRoute role="admin"><AdminProducts /></ProtectedRoute>} />
+              <Route path="/admin/customers" component={() => <ProtectedRoute role="admin"><AdminCustomers /></ProtectedRoute>} />
+              <Route path="/admin/suppliers" component={() => <ProtectedRoute role="admin"><AdminSuppliers /></ProtectedRoute>} />
+              <Route path="/supplier" component={() => <ProtectedRoute role="supplier"><SupplierDashboard /></ProtectedRoute>} />
+              <Route path="/supplier/inventory" component={() => <ProtectedRoute role="supplier"><SupplierInventory /></ProtectedRoute>} />
+              <Route path="/supplier/orders" component={() => <ProtectedRoute role="supplier"><SupplierOrders /></ProtectedRoute>} />
+              <Route component={NotFound} />
+            </Switch>
           </main>
-          <Footer />
+          <div className="w-full">
+            <Footer />
+          </div>
         </div>
         <Toaster />
       </TooltipProvider>
