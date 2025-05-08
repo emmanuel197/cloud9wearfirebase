@@ -18,10 +18,10 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-black text-white py-16 w-screen max-w-none -mx-4 px-4">
-        <div className="max-w-[1980px] mx-auto w-full">
+      <section className="bg-black text-white py-16 w-full max-w-none">
+        <div className="max-w-[1980px] mx-auto px-4 w-full">
           <div className="flex flex-col md:flex-row items-center w-full">
-            <div className="md:w-1/2 mb-10 md:mb-0 md:pr-8">
+            <div className="md:w-1/2 mb-10 md:mb-0">
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 {t("hero.title")}
               </h1>
@@ -54,7 +54,7 @@ export default function HomePage() {
               <img
                 src={heroImage}
                 alt="Collection of exclusive designer t-shirts"
-                className="w-full h-auto"
+                className="rounded-lg shadow-xl w-full h-auto"
               />
             </div>
           </div>
@@ -159,8 +159,8 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 pb-32 bg-black w-screen max-w-none -mx-4 px-4 mb-12">
-        <div className="max-w-[1980px] mx-auto text-center w-full">
+      <section className="py-20 pb-32 bg-black w-full max-w-none mb-12">
+        <div className="max-w-[1980px] mx-auto px-4 text-center w-full">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">{t("cta.title")}</h2>
           <p className="text-white opacity-90 text-lg mb-12 max-w-3xl mx-auto">{t("cta.description")}</p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
