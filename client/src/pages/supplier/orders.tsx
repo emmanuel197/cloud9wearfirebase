@@ -198,28 +198,28 @@ export default function SupplierOrders() {
 
         return (
           <div className="flex items-center space-x-2">
-            <Dialog>
-              <DialogTrigger asChild>
-                <Button 
-                  variant="outline" 
-                  size="sm"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    handleViewOrder(order.id);
-                  }}
-                >
-                  <Eye className="h-4 w-4 mr-1" />
-                  {t("supplier.orders.view")}
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-3xl" onInteractOutside={(e) => e.preventDefault()}>
-                <DialogHeader>
-                  <DialogTitle>{t("supplier.orders.orderDetails", { id: selectedOrder?.id })}</DialogTitle>
-                  <DialogDescription>
-                    {selectedOrder && new Date(selectedOrder.orderDate).toLocaleDateString()}
-                  </DialogDescription>
-                </DialogHeader>
+            <Button 
+                variant="outline" 
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleViewOrder(order.id);
+                }}
+              >
+                <Eye className="h-4 w-4 mr-1" />
+                {t("supplier.orders.view")}
+              </Button>
+              {selectedOrder && selectedOrder.id === order.id && (
+                <div className="fixed inset-0 z-50 bg-background/80 backdrop-blur-sm">
+                  <div className="fixed left-[50%] top-[50%] z-50 w-full max-w-3xl translate-x-[-50%] translate-y-[-50%] border bg-background p-6 shadow-lg rounded-lg">
+                    <div className="flex flex-col gap-4">
+                      <div>
+                        <h2 className="text-lg font-semibold">{t("supplier.orders.orderDetails", { id: selectedOrder.id })}</h2>
+                        <p className="text-sm text-muted-foreground">
+                          {new Date(selectedOrder.orderDate).toLocaleDateString()}
+                        </p>
+                      </div>
                 
                 {selectedOrder ? (
                   <>
@@ -320,14 +320,17 @@ export default function SupplierOrders() {
                         </div>
                       </div>
                     )}
-                  </>
-                ) : (
-                  <div className="flex items-center justify-center p-6">
-                    <Loader2 className="h-6 w-6 animate-spin" />
+                    <Button
+                      variant="outline"
+                      className="absolute right-4 top-4"
+                      onClick={() => setSelectedOrder(null)}
+                    >
+                      ✕
+                      <span className="sr-only">Close</span>
+                    </Button>
                   </div>
-                )}
-              </DialogContent>
-            </Dialog>
+                </div>
+              )}
             
             {/* Status update buttons */}
             {!isCancelled && !isDelivered && (
