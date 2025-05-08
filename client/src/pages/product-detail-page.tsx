@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
-import { Product } from "@shared/schema";
+import { Product, Review } from "@shared/schema";
 import { useLanguage } from "@/hooks/use-language";
 import { useCart } from "@/contexts/CartContext";
+import ProductReview from "@/components/product-review";
 import { 
   Breadcrumb, 
   BreadcrumbItem, 
@@ -327,6 +328,12 @@ export default function ProductDetailPage() {
         </TabsContent>
       </Tabs>
       
+      {/* Product Reviews Section */}
+      <div className="mb-16">
+        <h2 className="text-2xl font-bold mb-6">{t("products.reviews")}</h2>
+        <ProductReview productId={product.id} />
+      </div>
+      
       {/* Related Products Section - Can be implemented if needed */}
     </div>
   );
@@ -372,7 +379,11 @@ function ProductDetailSkeleton() {
       </div>
       
       <Skeleton className="h-10 w-full mb-4" />
-      <Skeleton className="h-60 w-full rounded-lg" />
+      <Skeleton className="h-60 w-full rounded-lg mb-16" />
+      
+      {/* Review section skeleton */}
+      <Skeleton className="h-10 w-60 mb-6" />
+      <Skeleton className="h-80 w-full rounded-lg" />
     </div>
   );
 }

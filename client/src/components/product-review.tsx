@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Star, StarHalf } from "lucide-react";
+import { Star, StarHalf, Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
@@ -9,21 +9,32 @@ import { Review } from "@shared/schema";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Separator } from "@/components/ui/separator";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProductReviewProps {
   productId: number;
-  reviews: Review[];
-  averageRating: number;
 }
 
-export default function ProductReview({ productId, reviews, averageRating }: ProductReviewProps) {
+export default function ProductReview({ productId }: ProductReviewProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const { user } = useAuth();
   const [rating, setRating] = useState(5);
   const [comment, setComment] = useState("");
   const [hoveredRating, setHoveredRating] = useState(0);
+  
+  // Fetch reviews for this product
+  const { data, isLoading } = useQuery<Review[]>({
+    queryKey: [`/api/products/${productId}/reviews`],
+  });
+  
+  const reviews = data || [];
+  
+  // Calculate average rating
+  const averageRating = reviews.length 
+    ? reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length 
+    : 0;
 
   // Post review mutation
   const postReviewMutation = useMutation({
@@ -118,6 +129,17 @@ export default function ProductReview({ productId, reviews, averageRating }: Pro
       </div>
     );
   };
+
+  if (isLoading) {
+    return (
+      <div className="mt-8">
+        <h2 className="text-2xl font-bold mb-4">{t("products.reviews")}</h2>
+        <div className="flex justify-center p-10">
+          <Loader2 className="animate-spin h-8 w-8 text-primary" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mt-8">
