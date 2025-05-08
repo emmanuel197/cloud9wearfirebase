@@ -593,34 +593,28 @@ export class DatabaseStorage implements IStorage {
 
   async updateProduct(id: number, product: Partial<Product>): Promise<Product | undefined> {
     try {
-      // Safely prepare the data for database update
-      const { 
-        comingSoon, 
-        releaseDate, 
-        ...safeDbProduct 
-      } = product as any;
+      // Convert camelCase property names to snake_case for DB
+      const updateData: Record<string, any> = {};
       
-      // Update only the fields that are definitely in the database
-      const updateData = {
-        name: safeDbProduct.name,
-        description: safeDbProduct.description,
-        price: safeDbProduct.price,
-        category: safeDbProduct.category,
-        imageUrls: safeDbProduct.imageUrls,
-        availableSizes: safeDbProduct.availableSizes,
-        availableColors: safeDbProduct.availableColors,
-        supplierId: safeDbProduct.supplierId,
-        stock: safeDbProduct.stock,
-        discount: safeDbProduct.discount,
-        isActive: safeDbProduct.isActive
-      };
+      if (product.name !== undefined) updateData.name = product.name;
+      if (product.description !== undefined) updateData.description = product.description;
+      if (product.price !== undefined) updateData.price = product.price;
+      if (product.category !== undefined) updateData.category = product.category;
+      if (product.imageUrls !== undefined) updateData.image_urls = product.imageUrls;
+      if (product.availableSizes !== undefined) updateData.available_sizes = product.availableSizes;
+      if (product.availableColors !== undefined) updateData.available_colors = product.availableColors;
+      if (product.supplierId !== undefined) updateData.supplier_id = product.supplierId;
+      if (product.stock !== undefined) updateData.stock = product.stock;
+      if (product.discount !== undefined) updateData.discount = product.discount;
+      if (product.isActive !== undefined) updateData.is_active = product.isActive;
+      if (product.comingSoon !== undefined) updateData.coming_soon = product.comingSoon;
+      if (product.releaseDate !== undefined) updateData.release_date = product.releaseDate;
       
-      // Remove undefined fields
-      Object.keys(updateData).forEach(key => {
-        if (updateData[key] === undefined) {
-          delete updateData[key];
-        }
-      });
+      // Only proceed if there are fields to update
+      if (Object.keys(updateData).length === 0) {
+        const existingProduct = await this.getProduct(id);
+        return existingProduct; 
+      }
       
       const [updatedProduct] = await db
         .update(products)
@@ -628,17 +622,7 @@ export class DatabaseStorage implements IStorage {
         .where(eq(products.id, id))
         .returning();
         
-      if (!updatedProduct) return undefined;
-      
-      // Get the current product to handle comingSoon property
-      const existingProduct = await this.getProduct(id);
-      
-      // For consistency with schema, add these properties even if not in DB
-      return { 
-        ...updatedProduct,
-        comingSoon: comingSoon !== undefined ? comingSoon : (existingProduct?.comingSoon || false),
-        releaseDate: releaseDate !== undefined ? releaseDate : (existingProduct?.releaseDate || null)
-      };
+      return updatedProduct || undefined;
     } catch (error) {
       console.error('Error updating product:', error);
       throw error;
