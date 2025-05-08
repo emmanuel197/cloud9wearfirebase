@@ -58,6 +58,10 @@ export interface IStorage {
   getReviews(productId?: number): Promise<Review[]>;
   getTopReviews(limit?: number): Promise<Review[]>;
   deleteReview(id: number): Promise<boolean>;
+  
+  // Product recommendations
+  getTrendingProducts(limit?: number): Promise<Product[]>;
+  getTopSellingProducts(limit?: number): Promise<Product[]>;
 
   // Session store for authentication
   sessionStore: session.Store;
@@ -356,6 +360,62 @@ export class MemStorage implements IStorage {
   
   async deleteReview(id: number): Promise<boolean> {
     return this.reviews.delete(id);
+  }
+  
+  async getTrendingProducts(limit: number = 4): Promise<Product[]> {
+    // For in-memory storage, we'll simulate trending products based on highest rating
+    const reviewAverages = new Map<number, { total: number, count: number }>();
+    
+    // Calculate average ratings for each product
+    Array.from(this.reviews.values()).forEach(review => {
+      const current = reviewAverages.get(review.productId) || { total: 0, count: 0 };
+      reviewAverages.set(review.productId, {
+        total: current.total + review.rating,
+        count: current.count + 1
+      });
+    });
+    
+    // Get products with their average ratings
+    const productsWithRatings = Array.from(this.products.values())
+      .map(product => {
+        const rating = reviewAverages.get(product.id);
+        return {
+          product,
+          avgRating: rating ? rating.total / rating.count : 0
+        };
+      })
+      .filter(item => item.product.isActive) // Only include active products
+      .sort((a, b) => b.avgRating - a.avgRating) // Sort by rating
+      .slice(0, limit)
+      .map(item => item.product);
+      
+    return productsWithRatings;
+  }
+  
+  async getTopSellingProducts(limit: number = 4): Promise<Product[]> {
+    // Create a map to track product sales count
+    const salesCount = new Map<number, number>();
+    
+    // Count occurrences of products in order items
+    Array.from(this.orderItems.values()).forEach(item => {
+      const current = salesCount.get(item.productId) || 0;
+      salesCount.set(item.productId, current + item.quantity);
+    });
+    
+    // Get products with their sales counts
+    const topSellingProducts = Array.from(this.products.values())
+      .map(product => {
+        return {
+          product,
+          salesCount: salesCount.get(product.id) || 0
+        };
+      })
+      .filter(item => item.product.isActive) // Only include active products
+      .sort((a, b) => b.salesCount - a.salesCount) // Sort by sales count
+      .slice(0, limit)
+      .map(item => item.product);
+      
+    return topSellingProducts;
   }
 
   // Initialize demo data
