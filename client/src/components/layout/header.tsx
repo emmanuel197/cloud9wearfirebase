@@ -73,7 +73,7 @@ export default function Header() {
     <header className={`sticky top-0 z-50 w-full transition-all duration-200 ${
       scrolled ? "bg-white shadow-sm" : "bg-white"
     }`}>
-      <div className="container mx-auto px-4">
+      <div className="w-full max-w-[1980px] mx-auto px-[clamp(1rem,3vw,2rem)]">
         <div className="flex justify-between items-center py-4">
           {/* Logo */}
           <div className="flex items-center">

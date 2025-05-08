@@ -2,6 +2,32 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  html {
+    font-size: clamp(14px, 1vw, 18px);
+  }
+  
+  body {
+    @apply mx-auto max-w-[1980px];
+  }
+
+  h1 {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+  }
+  
+  h2 {
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+  }
+  
+  h3 {
+    font-size: clamp(1.25rem, 2vw, 1.75rem);
+  }
+  
+  p, span, a, button {
+    font-size: clamp(0.875rem, 1.5vw, 1rem);
+  }
+}
+
 :root {
       --background: 0 0% 100%;
 --foreground: 20 14.3% 4.1%;

@@ -15,8 +15,8 @@ export default function Footer() {
   const { t } = useLanguage();
   
   return (
-    <footer className="bg-gray-800 text-white pt-10 md:pt-16 pb-6 md:pb-8">
-      <div className="container mx-auto px-4">
+    <footer className="bg-gray-800 text-white pt-10 md:pt-16 pb-6 md:pb-8 w-full">
+      <div className="w-full max-w-[1980px] mx-auto px-[clamp(1rem,3vw,2rem)]">
         {/* Mobile accordion version could be added here for even better mobile UX */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-8 md:mb-12">
           {/* Company Info */}
