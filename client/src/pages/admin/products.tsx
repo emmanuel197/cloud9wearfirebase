@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { DataTable } from "@/components/ui/data-table";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
+import ImageUpload from "@/components/image-upload";
 import { Product, insertProductSchema } from "@shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -629,16 +630,22 @@ export default function AdminProducts() {
                     <FormItem>
                       <FormLabel>{t("admin.products.form.images")}</FormLabel>
                       <div className="space-y-2">
-                        <div className="flex space-x-2">
-                          <Input
-                            placeholder={t("admin.products.form.imageUrl")}
-                            value={imageUrl}
-                            onChange={(e) => setImageUrl(e.target.value)}
-                          />
-                          <Button type="button" onClick={handleAddImage}>
-                            {t("admin.products.form.addImage")}
-                          </Button>
-                        </div>
+                        <ImageUpload 
+                          onImageAdded={(newImageUrl) => {
+                            const currentImages = form.getValues("imageUrls") || [];
+                            form.setValue("imageUrls", [...currentImages, newImageUrl]);
+                          }}
+                          translations={{
+                            imageUrl: t("admin.products.form.imageUrl"),
+                            uploadImage: t("admin.products.form.uploadImage", "Upload Image"),
+                            addImage: t("admin.products.form.addImage"),
+                            orEnterUrl: t("admin.products.form.orEnterUrl", "Or enter URL"),
+                            selectImage: t("admin.products.form.selectImage", "Select Image"),
+                            urlTab: t("admin.products.form.urlTab", "URL"),
+                            uploadTab: t("admin.products.form.uploadTab", "Upload"),
+                            uploading: t("admin.products.form.uploading", "Uploading")
+                          }}
+                        />
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                           {field.value.map((url, index) => (
