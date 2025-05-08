@@ -547,6 +547,61 @@ const translations = {
       availableSizes: "Tailles",
       availableColors: "Couleurs",
       stock: "Stock"
+    },
+    
+    orders: {
+      title: "Gestion des Commandes",
+      description: "Consultez et gérez les commandes clients",
+      allOrders: "Toutes les Commandes",
+      fetchError: "Erreur lors de la récupération de la commande",
+      fetchErrorDesc: "Impossible de charger les détails de la commande",
+      statusUpdateSuccess: "Statut de la commande mis à jour",
+      statusUpdateSuccessDesc: "Le statut de la commande a été mis à jour avec succès",
+      statusUpdateError: "Erreur de mise à jour du statut",
+      statusUpdateErrorDesc: "Échec de la mise à jour du statut de la commande",
+      selectStatus: "Sélectionner un statut",
+      filterByStatus: "Filtrer par statut",
+      noOrders: "Aucune commande trouvée",
+      noOrdersDesc: "Il n'y a aucune commande à afficher.",
+      waitingForPayment: "En attente de paiement",
+      noActionsAvailable: "Aucune action disponible",
+      viewAllOrders: "Affichage de toutes les commandes",
+      
+      status: {
+        pendingOrders: "Commandes en Attente",
+        processingOrders: "Commandes en Traitement",
+        shippedOrders: "Commandes Expédiées",
+        deliveredOrders: "Commandes Livrées",
+        cancelledOrders: "Commandes Annulées",
+        pending: "En Attente",
+        processing: "En Traitement",
+        shipped: "Expédiée",
+        delivered: "Livrée",
+        cancelled: "Annulée"
+      },
+      
+      payment: {
+        paid: "Payée",
+        pending: "En Attente",
+        failed: "Échouée",
+        refunded: "Remboursée"
+      },
+      
+      table: {
+        id: "ID Commande",
+        customer: "Client",
+        date: "Date de Commande",
+        amount: "Montant",
+        status: "Statut",
+        payment: "Paiement",
+        actions: "Actions"
+      },
+      
+      actions: {
+        startProcessing: "Traiter",
+        markShipped: "Expédier",
+        markDelivered: "Livrée"
+      }
     }
   },
   

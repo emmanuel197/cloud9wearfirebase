@@ -542,6 +542,107 @@ const translations = {
       settings: "Settings",
       storefront: "Visit Store",
       logout: "Logout"
+    },
+    
+    dashboard: {
+      title: "Supplier Dashboard",
+      welcome: "Welcome, {name}",
+      welcomeMessage: "Manage your inventory and track your product performance",
+      lowStockTitle: "Low Stock Products",
+      lowStockDesc: "Products that need attention",
+      allStocked: "All products well stocked",
+      allStockedDesc: "You don't have any products with low inventory levels",
+      quickActions: "Quick Actions",
+      manageInventory: "Manage Inventory",
+      tips: "Supplier Tips",
+      tip1: "Keep your inventory updated to avoid stockouts",
+      tip2: "Add high-quality images to increase product appeal",
+      tip3: "Respond quickly to low stock notifications",
+      
+      stats: {
+        totalProducts: "Total Products",
+        lowStock: "Low Stock",
+        needsAttention: "Needs Attention",
+        totalStock: "Total Stock"
+      },
+      
+      products: {
+        id: "Product ID",
+        stock: "Stock",
+        lastUpdated: "Last Updated"
+      }
+    },
+    
+    inventory: {
+      title: "Inventory Management",
+      description: "Manage your product inventory levels",
+      search: "Search inventory...",
+      refresh: "Refresh",
+      update: "Update",
+      updateSuccess: "Inventory updated successfully",
+      updateError: "Failed to update inventory",
+      noProducts: "No products found",
+      noProductsDesc: "You don't have any products in your inventory yet.",
+      lowStock: "Low Stock",
+      id: "ID",
+      availableSizes: "Sizes",
+      availableColors: "Colors",
+      stock: "Stock"
+    },
+    
+    orders: {
+      title: "Order Management",
+      description: "View and manage customer orders",
+      allOrders: "All Orders",
+      fetchError: "Error fetching order",
+      fetchErrorDesc: "Could not load order details",
+      statusUpdateSuccess: "Order status updated",
+      statusUpdateSuccessDesc: "The order status has been successfully updated",
+      statusUpdateError: "Error updating status",
+      statusUpdateErrorDesc: "Failed to update the order status",
+      selectStatus: "Select status",
+      filterByStatus: "Filter by status",
+      noOrders: "No orders found",
+      noOrdersDesc: "There are no orders to display.",
+      waitingForPayment: "Waiting for payment",
+      noActionsAvailable: "No actions available",
+      viewAllOrders: "Viewing all orders",
+      
+      status: {
+        pendingOrders: "Pending Orders",
+        processingOrders: "Processing Orders",
+        shippedOrders: "Shipped Orders",
+        deliveredOrders: "Delivered Orders",
+        cancelledOrders: "Cancelled Orders",
+        pending: "Pending",
+        processing: "Processing",
+        shipped: "Shipped",
+        delivered: "Delivered",
+        cancelled: "Cancelled"
+      },
+      
+      payment: {
+        paid: "Paid",
+        pending: "Pending",
+        failed: "Failed",
+        refunded: "Refunded"
+      },
+      
+      table: {
+        id: "Order ID",
+        customer: "Customer",
+        date: "Order Date",
+        amount: "Amount",
+        status: "Status",
+        payment: "Payment",
+        actions: "Actions"
+      },
+      
+      actions: {
+        startProcessing: "Process",
+        markShipped: "Ship",
+        markDelivered: "Delivered"
+      }
     }
   },
   
