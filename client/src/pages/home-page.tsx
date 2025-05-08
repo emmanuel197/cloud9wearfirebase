@@ -34,15 +34,17 @@ export default function HomePage() {
                     {t("hero.browseButton")}
                   </Button>
                 </Link>
-                <Link href="/auth">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="bg-white hover:bg-gray-100 text-primary border-white"
-                  >
-                    {t("hero.registerButton")}
-                  </Button>
-                </Link>
+                {!user && (
+                  <Link href="/auth">
+                    <Button
+                      size="lg"
+                      variant="outline"
+                      className="bg-white hover:bg-gray-100 text-primary border-white"
+                    >
+                      {t("hero.registerButton")}
+                    </Button>
+                  </Link>
+                )}
               </div>
             </div>
             <div className="md:w-1/2">
