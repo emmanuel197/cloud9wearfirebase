@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import PriceDisplay from "@/components/price-display";
 import { getColorHex } from "@/lib/colorUtils";
+import { normalizeImageUrl } from "@/lib/imageUtils";
 
 interface CartItemProps {
   item: {
