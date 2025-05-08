@@ -102,7 +102,19 @@ export default function ProductCard({ product }: ProductCardProps) {
           </div>
           <p className="text-gray-500 mb-4 text-sm line-clamp-2">{product.description}</p>
           <div className="flex justify-between items-center">
-            <PriceDisplay amount={product.price} className="text-lg font-bold" />
+            <div>
+              {product.discount ? (
+                <>
+                  <PriceDisplay amount={product.price - product.discount} className="text-lg font-bold" />
+                  <PriceDisplay amount={product.price} className="text-sm line-through text-gray-400 ml-2" />
+                  <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
+                    {Math.round((product.discount / product.price) * 100)}% off
+                  </span>
+                </>
+              ) : (
+                <PriceDisplay amount={product.price} className="text-lg font-bold" />
+              )}
+            </div>
             {product.stock <= 0 && (
               <span className="text-xs bg-red-100 text-red-800 px-2 py-1 rounded">
                 {t("products.outOfStock")}
