@@ -18,7 +18,7 @@ export default function HomePage() {
   return (
     <div>
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-primary to-blue-700 text-white py-16">
+      <section className="bg-black text-white py-16">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center">
             <div className="md:w-1/2 mb-10 md:mb-0">
@@ -32,7 +32,7 @@ export default function HomePage() {
                 <Link href="/products">
                   <Button
                     size="lg"
-                    className="bg-amber-500 hover:bg-amber-600 text-white"
+                    className="bg-[#ef0c11] hover:bg-[#ef0c11]/80 text-white"
                   >
                     {t("hero.browseButton")}
                   </Button>
@@ -42,7 +42,7 @@ export default function HomePage() {
                     <Button
                       size="lg"
                       variant="outline"
-                      className="bg-white hover:bg-gray-100 text-primary border-white"
+                      className="bg-white hover:bg-white text-black border-white hover:text-[#ef0c11]"
                     >
                       {t("hero.registerButton")}
                     </Button>
@@ -54,7 +54,7 @@ export default function HomePage() {
               <img
                 src={heroImage}
                 alt="Collection of exclusive designer t-shirts"
-                className="rounded-lg shadow-xl w-full h-auto"
+                className="rounded-lg shadow-xl w-full h-auto md:w-full"
               />
             </div>
           </div>
@@ -93,7 +93,7 @@ export default function HomePage() {
 
           <div className="text-center mt-12">
             <Link href="/products">
-              <Button variant="outline" className="border-primary text-primary hover:bg-primary hover:text-white">
+              <Button variant="outline" className="border-[#ef0c11] text-[#ef0c11] hover:bg-[#ef0c11] hover:text-white">
                 {t("featuredProducts.viewAllButton")}
               </Button>
             </Link>
@@ -111,10 +111,10 @@ export default function HomePage() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Credit Card Payment */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-primary transition-colors">
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-[#ef0c11] transition-colors">
               <div className="mb-4 text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full mb-4">
-                  <CreditCardIcon className="text-primary text-2xl" />
+                  <CreditCardIcon className="text-[#ef0c11] text-2xl" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">{t("payment.creditCard.title")}</h3>
                 <p className="text-gray-500">{t("payment.creditCard.description")}</p>
@@ -127,10 +127,10 @@ export default function HomePage() {
             </div>
             
             {/* Mobile Money Payment */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-primary transition-colors">
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-[#ef0c11] transition-colors">
               <div className="mb-4 text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-50 rounded-full mb-4">
-                  <SmartphoneIcon className="text-amber-500 text-2xl" />
+                  <SmartphoneIcon className="text-[#ef0c11] text-2xl" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">{t("payment.mobileMoney.title")}</h3>
                 <p className="text-gray-500">{t("payment.mobileMoney.description")}</p>
@@ -142,10 +142,10 @@ export default function HomePage() {
             </div>
             
             {/* Bank Transfer Payment */}
-            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-primary transition-colors">
+            <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200 hover:border-[#ef0c11] transition-colors">
               <div className="mb-4 text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-green-50 rounded-full mb-4">
-                  <BuildingIcon className="text-green-500 text-2xl" />
+                  <BuildingIcon className="text-[#ef0c11] text-2xl" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">{t("payment.bankTransfer.title")}</h3>
                 <p className="text-gray-500">{t("payment.bankTransfer.description")}</p>
@@ -159,18 +159,18 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-16 bg-primary">
+      <section className="py-20 pb-24 bg-black">
         <div className="container mx-auto px-4 text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4 text-white">{t("cta.title")}</h2>
-          <p className="text-white opacity-90 text-lg mb-8 max-w-3xl mx-auto">{t("cta.description")}</p>
+          <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">{t("cta.title")}</h2>
+          <p className="text-white opacity-90 text-lg mb-12 max-w-3xl mx-auto">{t("cta.description")}</p>
           <div className="flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
             <Link href="/auth">
-              <Button size="lg" className="bg-white hover:bg-gray-100 text-primary">
+              <Button size="lg" className="bg-white hover:bg-white text-black hover:text-[#ef0c11]">
                 {t("cta.signupButton")}
               </Button>
             </Link>
             <Link href="/products">
-              <Button size="lg" variant="outline" className="bg-transparent hover:bg-blue-600 border-2 border-white text-white">
+              <Button size="lg" variant="outline" className="bg-transparent hover:bg-[#ef0c11] border-2 border-white text-white">
                 {t("cta.exploreButton")}
               </Button>
             </Link>
