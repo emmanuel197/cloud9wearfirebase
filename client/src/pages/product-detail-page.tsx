@@ -138,6 +138,10 @@ export default function ProductDetailPage() {
               src={normalizeImageUrl(product.imageUrls[currentImageIndex])}
               alt={`${product.name} - ${currentImageIndex === 0 ? 'Front' : 'Back'} view`}
               className="w-full h-auto object-cover"
+              onError={(e) => {
+                console.error('Product detail image failed to load:', e.currentTarget.src);
+                e.currentTarget.src = 'https://via.placeholder.com/600x400?text=Image+Not+Available';
+              }}
             />
             
             {product.imageUrls.length > 1 && (
@@ -211,6 +215,10 @@ export default function ProductDetailPage() {
                     src={normalizeImageUrl(url)}
                     alt={`${product.name} view ${index + 1}`}
                     className="w-full h-20 object-cover"
+                    onError={(e) => {
+                      console.error('Product thumbnail image failed to load:', e.currentTarget.src);
+                      e.currentTarget.src = 'https://via.placeholder.com/100?text=Thumbnail';
+                    }}
                   />
                 </div>
               ))}

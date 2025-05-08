@@ -149,6 +149,10 @@ export default function ProductCard({ product }: ProductCardProps) {
                   src={normalizeImageUrl(product.imageUrls[0])} 
                   alt={product.name} 
                   className="w-16 h-16 object-cover rounded"
+                  onError={(e) => {
+                    console.error('Product dialog image failed to load:', e.currentTarget.src);
+                    e.currentTarget.src = 'https://via.placeholder.com/100?text=Product';
+                  }}
                 />
                 <div>
                   <h4 className="font-medium">{product.name}</h4>
