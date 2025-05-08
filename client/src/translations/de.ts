@@ -484,7 +484,9 @@ const translations = {
         addSize: "Größe Hinzufügen",
         colors: "Verfügbare Farben",
         colorPlaceholder: "Farbe (z.B. Rot, Blau, Schwarz)",
-        addColor: "Farbe Hinzufügen"
+        addColor: "Farbe Hinzufügen",
+        chooseColor: "Farbe Auswählen",
+        selectAColor: "Wähle eine Farbe"
       },
       
       table: {

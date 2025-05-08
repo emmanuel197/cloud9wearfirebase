@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { getColorHex } from "@/lib/colorUtils";
 import { Check } from "lucide-react";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const STANDARD_COLORS = [
   // Whites and creams
@@ -74,16 +75,23 @@ interface ColorPickerProps {
 export default function ColorPicker({ 
   onColorSelect, 
   currentColor, 
-  buttonText = "Choose Color"
+  buttonText
 }: ColorPickerProps) {
   const [open, setOpen] = useState(false);
   const [selectedColor, setSelectedColor] = useState(currentColor || "");
+  const { translations } = useLanguage();
+  const adminTranslations = translations.admin || {};
+  const productsTranslations = adminTranslations.products || {};
+  const formTranslations = productsTranslations.form || {};
   
   const handleColorSelect = (colorName: string) => {
     setSelectedColor(colorName);
     onColorSelect(colorName);
     setOpen(false);
   };
+  
+  // Use the translated text or fallback to a default
+  const chooseColorText = buttonText || formTranslations.chooseColor || "Choose Color";
   
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -99,12 +107,12 @@ export default function ColorPicker({
               style={{ backgroundColor: getColorHex(currentColor) }}
             />
           )}
-          {buttonText}
+          {chooseColorText}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Select a Color</DialogTitle>
+          <DialogTitle>{formTranslations.selectAColor || "Select a Color"}</DialogTitle>
         </DialogHeader>
         <div className="grid grid-cols-5 gap-2 max-h-[400px] overflow-y-auto p-2">
           {STANDARD_COLORS.map((color) => (
