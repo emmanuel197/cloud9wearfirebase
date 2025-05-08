@@ -117,29 +117,57 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Endpoint to get coming soon products
   app.get("/api/coming-soon-products", async (req, res) => {
     try {
-      // Since we don't have a comingSoon column in the database yet, 
-      // we'll create a mock product to demonstrate the feature
-      const mockComingSoonProduct = {
-        id: 9999, // Using an ID that won't conflict with existing products
-        name: "Limited Edition Collection 2025",
-        description: "Our upcoming exclusive limited edition design - be the first to know when it launches!",
-        price: 49.99,
-        discount: 0,
-        category: "t-shirts",
-        imageUrls: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
-        availableSizes: ["S", "M", "L", "XL"],
-        availableColors: ["Black", "White", "Red"],
-        supplierId: 2,
-        stock: 0,
-        isActive: false,
-        comingSoon: true,
-        releaseDate: new Date(2025, 5, 15) // June 15, 2025
-      };
+      const comingSoonProducts = await dbStorage.getProducts({ comingSoon: true });
       
-      res.json([mockComingSoonProduct]);
+      // If no coming soon products in the database, return the mock product for demo purposes
+      if (comingSoonProducts.length === 0) {
+        const mockComingSoonProduct = {
+          id: 9999, // Using an ID that won't conflict with existing products
+          name: "Limited Edition Collection 2025",
+          description: "Our upcoming exclusive limited edition design - be the first to know when it launches!",
+          price: 49.99,
+          discount: 0,
+          category: "t-shirts",
+          imageUrls: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
+          availableSizes: ["S", "M", "L", "XL"],
+          availableColors: ["Black", "White", "Red"],
+          supplierId: 2,
+          stock: 0,
+          isActive: false,
+          comingSoon: true,
+          releaseDate: new Date(2025, 5, 15) // June 15, 2025
+        };
+        
+        return res.json([mockComingSoonProduct]);
+      }
+      
+      res.json(comingSoonProducts);
     } catch (error) {
       console.error("Error fetching coming soon products:", error);
       res.status(500).json({ message: "Failed to fetch coming soon products" });
+    }
+  });
+  
+  // Create coming soon product
+  app.post("/api/products/coming-soon", requireRole(["admin", "supplier"]), async (req, res) => {
+    try {
+      // Set stock to 0, isActive to false and comingSoon to true
+      const productData = {
+        ...req.body,
+        stock: 0,
+        isActive: false,
+        comingSoon: true
+      };
+      
+      // If supplier is creating product, ensure supplierId is their own ID
+      if (req.user?.role === "supplier") {
+        productData.supplierId = req.user.id;
+      }
+      
+      const product = await dbStorage.createProduct(productData);
+      res.status(201).json(product);
+    } catch (error) {
+      handleZodError(error, res);
     }
   });
 
