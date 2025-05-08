@@ -220,6 +220,25 @@ export default function ProductDetailPage() {
         {/* Product Info */}
         <div>
           <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
+          
+          {/* Coming Soon Badge */}
+          {'comingSoon' in product && product.comingSoon && (
+            <div className="mb-4">
+              <span className="inline-block bg-[#ef0c11] text-white text-sm font-medium px-3 py-1 rounded-full">
+                COMING SOON
+              </span>
+              {'releaseDate' in product && product.releaseDate && (
+                <span className="ml-2 text-sm text-gray-600">
+                  Available on {new Date(product.releaseDate).toLocaleDateString('en-US', {
+                    month: 'long',
+                    day: 'numeric',
+                    year: 'numeric'
+                  })}
+                </span>
+              )}
+            </div>
+          )}
+          
           <div className="mb-4">
             {product.discount ? (
               <>
@@ -305,18 +324,33 @@ export default function ProductDetailPage() {
             </div>
           </div>
           
-          {/* Add to Cart Button */}
-          <Button 
-            className="w-full mb-4 py-6" 
-            onClick={handleAddToCart}
-            disabled={product.stock === 0}
-          >
-            <ShoppingCart className="mr-2 h-5 w-5" />
-            {product.stock === 0
-              ? t("productDetail.outOfStock")
-              : t("productDetail.addToCart")
-            }
-          </Button>
+          {/* Add to Cart Button or Notify Me Button for Coming Soon Products */}
+          {'comingSoon' in product && product.comingSoon ? (
+            <Button 
+              className="w-full mb-4 py-6 bg-black hover:bg-[#ef0c11]" 
+              onClick={() => {
+                toast({
+                  title: "Notification request saved",
+                  description: "We'll let you know when this product is available",
+                });
+              }}
+            >
+              <InfoIcon className="mr-2 h-5 w-5" />
+              {t("productDetail.notifyMe") || "Notify Me When Available"}
+            </Button>
+          ) : (
+            <Button 
+              className="w-full mb-4 py-6" 
+              onClick={handleAddToCart}
+              disabled={product.stock === 0}
+            >
+              <ShoppingCart className="mr-2 h-5 w-5" />
+              {product.stock === 0
+                ? t("productDetail.outOfStock")
+                : t("productDetail.addToCart")
+              }
+            </Button>
+          )}
           
           {/* Category */}
           <div className="text-sm text-gray-500">

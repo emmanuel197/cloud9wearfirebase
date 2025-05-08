@@ -101,6 +101,49 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Coming Soon Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="flex flex-col md:flex-row items-center">
+            <div className="md:w-1/2 mb-8 md:mb-0 md:pr-8">
+              <span className="inline-block bg-[#ef0c11] text-white text-sm font-medium px-3 py-1 rounded-full mb-4">
+                COMING SOON
+              </span>
+              <h2 className="text-3xl font-bold mb-4 text-black">
+                Limited Edition Collection 2025
+              </h2>
+              <p className="text-gray-700 mb-6">
+                Our upcoming exclusive limited edition design - be the first to know when it launches! 
+                Sign up for notifications to get early access to our most anticipated release of the year.
+              </p>
+              <div className="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
+                <Link href="/products/9999">
+                  <Button className="bg-black hover:bg-[#ef0c11] text-white">
+                    View Details
+                  </Button>
+                </Link>
+                <Link href="/notify">
+                  <Button variant="outline" className="border-black text-black hover:bg-black hover:text-white">
+                    Get Notified
+                  </Button>
+                </Link>
+              </div>
+            </div>
+            <div className="md:w-1/2">
+              <div className="relative">
+                <img 
+                  src="https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600" 
+                  alt="Coming Soon: Limited Edition Collection 2025" 
+                  className="rounded-lg shadow-xl w-full h-auto"
+                />
+                <div className="absolute top-4 right-4 bg-[#ef0c11] text-white text-xs font-bold px-2 py-1 rounded">
+                  JUNE 15, 2025
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
 
       {/* Payment Options Section */}
