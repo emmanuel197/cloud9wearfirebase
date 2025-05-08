@@ -161,12 +161,12 @@ export default function ProductDetailPage() {
             {product.discount ? (
               <>
                 <p className="text-2xl font-semibold text-primary">
-                  ${(product.price - product.discount).toFixed(2)}
+                  ${(product.price * (1 - product.discount / 100)).toFixed(2)}
                   <span className="ml-2 text-lg line-through text-gray-400">
                     ${product.price.toFixed(2)}
                   </span>
                   <span className="ml-2 text-sm text-green-600">
-                    ({Math.round((product.discount / product.price) * 100)}% off)
+                    ({product.discount}% off)
                   </span>
                 </p>
               </>

@@ -105,10 +105,13 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div>
               {product.discount ? (
                 <>
-                  <PriceDisplay amount={product.price - product.discount} className="text-lg font-bold" />
+                  <PriceDisplay 
+                    amount={product.price * (1 - product.discount / 100)} 
+                    className="text-lg font-bold" 
+                  />
                   <PriceDisplay amount={product.price} className="text-sm line-through text-gray-400 ml-2" />
                   <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                    {Math.round((product.discount / product.price) * 100)}% off
+                    {product.discount}% off
                   </span>
                 </>
               ) : (
@@ -139,7 +142,20 @@ export default function ProductCard({ product }: ProductCardProps) {
                 />
                 <div>
                   <h4 className="font-medium">{product.name}</h4>
-                  <PriceDisplay amount={product.price} />
+                  {product.discount ? (
+                    <div className="flex items-center">
+                      <PriceDisplay 
+                        amount={product.price * (1 - product.discount / 100)} 
+                        className="font-medium" 
+                      />
+                      <PriceDisplay 
+                        amount={product.price} 
+                        className="text-sm line-through text-gray-400 ml-2" 
+                      />
+                    </div>
+                  ) : (
+                    <PriceDisplay amount={product.price} />
+                  )}
                 </div>
               </div>
               
