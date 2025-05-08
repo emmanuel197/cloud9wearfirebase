@@ -808,6 +808,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
       handleZodError(error, res);
     }
   });
+  
+  // Get reviews for a product
+  app.get("/api/products/:id/reviews", async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      const reviews = await storage.getReviews(productId);
+      res.json(reviews);
+    } catch (error) {
+      console.error("Error fetching reviews:", error);
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+  
+  // Get top reviews for the home page
+  app.get("/api/reviews/top", async (req, res) => {
+    try {
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 5;
+      const reviews = await storage.getTopReviews(limit);
+      
+      // Get product details for each review
+      const reviewsWithProducts = await Promise.all(
+        reviews.map(async (review) => {
+          const product = await storage.getProduct(review.productId);
+          const customer = await storage.getUser(review.customerId);
+          
+          return {
+            ...review,
+            product: product ? { 
+              id: product.id,
+              name: product.name,
+              imageUrl: product.imageUrls[0] 
+            } : null,
+            customer: customer ? {
+              id: customer.id,
+              fullName: customer.fullName
+            } : null
+          };
+        })
+      );
+      
+      res.json(reviewsWithProducts);
+    } catch (error) {
+      console.error("Error fetching top reviews:", error);
+      res.status(500).json({ message: "Failed to fetch top reviews" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

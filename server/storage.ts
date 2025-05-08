@@ -55,6 +55,8 @@ export interface IStorage {
 
   // Review management
   createReview(review: InsertReview): Promise<Review>;
+  getReviews(productId?: number): Promise<Review[]>;
+  getTopReviews(limit?: number): Promise<Review[]>;
 
   // Session store for authentication
   sessionStore: session.Store;
@@ -320,6 +322,28 @@ export class MemStorage implements IStorage {
     const newReview: Review = {...review, id, createdAt};
     this.reviews.set(id, newReview);
     return newReview;
+  }
+
+  async getReviews(productId?: number): Promise<Review[]> {
+    let reviews = Array.from(this.reviews.values());
+    
+    if (productId !== undefined) {
+      reviews = reviews.filter(r => r.productId === productId);
+    }
+    
+    // Sort by newest first
+    return reviews.sort((a, b) => 
+      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    );
+  }
+
+  async getTopReviews(limit: number = 5): Promise<Review[]> {
+    // Get all reviews and sort by rating (highest first)
+    const reviews = Array.from(this.reviews.values())
+      .sort((a, b) => b.rating - a.rating)
+      .slice(0, limit);
+    
+    return reviews;
   }
 
   // Initialize demo data
@@ -692,6 +716,26 @@ export class DatabaseStorage implements IStorage {
       .values(review)
       .returning();
     return newReview;
+  }
+
+  async getReviews(productId?: number): Promise<Review[]> {
+    let query = db.select().from(reviews);
+    
+    if (productId !== undefined) {
+      query = query.where(eq(reviews.productId, productId));
+    }
+    
+    // Order by most recent
+    return await query.orderBy(desc(reviews.createdAt));
+  }
+
+  async getTopReviews(limit: number = 5): Promise<Review[]> {
+    // Get highest rated reviews
+    return await db
+      .select()
+      .from(reviews)
+      .orderBy(desc(reviews.rating))
+      .limit(limit);
   }
 
 
