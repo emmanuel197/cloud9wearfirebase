@@ -331,7 +331,14 @@ export class MemStorage implements IStorage {
   async createReview(review: InsertReview): Promise<Review> {
     const id = this.reviewIdCounter++;
     const createdAt = new Date();
-    const newReview: Review = {...review, id, createdAt};
+    
+    // Handle case where a review doesn't have a customerId (admin-created general review)
+    const reviewData = {
+      ...review,
+      customerId: review.customerId && review.customerId > 0 ? review.customerId : null
+    };
+    
+    const newReview: Review = {...reviewData, id, createdAt};
     this.reviews.set(id, newReview);
     return newReview;
   }
@@ -876,9 +883,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createReview(review: InsertReview): Promise<Review> {
+    // Handle case where a review doesn't have a customerId (admin-created general review)
+    const reviewData = {
+      ...review,
+      customerId: review.customerId && review.customerId > 0 ? review.customerId : null
+    };
+    
     const [newReview] = await db
       .insert(reviews)
-      .values(review)
+      .values(reviewData)
       .returning();
     return newReview;
   }

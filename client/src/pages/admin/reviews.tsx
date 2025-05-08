@@ -551,13 +551,16 @@ export default function AdminReviews() {
                 )}
               />
               
-              {/* Customer selection */}
+              {/* Customer selection - Optional */}
               <FormField
                 control={form.control}
                 name="customerId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{t("admin.reviews.customer")}</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>{t("admin.reviews.customer")}</FormLabel>
+                      <span className="text-xs text-gray-500">{t("common.optional")}</span>
+                    </div>
                     <Select
                       onValueChange={(value) => field.onChange(parseInt(value))}
                       defaultValue={field.value > 0 ? field.value.toString() : ""}
@@ -568,6 +571,7 @@ export default function AdminReviews() {
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
+                        <SelectItem value="0">{t("admin.reviews.noCustomer")}</SelectItem>
                         {customers?.filter(c => c.role === "customer").map((customer) => (
                           <SelectItem key={customer.id} value={customer.id.toString()}>
                             {customer.fullName} ({customer.email})
@@ -575,6 +579,9 @@ export default function AdminReviews() {
                         ))}
                       </SelectContent>
                     </Select>
+                    <FormDescription>
+                      {t("admin.reviews.customerOptional")}
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

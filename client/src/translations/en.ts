@@ -624,6 +624,8 @@ const translations = {
       commentMinLength: "Comment must be at least 5 characters",
       productRequired: "Product is required",
       customerRequired: "Customer is required",
+      customerOptional: "Leave empty for general product reviews not tied to a specific customer",
+      noCustomer: "No customer (general review)",
       
       noReviews: "No reviews found",
       noSearchResults: "No reviews matching your search",
@@ -775,7 +777,8 @@ const translations = {
     none: "None",
     back: "Back",
     next: "Next",
-    previous: "Previous"
+    previous: "Previous",
+    optional: "Optional"
   },
   
   // About Page
