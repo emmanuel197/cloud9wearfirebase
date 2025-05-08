@@ -46,10 +46,6 @@ export default function InventoryItem({
             src={normalizeImageUrl(product.imageUrls[0])}
             alt={product.name}
             className="h-full w-full object-cover"
-            onError={(e) => {
-              console.error('Supplier inventory item image failed to load:', e.currentTarget.src);
-              e.currentTarget.src = 'https://via.placeholder.com/100?text=No+Image';
-            }}
           />
         </div>
         

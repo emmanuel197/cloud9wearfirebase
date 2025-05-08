@@ -241,10 +241,6 @@ export default function HomePage() {
                         src={normalizeImageUrl(product.imageUrls[0])}
                         alt={product.name}
                         className="w-full h-64 object-cover"
-                        onError={(e) => {
-                          console.error('Image failed to load:', e.currentTarget.src);
-                          e.currentTarget.src = 'https://via.placeholder.com/300';
-                        }}
                       />
                       <div className="absolute top-0 right-0 bg-[#ef0c11] text-white px-3 py-1 m-2 rounded-full flex items-center gap-1">
                         <Clock className="w-4 h-4" />

@@ -75,10 +75,6 @@ export default function ProductCard({ product }: ProductCardProps) {
             src={normalizeImageUrl(product.imageUrls[0])} 
             alt={product.name} 
             className="w-full h-64 object-cover"
-            onError={(e) => {
-              console.error('Product card image failed to load:', e.currentTarget.src);
-              e.currentTarget.src = 'https://via.placeholder.com/300';
-            }}
           />
           {product.imageUrls.length > 1 && (
             <div className="absolute top-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded-full">
@@ -149,10 +145,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                   src={normalizeImageUrl(product.imageUrls[0])} 
                   alt={product.name} 
                   className="w-16 h-16 object-cover rounded"
-                  onError={(e) => {
-                    console.error('Product dialog image failed to load:', e.currentTarget.src);
-                    e.currentTarget.src = 'https://via.placeholder.com/100?text=Product';
-                  }}
                 />
                 <div>
                   <h4 className="font-medium">{product.name}</h4>

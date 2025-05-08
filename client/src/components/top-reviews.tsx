@@ -134,10 +134,6 @@ export default function TopReviews() {
                             src={normalizeImageUrl(review.product.imageUrl)} 
                             alt={review.product.name}
                             className="w-full h-full object-cover"
-                            onError={(e) => {
-                              console.error('Review product image failed to load:', e.currentTarget.src);
-                              e.currentTarget.src = 'https://via.placeholder.com/300';
-                            }}
                           />
                         </div>
                         <div className="flex-1">

@@ -38,10 +38,6 @@ export default function CartItem({ item }: CartItemProps) {
           src={normalizeImageUrl(item.product.imageUrls[0])}
           alt={item.product.name}
           className="h-full w-full object-cover object-center"
-          onError={(e) => {
-            console.error('Cart item image failed to load:', e.currentTarget.src);
-            e.currentTarget.src = 'https://via.placeholder.com/300';
-          }}
         />
       </div>
 
