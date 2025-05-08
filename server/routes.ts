@@ -967,6 +967,59 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch top reviews" });
     }
   });
+
+  // Admin review endpoints
+  app.get("/api/admin/reviews", requireRole(["admin"]), async (req, res) => {
+    try {
+      const reviews = await dbStorage.getReviews();
+      
+      // Get product details for each review
+      const reviewsWithDetails = await Promise.all(
+        reviews.map(async (review) => {
+          const product = await dbStorage.getProduct(review.productId);
+          const customer = await dbStorage.getUser(review.customerId);
+          
+          return {
+            ...review,
+            product: product ? { 
+              id: product.id,
+              name: product.name,
+              imageUrl: product.imageUrls[0] 
+            } : null,
+            customer: customer ? {
+              id: customer.id,
+              fullName: customer.fullName
+            } : null
+          };
+        })
+      );
+      
+      res.json(reviewsWithDetails);
+    } catch (error) {
+      console.error("Error fetching all reviews:", error);
+      res.status(500).json({ message: "Failed to fetch reviews" });
+    }
+  });
+
+  // Delete a review (admin only)
+  app.delete("/api/admin/reviews/:id", requireRole(["admin"]), async (req, res) => {
+    try {
+      const reviewId = parseInt(req.params.id);
+      if (isNaN(reviewId)) {
+        return res.status(400).json({ message: "Invalid review ID" });
+      }
+
+      const deleted = await dbStorage.deleteReview(reviewId);
+      if (!deleted) {
+        return res.status(404).json({ message: "Review not found" });
+      }
+      
+      res.status(200).json({ message: "Review deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      res.status(500).json({ message: "Failed to delete review" });
+    }
+  });
   
   // Image upload endpoint
   app.post("/api/upload/product-image", requireRole(["admin", "supplier"]), upload.single('image'), async (req: Request & { file?: Express.Multer.File }, res) => {

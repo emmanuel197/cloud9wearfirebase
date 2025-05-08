@@ -57,6 +57,7 @@ export interface IStorage {
   createReview(review: InsertReview): Promise<Review>;
   getReviews(productId?: number): Promise<Review[]>;
   getTopReviews(limit?: number): Promise<Review[]>;
+  deleteReview(id: number): Promise<boolean>;
 
   // Session store for authentication
   sessionStore: session.Store;
@@ -351,6 +352,10 @@ export class MemStorage implements IStorage {
       .slice(0, limit);
     
     return reviews;
+  }
+  
+  async deleteReview(id: number): Promise<boolean> {
+    return this.reviews.delete(id);
   }
 
   // Initialize demo data
@@ -836,6 +841,19 @@ export class DatabaseStorage implements IStorage {
       .from(reviews)
       .orderBy(desc(reviews.rating))
       .limit(limit);
+  }
+  
+  async deleteReview(id: number): Promise<boolean> {
+    try {
+      const [deleted] = await db
+        .delete(reviews)
+        .where(eq(reviews.id, id))
+        .returning();
+      return !!deleted;
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      return false;
+    }
   }
 
 
