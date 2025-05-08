@@ -1029,8 +1029,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create URL for uploaded image
-      const baseUrl = req.protocol + '://' + req.get('host');
-      const imageUrl = `${baseUrl}/uploads/products/${req.file.filename}`;
+      // Use relative URL path to avoid hardcoded domain issues
+      const imageUrl = `/uploads/products/${req.file.filename}`;
       
       res.status(201).json({ 
         url: imageUrl,
