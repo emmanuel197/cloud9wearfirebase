@@ -146,7 +146,7 @@ export default function HomePage() {
                   <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
                     <div className="relative">
                       <img
-                        src={product.imageUrls[0] || "https://via.placeholder.com/300"}
+                        src={normalizeImageUrl(product.imageUrls[0])}
                         alt={product.name}
                         className="w-full h-64 object-cover"
                       />
