@@ -46,7 +46,7 @@ export default function CartItem({ item }: CartItemProps) {
             {item.product.discount ? (
               <div className="flex flex-col items-end">
                 <PriceDisplay 
-                  amount={item.product.price * (1 - item.product.discount / 100) * item.quantity} 
+                  amount={item.product.price * (1 - Math.round(item.product.discount) / 100) * item.quantity} 
                 />
                 <PriceDisplay 
                   amount={item.product.price * item.quantity} 

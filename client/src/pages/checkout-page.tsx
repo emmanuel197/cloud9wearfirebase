@@ -234,7 +234,7 @@ export default function CheckoutPage() {
                   <span>{t("checkout.savings")}</span>
                   <span>-{cart.items.reduce((sum, item) => {
                     return item.product.discount && item.product.discount > 0
-                      ? sum + (item.product.price * item.product.discount / 100 * item.quantity)
+                      ? sum + (item.product.price * Math.round(item.product.discount) / 100 * item.quantity)
                       : sum;
                   }, 0).toFixed(2)} GHS</span>
                 </div>
@@ -476,7 +476,7 @@ export default function CheckoutPage() {
                     {item.product.discount ? (
                       <div className="flex flex-col items-end">
                         <PriceDisplay 
-                          amount={item.product.price * (1 - item.product.discount / 100) * item.quantity}
+                          amount={item.product.price * (1 - Math.round(item.product.discount) / 100) * item.quantity}
                           className="font-medium" 
                         />
                         <PriceDisplay 

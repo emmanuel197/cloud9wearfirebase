@@ -49,7 +49,7 @@ export function CartProvider({ children }: CartProviderProps) {
   const total = cart.items.reduce(
     (sum, item) => {
       const itemPrice = item.product.discount 
-        ? item.product.price * (1 - item.product.discount / 100) 
+        ? item.product.price * (1 - Math.round(item.product.discount) / 100) 
         : item.product.price;
       return sum + itemPrice * item.quantity;
     },
