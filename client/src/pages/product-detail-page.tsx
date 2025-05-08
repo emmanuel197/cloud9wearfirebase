@@ -166,7 +166,7 @@ export default function ProductDetailPage() {
                     ${product.price.toFixed(2)}
                   </span>
                   <span className="ml-2 text-sm text-green-600">
-                    ({product.discount}% off)
+                    ({Math.round(product.discount)}% off)
                   </span>
                 </p>
               </>

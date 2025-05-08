@@ -111,7 +111,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                   />
                   <PriceDisplay amount={product.price} className="text-sm line-through text-gray-400 ml-2" />
                   <span className="ml-2 text-xs bg-green-100 text-green-800 px-2 py-1 rounded">
-                    {product.discount}% off
+                    {Math.round(product.discount)}% off
                   </span>
                 </>
               ) : (
