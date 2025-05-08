@@ -199,9 +199,9 @@ export default function SupplierOrders() {
         return (
           <div className="flex items-center space-x-2">
             <Dialog open={order.id === selectedOrder?.id} onOpenChange={(open) => {
-              console.log("[Dialog Debug] Dialog state changed:", open);
-              console.log("[Dialog Debug] Selected order:", order.id);
-              console.log("[Dialog Debug] Current selected order state:", selectedOrder);
+              if (!open) {
+                setSelectedOrder(null);
+              }
             }}>
               <DialogTrigger asChild>
                 <Button 
@@ -294,41 +294,26 @@ export default function SupplierOrders() {
                       </div>
                     </div>
 
-                    {!isCancelled && !isDelivered && (
+                    {selectedOrder && !isCancelled && !isDelivered && (
                       <div className="space-y-4">
                         <div>
                           <h3 className="font-medium mb-2">{t("supplier.orders.updateStatus")}</h3>
-                          <div className="flex space-x-2">
-                            {order.status === "pending" && isPaid && (
-                              <Button
-                                size="sm"
-                                onClick={() => updateOrderStatus(order.id, "processing")}
-                              >
-                                <Package className="mr-1 h-4 w-4" />
-                                {t("supplier.orders.actions.startProcessing")}
-                              </Button>
-                            )}
-
-                            {order.status === "processing" && (
-                              <Button
-                                size="sm"
-                                onClick={() => updateOrderStatus(order.id, "shipped")}
-                              >
-                                <Truck className="mr-1 h-4 w-4" />
-                                {t("supplier.orders.actions.markShipped")}
-                              </Button>
-                            )}
-
-                            {order.status === "shipped" && (
-                              <Button
-                                size="sm"
-                                onClick={() => updateOrderStatus(order.id, "delivered")}
-                              >
-                                <Clock className="mr-1 h-4 w-4" />
-                                {t("supplier.orders.actions.markDelivered")}
-                              </Button>
-                            )}
-                          </div>
+                          <Select 
+                            defaultValue={selectedOrder.status}
+                            onValueChange={(value) => {
+                              updateOrderStatus(selectedOrder.id, value as OrderStatus);
+                            }}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder={t("supplier.orders.selectStatus")} />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">{t("supplier.orders.status.pending")}</SelectItem>
+                              <SelectItem value="processing">{t("supplier.orders.status.processing")}</SelectItem>
+                              <SelectItem value="shipped">{t("supplier.orders.status.shipped")}</SelectItem>
+                              <SelectItem value="delivered">{t("supplier.orders.status.delivered")}</SelectItem>
+                            </SelectContent>
+                          </Select>
                         </div>
                       </div>
                     )}
