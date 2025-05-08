@@ -128,7 +128,9 @@ const translations = {
     badge: "Coming Soon",
     notifyButton: "Notify Me",
     availableOn: "Available on",
-    noProducts: "No upcoming products at this time. Check back later!"
+    noProducts: "No upcoming products at this time. Check back later!",
+    notificationSaved: "Notification request saved",
+    notificationDescription: "We'll let you know when this product is available"
   },
   
   cta: {

@@ -105,7 +105,9 @@ const translations = {
     badge: "Demnächst Verfügbar",
     notifyButton: "Benachrichtige Mich",
     availableOn: "Verfügbar am",
-    noProducts: "Derzeit keine kommenden Produkte. Schau später wieder vorbei!"
+    noProducts: "Derzeit keine kommenden Produkte. Schau später wieder vorbei!",
+    notificationSaved: "Benachrichtigungsanfrage gespeichert",
+    notificationDescription: "Wir informieren dich, sobald dieses Produkt verfügbar ist"
   },
   
   cta: {

@@ -105,7 +105,9 @@ const translations = {
     badge: "Bientôt Disponible",
     notifyButton: "Me Notifier",
     availableOn: "Disponible le",
-    noProducts: "Aucun produit à venir pour le moment. Revenez plus tard !"
+    noProducts: "Aucun produit à venir pour le moment. Revenez plus tard !",
+    notificationSaved: "Demande de notification enregistrée",
+    notificationDescription: "Nous vous informerons dès que ce produit sera disponible"
   },
   
   cta: {
