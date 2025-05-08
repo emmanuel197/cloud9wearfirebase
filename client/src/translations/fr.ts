@@ -99,6 +99,15 @@ const translations = {
     }
   },
   
+  comingSoon: {
+    title: "Bientôt Disponible",
+    subtitle: "Designs exclusifs à venir. Soyez le premier à savoir quand ils arrivent.",
+    badge: "Bientôt Disponible",
+    notifyButton: "Me Notifier",
+    availableOn: "Disponible le",
+    noProducts: "Aucun produit à venir pour le moment. Revenez plus tard !"
+  },
+  
   cta: {
     title: "Prêt à Rejoindre Notre Communauté Exclusive?",
     description: "Accédez à du contenu premium, des remises spéciales et des lancements anticipés. Rejoignez des milliers de membres satisfaits dès aujourd'hui.",

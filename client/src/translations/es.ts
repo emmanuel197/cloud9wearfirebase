@@ -99,6 +99,15 @@ const translations = {
     }
   },
   
+  comingSoon: {
+    title: "Próximamente",
+    subtitle: "Diseños exclusivos en camino. Sé el primero en saber cuando lleguen.",
+    badge: "Próximamente",
+    notifyButton: "Notificarme",
+    availableOn: "Disponible el",
+    noProducts: "No hay productos próximos en este momento. ¡Vuelve más tarde!"
+  },
+  
   cta: {
     title: "¿Listo para Unirte a Nuestra Comunidad Exclusiva?",
     description: "Obtén acceso a contenido premium, descuentos especiales y lanzamientos anticipados de productos. Únete a miles de miembros satisfechos hoy.",

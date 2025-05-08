@@ -122,6 +122,15 @@ const translations = {
     }
   },
   
+  comingSoon: {
+    title: "Coming Soon",
+    subtitle: "Exclusive designs dropping soon. Be the first to know when they arrive.",
+    badge: "Coming Soon",
+    notifyButton: "Notify Me",
+    availableOn: "Available on",
+    noProducts: "No upcoming products at this time. Check back later!"
+  },
+  
   cta: {
     title: "Ready to Join Our Exclusive Community?",
     description: "Get access to premium content, special discounts, and early product releases. Join thousands of satisfied members today.",
