@@ -99,17 +99,25 @@ export default function AdminCustomers() {
         const customer = row.original;
         return (
           <div className="flex items-center space-x-2">
-            <Dialog>
+            <Dialog open={customer.id === selectedCustomer?.id} onOpenChange={(open) => {
+              if (!open) {
+                setSelectedCustomer(null);
+              }
+            }}>
               <DialogTrigger asChild>
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => handleViewCustomer(customer.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleViewCustomer(customer.id);
+                  }}
                 >
                   {t("admin.customers.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
                 {selectedCustomer ? (
                   <>
                     <DialogHeader>

@@ -122,17 +122,25 @@ export default function AdminSuppliers() {
         const supplier = row.original;
         return (
           <div className="flex items-center space-x-2">
-            <Dialog>
+            <Dialog open={supplier.id === selectedSupplier?.id} onOpenChange={(open) => {
+              if (!open) {
+                setSelectedSupplier(null);
+              }
+            }}>
               <DialogTrigger asChild>
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={() => handleViewSupplier(supplier.id)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    handleViewSupplier(supplier.id);
+                  }}
                 >
                   {t("admin.suppliers.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
                 {selectedSupplier ? (
                   <>
                     <DialogHeader>
