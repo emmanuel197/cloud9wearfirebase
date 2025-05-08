@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useLanguage } from "@/hooks/use-language";
+import { useAuth } from "@/hooks/use-auth";
 import { Link } from "wouter";
 import ProductGrid from "@/components/product-grid";
 import { useQuery } from "@tanstack/react-query";
@@ -8,6 +9,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 export default function HomePage() {
   const { t } = useLanguage();
+  const { user } = useAuth();
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
   });
