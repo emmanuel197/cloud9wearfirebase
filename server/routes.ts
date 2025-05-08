@@ -1,6 +1,6 @@
-import type { Express, Request, Response, NextFunction } from "express";
+import express, { type Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage as dbStorage } from "./storage";
 import { setupAuth } from "./auth";
 import { 
   insertProductSchema, 
@@ -12,6 +12,9 @@ import {
 } from "@shared/schema";
 import { ZodError } from "zod";
 import Paystack from "paystack-node";
+import multer from "multer";
+import path from "path";
+import fs from "fs-extra";
 
 declare global {
   namespace Express {
@@ -35,6 +38,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
   if (!paystackClient || !paystackClient.transaction) {
     console.error("Failed to initialize Paystack client properly");
   }
+  
+  // Configure multer for image upload
+  const multerStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, './uploads/products');
+    },
+    filename: (req, file, cb) => {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const ext = path.extname(file.originalname);
+      cb(null, 'product-' + uniqueSuffix + ext);
+    }
+  });
+  
+  const upload = multer({ 
+    storage: multerStorage,
+    limits: { 
+      fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: (req, file, cb) => {
+      // Accept only image files
+      if (file.mimetype.startsWith('image/')) {
+        cb(null, true);
+      } else {
+        cb(new Error('Only image files are allowed'));
+      }
+    }
+  });
 
   // Role-based authorization middleware
   const requireRole = (roles: string[]) => {
@@ -75,7 +105,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (category) filters.category = category;
       if (supplierId) filters.supplierId = Number(supplierId);
 
-      const products = await storage.getProducts(filters);
+      const products = await dbStorage.getProducts(filters);
       res.json(products);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -86,7 +116,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/products/:id", async (req, res) => {
     try {
       const productId = parseInt(req.params.id);
-      const product = await storage.getProduct(productId);
+      const product = await dbStorage.getProduct(productId);
 
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
@@ -108,10 +138,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         productData.supplierId = req.user.id;
       }
 
-      const product = await storage.createProduct(productData);
+      const product = await dbStorage.createProduct(productData);
 
       // Initialize inventory for the supplier
-      await storage.updateInventory(product.supplierId, product.id, product.stock);
+      await dbStorage.updateInventory(product.supplierId, product.id, product.stock);
 
       res.status(201).json(product);
     } catch (error) {
@@ -122,7 +152,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/products/:id", requireRole(["admin", "supplier"]), async (req, res) => {
     try {
       const productId = parseInt(req.params.id);
-      const product = await storage.getProduct(productId);
+      const product = await dbStorage.getProduct(productId);
 
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
@@ -133,11 +163,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You can only update your own products" });
       }
 
-      const updatedProduct = await storage.updateProduct(productId, req.body);
+      const updatedProduct = await dbStorage.updateProduct(productId, req.body);
 
       // Update inventory if stock changed
       if (req.body.stock !== undefined) {
-        await storage.updateInventory(product.supplierId, productId, req.body.stock);
+        await dbStorage.updateInventory(product.supplierId, productId, req.body.stock);
       }
 
       res.json(updatedProduct);
@@ -150,7 +180,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/products/:id", requireRole(["admin"]), async (req, res) => {
     try {
       const productId = parseInt(req.params.id);
-      const deleted = await storage.deleteProduct(productId);
+      const deleted = await dbStorage.deleteProduct(productId);
 
       if (!deleted) {
         return res.status(404).json({ message: "Product not found" });
@@ -179,18 +209,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
         filters.status = req.query.status;
       }
 
-      const orders = await storage.getOrders(filters);
+      const orders = await dbStorage.getOrders(filters);
 
       // If supplier, filter orders that contain products they supply
       if (req.user.role === "supplier") {
         // Get all products by the supplier
-        const supplierProducts = await storage.getProducts({ supplierId: req.user.id });
+        const supplierProducts = await dbStorage.getProducts({ supplierId: req.user.id });
         const supplierProductIds = supplierProducts.map(product => product.id);
 
         // For each order, get the items and check if any product is supplied by this supplier
         const supplierOrders = await Promise.all(
           orders.map(async (order) => {
-            const orderItems = await storage.getOrderItems(order.id);
+            const orderItems = await dbStorage.getOrderItems(order.id);
             const hasSupplierItems = orderItems.some(item => 
               supplierProductIds.includes(item.productId)
             );
@@ -220,7 +250,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/orders/:id", requireRole(["admin", "customer", "supplier"]), async (req, res) => {
     try {
       const orderId = parseInt(req.params.id);
-      const order = await storage.getOrder(orderId);
+      const order = await dbStorage.getOrder(orderId);
 
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
@@ -232,12 +262,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get order items
-      const orderItems = await storage.getOrderItems(orderId);
+      const orderItems = await dbStorage.getOrderItems(orderId);
 
       // Suppliers can only view orders containing their products
       if (req.user.role === "supplier") {
         // Get all products by the supplier
-        const supplierProducts = await storage.getProducts({ supplierId: req.user.id });
+        const supplierProducts = await dbStorage.getProducts({ supplierId: req.user.id });
         const supplierProductIds = supplierProducts.map(product => product.id);
 
         // Check if any order item is from this supplier
@@ -272,7 +302,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // Create the order
-      const order = await storage.createOrder(orderData);
+      const order = await dbStorage.createOrder(orderData);
 
       // Add order items
       const orderItems = req.body.items || [];
@@ -282,19 +312,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
           orderId: order.id
         });
 
-        await storage.addOrderItem(orderItemData);
+        await dbStorage.addOrderItem(orderItemData);
 
         // Update product stock
-        const product = await storage.getProduct(item.productId);
+        const product = await dbStorage.getProduct(item.productId);
         if (product) {
           const newStock = Math.max(0, product.stock - item.quantity);
-          await storage.updateProduct(item.productId, { stock: newStock });
-          await storage.updateInventory(product.supplierId, product.id, newStock);
+          await dbStorage.updateProduct(item.productId, { stock: newStock });
+          await dbStorage.updateInventory(product.supplierId, product.id, newStock);
         }
       }
 
       // Clear user's cart
-      await storage.updateCart(req.user.id, []);
+      await dbStorage.updateCart(req.user.id, []);
 
       res.status(201).json(order);
     } catch (error) {
@@ -305,13 +335,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/orders/:id", requireRole(["admin"]), async (req, res) => {
     try {
       const orderId = parseInt(req.params.id);
-      const order = await storage.getOrder(orderId);
+      const order = await dbStorage.getOrder(orderId);
 
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
 
-      const updatedOrder = await storage.updateOrder(orderId, req.body);
+      const updatedOrder = await dbStorage.updateOrder(orderId, req.body);
       res.json(updatedOrder);
     } catch (error) {
       console.error("Error updating order:", error);
@@ -323,7 +353,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.patch("/api/orders/:id", requireRole(["admin", "supplier"]), async (req, res) => {
     try {
       const orderId = parseInt(req.params.id);
-      const order = await storage.getOrder(orderId);
+      const order = await dbStorage.getOrder(orderId);
 
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
@@ -342,8 +372,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // For suppliers, we need to check if this order contains their products
       if (req.user?.role === "supplier") {
-        const orderItems = await storage.getOrderItems(orderId);
-        const supplierProducts = await storage.getProducts({ supplierId: req.user.id });
+        const orderItems = await dbStorage.getOrderItems(orderId);
+        const supplierProducts = await dbStorage.getProducts({ supplierId: req.user.id });
         const supplierProductIds = supplierProducts.map(product => product.id);
 
         // Check if any order item is from this supplier
@@ -356,7 +386,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
 
-      const updatedOrder = await storage.updateOrder(orderId, { status: req.body.status });
+      const updatedOrder = await dbStorage.updateOrder(orderId, { status: req.body.status });
       res.json(updatedOrder);
     } catch (error) {
       console.error("Error updating order status:", error);
@@ -367,7 +397,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Cart API
   app.get("/api/cart", requireRole(["customer"]), async (req, res) => {
     try {
-      const cart = await storage.getCart(req.user.id);
+      const cart = await dbStorage.getCart(req.user.id);
       res.json(cart || { userId: req.user.id, items: [] });
     } catch (error) {
       console.error("Error fetching cart:", error);
@@ -378,7 +408,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/cart", requireRole(["customer"]), async (req, res) => {
     try {
       const items = req.body.items as CartItem[];
-      const cart = await storage.updateCart(req.user.id, items);
+      const cart = await dbStorage.updateCart(req.user.id, items);
       res.json(cart);
     } catch (error) {
       console.error("Error updating cart:", error);
@@ -389,7 +419,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Supplier inventory API
   app.get("/api/inventory", requireRole(["supplier"]), async (req, res) => {
     try {
-      const inventory = await storage.getInventory(req.user.id);
+      const inventory = await dbStorage.getInventory(req.user.id);
       res.json(inventory);
     } catch (error) {
       console.error("Error fetching inventory:", error);
@@ -406,7 +436,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid stock value" });
       }
 
-      const product = await storage.getProduct(productId);
+      const product = await dbStorage.getProduct(productId);
 
       // Check if product exists and belongs to the supplier
       if (!product) {
@@ -417,10 +447,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You can only update your own inventory" });
       }
 
-      const inventory = await storage.updateInventory(req.user.id, productId, stock);
+      const inventory = await dbStorage.updateInventory(req.user.id, productId, stock);
 
       // Also update the product stock
-      await storage.updateProduct(productId, { stock });
+      await dbStorage.updateProduct(productId, { stock });
 
       res.json(inventory);
     } catch (error) {
@@ -432,12 +462,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin users management
   app.get("/api/admin/customers", requireRole(["admin"]), async (req, res) => {
     try {
-      const customers = await storage.getUsersByRole("customer");
+      const customers = await dbStorage.getUsersByRole("customer");
 
       // Add metadata like order count if needed
       const customersWithMetadata = await Promise.all(
         customers.map(async (customer) => {
-          const customerOrders = await storage.getOrders({ customerId: customer.id });
+          const customerOrders = await dbStorage.getOrders({ customerId: customer.id });
           return {
             ...customer,
             orderCount: customerOrders.length,
@@ -454,12 +484,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get("/api/admin/suppliers", requireRole(["admin"]), async (req, res) => {
     try {
-      const suppliers = await storage.getUsersByRole("supplier");
+      const suppliers = await dbStorage.getUsersByRole("supplier");
 
       // Add metadata like product count
       const suppliersWithMetadata = await Promise.all(
         suppliers.map(async (supplier) => {
-          const supplierProducts = await storage.getProducts({ supplierId: supplier.id });
+          const supplierProducts = await dbStorage.getProducts({ supplierId: supplier.id });
           return {
             ...supplier,
             productCount: supplierProducts.length,
@@ -478,12 +508,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/admin/orders", requireRole(["admin"]), async (req, res) => {
     try {
       // Get all orders
-      const orders = await storage.getOrders();
+      const orders = await dbStorage.getOrders();
 
       // Delete each order
       for (const order of orders) {
         // Delete order items first
-        const orderItems = await storage.getOrderItems(order.id);
+        const orderItems = await dbStorage.getOrderItems(order.id);
         // In a real database we would use transactions, but for this demo we'll loop
         for (const item of orderItems) {
           // Here we would delete the order items, but our storage interface doesn't have this method
@@ -491,7 +521,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
 
         // Delete the order
-        await storage.deleteOrder(order.id);
+        await dbStorage.deleteOrder(order.id);
       }
 
       res.status(200).json({ message: "All orders have been cleared" });
@@ -511,12 +541,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      const inventory = await storage.getInventory(supplierId);
+      const inventory = await dbStorage.getInventory(supplierId);
 
       // Fetch product details for each inventory item
       const inventoryWithProductDetails = await Promise.all(
         inventory.map(async (item) => {
-          const product = await storage.getProduct(item.productId);
+          const product = await dbStorage.getProduct(item.productId);
           return {
             ...item,
             product
@@ -535,7 +565,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/users/:id", requireRole(["admin"]), async (req, res) => {
     try {
       const userId = parseInt(req.params.id);
-      const user = await storage.getUser(userId);
+      const user = await dbStorage.getUser(userId);
 
       if (!user) {
         return res.status(404).json({ message: "User not found" });
@@ -667,9 +697,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         orderId = parseInt(orderIdMatch[1]);
 
         // Update order in database if found
-        const order = await storage.getOrder(orderId);
+        const order = await dbStorage.getOrder(orderId);
         if (order) {
-          await storage.updateOrder(orderId, { 
+          await dbStorage.updateOrder(orderId, { 
             paymentStatus: "paid",
             status: "processing" 
           });
@@ -708,10 +738,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // If this is associated with an order, update the order payment status
         if (metadata && metadata.orderId) {
           const orderId = parseInt(metadata.orderId);
-          const order = await storage.getOrder(orderId);
+          const order = await dbStorage.getOrder(orderId);
 
           if (order) {
-            await storage.updateOrder(orderId, { 
+            await dbStorage.updateOrder(orderId, { 
               paymentStatus: "paid",
               status: "processing" 
             });
@@ -742,10 +772,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin dashboard stats
   app.get("/api/admin/stats", requireRole(["admin"]), async (req, res) => {
     try {
-      const orders = await storage.getOrders();
-      const products = await storage.getProducts();
-      const customers = await storage.getUsersByRole("customer");
-      const suppliers = await storage.getUsersByRole("supplier");
+      const orders = await dbStorage.getOrders();
+      const products = await dbStorage.getProducts();
+      const customers = await dbStorage.getUsersByRole("customer");
+      const suppliers = await dbStorage.getUsersByRole("supplier");
 
       // Calculate total sales
       const totalSales = orders.reduce((sum, order) => sum + order.totalAmount, 0);
@@ -778,11 +808,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.delete("/api/admin/orders", requireRole(["admin"]), async (req, res) => {
     try {
       // Get all orders
-      const orders = await storage.getOrders();
+      const orders = await dbStorage.getOrders();
 
       // Delete each order
       for (const order of orders) {
-        await storage.deleteOrder(order.id);
+        await dbStorage.deleteOrder(order.id);
       }
 
       res.json({ success: true, message: "All orders have been deleted" });
@@ -802,7 +832,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         customerId: req.user.id,
       });
 
-      const newReview = await storage.createReview(review);
+      const newReview = await dbStorage.createReview(review);
       res.status(201).json(newReview);
     } catch (error) {
       handleZodError(error, res);
@@ -813,7 +843,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/products/:id/reviews", async (req, res) => {
     try {
       const productId = parseInt(req.params.id);
-      const reviews = await storage.getReviews(productId);
+      const reviews = await dbStorage.getReviews(productId);
       res.json(reviews);
     } catch (error) {
       console.error("Error fetching reviews:", error);
@@ -825,13 +855,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/reviews/top", async (req, res) => {
     try {
       const limit = req.query.limit ? parseInt(req.query.limit as string) : 5;
-      const reviews = await storage.getTopReviews(limit);
+      const reviews = await dbStorage.getTopReviews(limit);
       
       // Get product details for each review
       const reviewsWithProducts = await Promise.all(
         reviews.map(async (review) => {
-          const product = await storage.getProduct(review.productId);
-          const customer = await storage.getUser(review.customerId);
+          const product = await dbStorage.getProduct(review.productId);
+          const customer = await dbStorage.getUser(review.customerId);
           
           return {
             ...review,
@@ -854,6 +884,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to fetch top reviews" });
     }
   });
+  
+  // Image upload endpoint
+  app.post("/api/upload/product-image", requireRole(["admin", "supplier"]), upload.single('image'), async (req: Request & { file?: Express.Multer.File }, res) => {
+    try {
+      if (!req.file) {
+        return res.status(400).json({ message: "No file uploaded" });
+      }
+      
+      // Create URL for uploaded image
+      const baseUrl = req.protocol + '://' + req.get('host');
+      const imageUrl = `${baseUrl}/uploads/products/${req.file.filename}`;
+      
+      res.status(201).json({ 
+        url: imageUrl,
+        filename: req.file.filename,
+        message: "Image uploaded successfully" 
+      });
+    } catch (error) {
+      console.error("Error uploading image:", error);
+      res.status(500).json({ message: "Failed to upload image" });
+    }
+  });
+  
+  // Serve uploaded files statically
+  app.use('/uploads', express.static('./uploads'));
 
   const httpServer = createServer(app);
   return httpServer;
