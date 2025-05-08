@@ -5,6 +5,17 @@
 @layer base {
   html {
     font-size: clamp(14px, 1vw, 18px);
+    -webkit-text-size-adjust: 100%;
+  }
+
+  @media (max-width: 768px) {
+    body {
+      @apply text-[14px];
+    }
+    
+    .text-gray-500 {
+      @apply text-gray-700 dark:text-gray-300;
+    }
   }
   
   body {

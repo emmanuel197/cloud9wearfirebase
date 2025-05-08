@@ -23,8 +23,8 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
                 <CreditCard className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-1">
-                <div className="font-medium">{t("checkout.payment.creditCard.title")}</div>
-                <div className="text-sm text-gray-500">{t("checkout.payment.creditCard.description")}</div>
+                <div className="font-medium text-foreground">{t("checkout.payment.creditCard.title")}</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">{t("checkout.payment.creditCard.description")}</div>
               </div>
             </Label>
           </CardContent>
@@ -40,8 +40,8 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
                 <Smartphone className="h-5 w-5 text-amber-500" />
               </div>
               <div className="flex-1">
-                <div className="font-medium">{t("checkout.payment.mtnMobile.title")}</div>
-                <div className="text-sm text-gray-500">{t("checkout.payment.mtnMobile.description")}</div>
+                <div className="font-medium text-foreground">{t("checkout.payment.mtnMobile.title")}</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">{t("checkout.payment.mtnMobile.description")}</div>
               </div>
             </Label>
           </CardContent>
@@ -57,8 +57,8 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
                 <Smartphone className="h-5 w-5 text-red-500" />
               </div>
               <div className="flex-1">
-                <div className="font-medium">{t("checkout.payment.telecel.title")}</div>
-                <div className="text-sm text-gray-500">{t("checkout.payment.telecel.description")}</div>
+                <div className="font-medium text-foreground">{t("checkout.payment.telecel.title")}</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">{t("checkout.payment.telecel.description")}</div>
               </div>
             </Label>
           </CardContent>
@@ -74,8 +74,8 @@ export default function PaymentMethodSelector({ value, onChange }: PaymentMethod
                 <Building className="h-5 w-5 text-green-500" />
               </div>
               <div className="flex-1">
-                <div className="font-medium">{t("checkout.payment.bankTransfer.title")}</div>
-                <div className="text-sm text-gray-500">{t("checkout.payment.bankTransfer.description")}</div>
+                <div className="font-medium text-foreground">{t("checkout.payment.bankTransfer.title")}</div>
+                <div className="text-sm text-gray-700 dark:text-gray-300">{t("checkout.payment.bankTransfer.description")}</div>
               </div>
             </Label>
           </CardContent>
