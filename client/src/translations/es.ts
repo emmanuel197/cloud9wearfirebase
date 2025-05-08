@@ -512,6 +512,48 @@ const translations = {
         status: "Estado",
         actions: "Acciones"
       }
+    },
+    
+    reviews: {
+      title: "Gestión de Reseñas",
+      description: "Gestiona las reseñas de productos en tu tienda",
+      allReviews: "Todas las Reseñas",
+      addReview: "Añadir Reseña",
+      addReviewDesc: "Crear una nueva reseña de producto",
+      viewProduct: "Ver Producto",
+      deleteReview: "Borrar Reseña",
+      search: "Buscar reseñas...",
+      sortBy: "Ordenar por",
+      sortField: "Campo de orden",
+      date: "Fecha",
+      rating: "Valoración",
+      product: "Producto",
+      customer: "Cliente", 
+      comment: "Comentario",
+      actions: "Acciones",
+      id: "ID",
+      
+      selectProduct: "Seleccionar un producto",
+      selectCustomer: "Seleccionar un cliente",
+      selectRating: "Valoración",
+      commentPlaceholder: "Introduce el comentario...",
+      commentDesc: "Esto se mostrará públicamente en la página del producto",
+      commentMinLength: "El comentario debe tener al menos 5 caracteres",
+      productRequired: "El producto es requerido",
+      customerRequired: "El cliente es requerido",
+      
+      noReviews: "No se encontraron reseñas",
+      noSearchResults: "No hay reseñas que coincidan con tu búsqueda",
+      
+      createSuccess: "Reseña creada con éxito",
+      createSuccessDesc: "La reseña ha sido añadida al producto",
+      createError: "Error al crear la reseña",
+      
+      deleteConfirmTitle: "¿Borrar Reseña?",
+      deleteConfirmDesc: "Esta acción no se puede deshacer. La reseña será eliminada permanentemente.",
+      deleteSuccess: "Reseña eliminada con éxito",
+      deleteSuccessDesc: "La reseña ha sido eliminada",
+      deleteError: "Error al eliminar la reseña"
     }
   },
   

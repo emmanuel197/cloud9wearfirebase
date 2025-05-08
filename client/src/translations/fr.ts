@@ -498,6 +498,48 @@ const translations = {
         status: "Statut",
         actions: "Actions"
       }
+    },
+    
+    reviews: {
+      title: "Gestion des Avis",
+      description: "Gérer les avis des produits sur votre boutique",
+      allReviews: "Tous les Avis",
+      addReview: "Ajouter un Avis",
+      addReviewDesc: "Créer un nouvel avis de produit",
+      viewProduct: "Voir le Produit",
+      deleteReview: "Supprimer l'Avis",
+      search: "Rechercher des avis...",
+      sortBy: "Trier par",
+      sortField: "Champ de tri",
+      date: "Date",
+      rating: "Évaluation",
+      product: "Produit",
+      customer: "Client", 
+      comment: "Commentaire",
+      actions: "Actions",
+      id: "ID",
+      
+      selectProduct: "Sélectionner un produit",
+      selectCustomer: "Sélectionner un client",
+      selectRating: "Évaluation",
+      commentPlaceholder: "Entrez le commentaire...",
+      commentDesc: "Ceci sera affiché publiquement sur la page du produit",
+      commentMinLength: "Le commentaire doit comporter au moins 5 caractères",
+      productRequired: "Le produit est requis",
+      customerRequired: "Le client est requis",
+      
+      noReviews: "Aucun avis trouvé",
+      noSearchResults: "Aucun avis correspondant à votre recherche",
+      
+      createSuccess: "Avis créé avec succès",
+      createSuccessDesc: "L'avis a été ajouté au produit",
+      createError: "Échec de la création de l'avis",
+      
+      deleteConfirmTitle: "Supprimer l'Avis?",
+      deleteConfirmDesc: "Cette action ne peut pas être annulée. L'avis sera définitivement supprimé.",
+      deleteSuccess: "Avis supprimé avec succès",
+      deleteSuccessDesc: "L'avis a été supprimé",
+      deleteError: "Échec de la suppression de l'avis"
     }
   },
   
