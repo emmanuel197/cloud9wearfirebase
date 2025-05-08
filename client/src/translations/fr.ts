@@ -336,6 +336,8 @@ const translations = {
       orders: "Commandes",
       products: "Produits",
       customers: "Clients",
+      suppliers: "Fournisseurs",
+      comingSoon: "Bientôt Disponible",
       settings: "Paramètres",
       storefront: "Visiter la Boutique",
       logout: "Déconnexion"

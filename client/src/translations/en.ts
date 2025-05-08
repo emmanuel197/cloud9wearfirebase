@@ -376,6 +376,7 @@ const translations = {
       products: "Products",
       customers: "Customers",
       suppliers: "Suppliers",
+      comingSoon: "Coming Soon",
       settings: "Settings",
       storefront: "Visit Store",
       logout: "Logout"

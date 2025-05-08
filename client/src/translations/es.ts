@@ -350,6 +350,8 @@ const translations = {
       orders: "Pedidos",
       products: "Productos",
       customers: "Clientes",
+      suppliers: "Proveedores",
+      comingSoon: "Próximamente",
       settings: "Configuración",
       storefront: "Visitar Tienda",
       logout: "Cerrar Sesión"
