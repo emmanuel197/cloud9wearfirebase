@@ -7,12 +7,18 @@ import { useQuery } from "@tanstack/react-query";
 import { Product } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
 import heroImage from "../assets/hero-image.jpeg";
+import ProductCard from "@/components/product-card";
+import { AlertCircle, Clock } from "lucide-react";
 
 export default function HomePage() {
   const { t } = useLanguage();
   const { user } = useAuth();
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products"],
+  });
+  
+  const { data: comingSoonProducts, isLoading: isComingSoonLoading } = useQuery<Product[]>({
+    queryKey: ["/api/coming-soon-products"],
   });
 
   return (
@@ -102,6 +108,83 @@ export default function HomePage() {
       </section>
 
 
+
+      {/* Coming Soon Section */}
+      <section className="py-16 bg-gray-50">
+        <div className="container mx-auto px-4">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <Clock className="h-6 w-6 text-[#ef0c11]" />
+            <h2 className="text-3xl font-bold text-center text-black">
+              {t("comingSoon.title")}
+            </h2>
+          </div>
+          <p className="text-gray-700 text-center mb-12">
+            {t("comingSoon.subtitle")}
+          </p>
+
+          {isComingSoonLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white rounded-lg overflow-hidden shadow-md">
+                  <Skeleton className="w-full h-64" />
+                  <div className="p-4">
+                    <Skeleton className="h-6 w-3/4 mb-2" />
+                    <Skeleton className="h-4 w-full mb-4" />
+                    <div className="flex justify-between items-center">
+                      <Skeleton className="h-6 w-20" />
+                      <Skeleton className="h-10 w-32" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : comingSoonProducts && comingSoonProducts.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {comingSoonProducts.map((product) => (
+                <Link key={product.id} href={`/products/${product.id}`}>
+                  <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+                    <div className="relative">
+                      <img
+                        src={product.imageUrls[0] || "https://via.placeholder.com/300"}
+                        alt={product.name}
+                        className="w-full h-64 object-cover"
+                      />
+                      <div className="absolute top-0 right-0 bg-[#ef0c11] text-white px-3 py-1 m-2 rounded-full flex items-center gap-1">
+                        <Clock className="w-4 h-4" />
+                        <span className="text-sm font-medium">{t("comingSoon.badge")}</span>
+                      </div>
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold mb-2 text-black">{product.name}</h3>
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">{product.description}</p>
+                      <div className="flex justify-between items-center">
+                        <div className="flex flex-col">
+                          <span className="text-lg font-bold text-[#ef0c11]">
+                            ₵{product.price.toFixed(2)}
+                          </span>
+                          {product.releaseDate && (
+                            <span className="text-xs text-gray-500">
+                              {t("comingSoon.availableOn")}: {new Date(product.releaseDate).toLocaleDateString()}
+                            </span>
+                          )}
+                        </div>
+                        <Button variant="outline" className="border-[#ef0c11] text-[#ef0c11] hover:bg-[#ef0c11] hover:text-white">
+                          {t("comingSoon.notifyButton")}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-10">
+              <AlertCircle className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg">{t("comingSoon.noProducts")}</p>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Payment Options Section */}
       <section className="py-16 bg-white">
