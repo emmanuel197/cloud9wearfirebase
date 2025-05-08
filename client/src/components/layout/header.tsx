@@ -72,7 +72,7 @@ export default function Header() {
   
   return (
     <header className={`sticky top-0 z-50 w-full transition-all duration-200 ${
-      scrolled ? "bg-white shadow-sm" : "bg-white"
+      scrolled ? "bg-black shadow-sm" : "bg-black"
     }`}>
       <div className="w-full max-w-[1980px] mx-auto px-[clamp(1rem,3vw,2rem)] relative">
         <div className="flex justify-between items-center py-4">
@@ -92,25 +92,25 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-4 lg:space-x-8">
             <Link href="/">
-              <a className={`font-medium ${location === "/" ? "text-primary" : "text-gray-600 hover:text-primary"} transition-colors`}>
+              <a className={`font-medium ${location === "/" ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors`}>
                 {t("navigation.home")}
               </a>
             </Link>
             <Link href="/products">
-              <a className={`font-medium ${location === "/products" ? "text-primary" : "text-gray-600 hover:text-primary"} transition-colors`}>
+              <a className={`font-medium ${location === "/products" ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors`}>
                 {t("navigation.products")}
               </a>
             </Link>
             {user?.role === "admin" && (
               <Link href="/admin">
-                <a className={`font-medium ${location.startsWith("/admin") ? "text-primary" : "text-gray-600 hover:text-primary"} transition-colors`}>
+                <a className={`font-medium ${location.startsWith("/admin") ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors`}>
                   {t("navigation.admin")}
                 </a>
               </Link>
             )}
             {user?.role === "supplier" && (
               <Link href="/supplier">
-                <a className={`font-medium ${location.startsWith("/supplier") ? "text-primary" : "text-gray-600 hover:text-primary"} transition-colors`}>
+                <a className={`font-medium ${location.startsWith("/supplier") ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors`}>
                   {t("navigation.supplier")}
                 </a>
               </Link>
@@ -129,9 +129,9 @@ export default function Header() {
               {user ? (
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                    <Button variant="ghost" className="relative h-8 w-8 rounded-full text-white hover:text-white hover:bg-black/60">
                       <Avatar className="h-8 w-8">
-                        <AvatarFallback className="bg-primary text-primary-foreground">
+                        <AvatarFallback className="bg-white text-black">
                           {getInitials(user.fullName || user.username || '')}
                         </AvatarFallback>
                       </Avatar>
@@ -176,7 +176,7 @@ export default function Header() {
                 </DropdownMenu>
               ) : (
                 <Link href="/auth">
-                  <Button variant="ghost" className="flex items-center">
+                  <Button variant="ghost" className="flex items-center text-white hover:text-white hover:bg-black/60">
                     <User className="mr-2 h-4 w-4" />
                     <span>{t("navigation.login")}</span>
                   </Button>
@@ -187,10 +187,10 @@ export default function Header() {
             {/* Cart - Show on all screen sizes for customers */}
             {user?.role === "customer" && (
               <Link href="/cart">
-                <Button variant="ghost" className="relative p-2">
+                <Button variant="ghost" className="relative p-2 text-white hover:text-white hover:bg-black/60">
                   <ShoppingCart className="h-5 w-5" />
                   {cart.items.length > 0 && (
-                    <span className="absolute -top-2 -right-2 bg-primary text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-2 -right-2 bg-white text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {cart.items.length}
                     </span>
                   )}
@@ -201,7 +201,7 @@ export default function Header() {
             {/* Mobile Menu Button */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="md:hidden">
+                <Button variant="ghost" size="icon" className="md:hidden text-white hover:text-white hover:bg-black/60">
                   <Menu className="h-5 w-5" />
                   <span className="sr-only">Toggle menu</span>
                 </Button>

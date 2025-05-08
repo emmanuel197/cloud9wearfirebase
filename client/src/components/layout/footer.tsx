@@ -15,7 +15,7 @@ export default function Footer() {
   const { t } = useLanguage();
   
   return (
-    <footer className="bg-gray-800 text-white pt-10 md:pt-16 pb-6 md:pb-8 w-full">
+    <footer className="bg-black text-white pt-10 md:pt-16 pb-6 md:pb-8 w-full">
       <div className="w-full max-w-[1980px] mx-auto px-[clamp(1rem,3vw,2rem)]">
         {/* Mobile accordion version could be added here for even better mobile UX */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8 mb-8 md:mb-12">
@@ -136,7 +136,7 @@ export default function Footer() {
         </div>
         
         {/* Footer Bottom Section */}
-        <div className="pt-6 md:pt-8 border-t border-gray-700 text-center text-gray-500 text-sm">
+        <div className="pt-6 md:pt-8 border-t border-gray-500 text-center text-gray-300 text-sm">
           <div className="flex justify-center space-x-4 mb-4">
             <LanguageSwitcher />
           </div>
