@@ -92,25 +92,25 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-4 lg:space-x-8">
             <Link href="/">
-              <div className={`font-medium ${location === "/" ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors cursor-pointer`}>
+              <div className={`font-medium ${location === "/" ? "text-white font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
                 {t("navigation.home")}
               </div>
             </Link>
             <Link href="/products">
-              <div className={`font-medium ${location === "/products" ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors cursor-pointer`}>
+              <div className={`font-medium ${location === "/products" ? "text-white font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
                 {t("navigation.products")}
               </div>
             </Link>
             {user?.role === "admin" && (
               <Link href="/admin">
-                <div className={`font-medium ${location.startsWith("/admin") ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors cursor-pointer`}>
+                <div className={`font-medium ${location.startsWith("/admin") ? "text-white font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
                   {t("navigation.admin")}
                 </div>
               </Link>
             )}
             {user?.role === "supplier" && (
               <Link href="/supplier">
-                <div className={`font-medium ${location.startsWith("/supplier") ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors cursor-pointer`}>
+                <div className={`font-medium ${location.startsWith("/supplier") ? "text-white font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
                   {t("navigation.supplier")}
                 </div>
               </Link>
