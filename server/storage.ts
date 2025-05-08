@@ -592,28 +592,57 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateProduct(id: number, product: Partial<Product>): Promise<Product | undefined> {
-    // Remove comingSoon and releaseDate fields for database update
-    const { comingSoon, releaseDate, ...dbProduct } = product as any;
-    
-    const [updatedProduct] = await db
-      .update(products)
-      .set(dbProduct)
-      .where(eq(products.id, id))
-      .returning();
+    try {
+      // Safely prepare the data for database update
+      const { 
+        comingSoon, 
+        releaseDate, 
+        ...safeDbProduct 
+      } = product as any;
       
-    if (!updatedProduct) return undefined;
-    
-    // Get the current product first to check if it has comingSoon property
-    const existingProduct = await this.getProduct(id);
-    const existingComingSoon = existingProduct?.comingSoon || false;
-    const existingReleaseDate = existingProduct?.releaseDate || null;
-    
-    // Return the product with comingSoon property properly set
-    return { 
-      ...updatedProduct,
-      comingSoon: comingSoon !== undefined ? comingSoon : existingComingSoon,
-      releaseDate: releaseDate !== undefined ? releaseDate : existingReleaseDate
-    };
+      // Update only the fields that are definitely in the database
+      const updateData = {
+        name: safeDbProduct.name,
+        description: safeDbProduct.description,
+        price: safeDbProduct.price,
+        category: safeDbProduct.category,
+        imageUrls: safeDbProduct.imageUrls,
+        availableSizes: safeDbProduct.availableSizes,
+        availableColors: safeDbProduct.availableColors,
+        supplierId: safeDbProduct.supplierId,
+        stock: safeDbProduct.stock,
+        discount: safeDbProduct.discount,
+        isActive: safeDbProduct.isActive
+      };
+      
+      // Remove undefined fields
+      Object.keys(updateData).forEach(key => {
+        if (updateData[key] === undefined) {
+          delete updateData[key];
+        }
+      });
+      
+      const [updatedProduct] = await db
+        .update(products)
+        .set(updateData)
+        .where(eq(products.id, id))
+        .returning();
+        
+      if (!updatedProduct) return undefined;
+      
+      // Get the current product to handle comingSoon property
+      const existingProduct = await this.getProduct(id);
+      
+      // For consistency with schema, add these properties even if not in DB
+      return { 
+        ...updatedProduct,
+        comingSoon: comingSoon !== undefined ? comingSoon : (existingProduct?.comingSoon || false),
+        releaseDate: releaseDate !== undefined ? releaseDate : (existingProduct?.releaseDate || null)
+      };
+    } catch (error) {
+      console.error('Error updating product:', error);
+      throw error;
+    }
   }
 
   async deleteProduct(id: number): Promise<boolean> {
