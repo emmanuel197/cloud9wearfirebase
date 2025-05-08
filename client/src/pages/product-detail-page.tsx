@@ -225,11 +225,11 @@ export default function ProductDetailPage() {
           {'comingSoon' in product && product.comingSoon && (
             <div className="mb-4">
               <span className="inline-block bg-[#ef0c11] text-white text-sm font-medium px-3 py-1 rounded-full">
-                COMING SOON
+                {t("comingSoon.badge")}
               </span>
               {'releaseDate' in product && product.releaseDate && (
                 <span className="ml-2 text-sm text-gray-600">
-                  Available on {new Date(product.releaseDate).toLocaleDateString('en-US', {
+                  {t("comingSoon.availableOn")} {new Date(product.releaseDate).toLocaleDateString(undefined, {
                     month: 'long',
                     day: 'numeric',
                     year: 'numeric'
@@ -330,13 +330,13 @@ export default function ProductDetailPage() {
               className="w-full mb-4 py-6 bg-black hover:bg-[#ef0c11]" 
               onClick={() => {
                 toast({
-                  title: "Notification request saved",
-                  description: "We'll let you know when this product is available",
+                  title: t("comingSoon.notificationSaved"),
+                  description: t("comingSoon.notificationDescription"),
                 });
               }}
             >
               <InfoIcon className="mr-2 h-5 w-5" />
-              {t("productDetail.notifyMe") || "Notify Me When Available"}
+              {t("comingSoon.notifyButton")}
             </Button>
           ) : (
             <Button 
