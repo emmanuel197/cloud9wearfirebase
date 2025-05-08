@@ -43,7 +43,19 @@ export default function CartItem({ item }: CartItemProps) {
         <div>
           <div className="flex justify-between text-base font-medium text-gray-900">
             <h3>{item.product.name}</h3>
-            <PriceDisplay amount={item.product.price * item.quantity} />
+            {item.product.discount ? (
+              <div className="flex flex-col items-end">
+                <PriceDisplay 
+                  amount={item.product.price * (1 - item.product.discount / 100) * item.quantity} 
+                />
+                <PriceDisplay 
+                  amount={item.product.price * item.quantity} 
+                  className="text-sm line-through text-gray-400" 
+                />
+              </div>
+            ) : (
+              <PriceDisplay amount={item.product.price * item.quantity} />
+            )}
           </div>
           <p className="mt-1 text-sm text-gray-500">
             {item.color}

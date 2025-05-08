@@ -228,6 +228,17 @@ export default function CheckoutPage() {
                 <span>{t("checkout.subtotal")}</span>
                 <PriceDisplay amount={total} />
               </div>
+              {/* Show savings from discounts if applicable */}
+              {cart.items.some(item => item.product.discount > 0) && (
+                <div className="flex justify-between mb-2 text-green-600">
+                  <span>{t("checkout.savings")}</span>
+                  <span>-{cart.items.reduce((sum, item) => {
+                    return item.product.discount
+                      ? sum + (item.product.price * item.product.discount / 100 * item.quantity)
+                      : sum;
+                  }, 0).toFixed(2)} GHS</span>
+                </div>
+              )}
               <div className="flex justify-between mb-2">
                 <span>{t("checkout.shipping")}</span>
                 <PriceDisplay amount={shippingCost} />
@@ -462,10 +473,23 @@ export default function CheckoutPage() {
                         {item.size}, {item.color} × {item.quantity}
                       </p>
                     </div>
-                    <PriceDisplay
-                      amount={item.product.price * item.quantity}
-                      className="font-medium"
-                    />
+                    {item.product.discount ? (
+                      <div className="flex flex-col items-end">
+                        <PriceDisplay 
+                          amount={item.product.price * (1 - item.product.discount / 100) * item.quantity}
+                          className="font-medium" 
+                        />
+                        <PriceDisplay 
+                          amount={item.product.price * item.quantity}
+                          className="text-sm line-through text-gray-400" 
+                        />
+                      </div>
+                    ) : (
+                      <PriceDisplay
+                        amount={item.product.price * item.quantity}
+                        className="font-medium"
+                      />
+                    )}
                   </div>
                 ))}
               </div>

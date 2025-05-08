@@ -45,9 +45,14 @@ export function CartProvider({ children }: CartProviderProps) {
     return savedCart ? JSON.parse(savedCart) : { items: [] };
   });
   
-  // Calculate total price
+  // Calculate total price, accounting for discounts
   const total = cart.items.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
+    (sum, item) => {
+      const itemPrice = item.product.discount 
+        ? item.product.price * (1 - item.product.discount / 100) 
+        : item.product.price;
+      return sum + itemPrice * item.quantity;
+    },
     0
   );
   
