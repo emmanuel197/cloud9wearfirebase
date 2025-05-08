@@ -198,7 +198,7 @@ export default function SupplierOrders() {
 
         return (
           <div className="flex items-center space-x-2">
-            <Dialog onOpenChange={(open) => {
+            <Dialog open={order.id === selectedOrder?.id} onOpenChange={(open) => {
               console.log("[Dialog Debug] Dialog state changed:", open);
               console.log("[Dialog Debug] Selected order:", order.id);
               console.log("[Dialog Debug] Current selected order state:", selectedOrder);
@@ -221,7 +221,11 @@ export default function SupplierOrders() {
                   {t("supplier.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
+              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()} onEscapeKeyDown={() => {
+                console.log("[Dialog Debug] Dialog escape pressed");
+              }} onInteractOutside={() => {
+                console.log("[Dialog Debug] Dialog clicked outside");
+              }}>
                 <DialogHeader>
                   <DialogTitle>{t("supplier.orders.orderDetails", { id: selectedOrder?.id })}</DialogTitle>
                   <DialogDescription>
