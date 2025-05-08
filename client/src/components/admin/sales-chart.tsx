@@ -1,4 +1,5 @@
-import React, { useMemo } from "react";
+
+import React from "react";
 import {
   AreaChart,
   Area,
@@ -10,36 +11,60 @@ import {
   Legend
 } from "recharts";
 import { useLanguage } from "@/hooks/use-language";
+import { useQuery } from "@tanstack/react-query";
 
 export default function SalesChart() {
   const { t } = useLanguage();
 
-  // This is sample data to represent sales over time
-  // In a real app, this would come from an API call
-  const sampleData = useMemo(() => {
+  // Fetch all orders
+  const { data: orders = [] } = useQuery({
+    queryKey: ["/api/orders"],
+  });
+
+  // Process orders to get monthly data
+  const monthlyData = React.useMemo(() => {
     const months = [
       "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
       "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
     ];
     
     // Get the last 6 months
-    const currentMonth = new Date().getMonth();
     const last6Months = Array(6).fill(0).map((_, i) => {
-      const monthIndex = (currentMonth - 5 + i) % 12;
-      return months[monthIndex < 0 ? monthIndex + 12 : monthIndex];
+      const date = new Date();
+      date.setMonth(date.getMonth() - (5 - i));
+      return {
+        month: months[date.getMonth()],
+        year: date.getFullYear(),
+        monthIndex: date.getMonth(),
+        sales: 0,
+        orders: 0
+      };
     });
-    
-    return last6Months.map(month => ({
-      month,
-      sales: Math.floor(Math.random() * 10000) + 2000,
-      orders: Math.floor(Math.random() * 100) + 20
-    }));
-  }, []);
+
+    // Process each order
+    orders.forEach((order: any) => {
+      const orderDate = new Date(order.orderDate);
+      const monthIndex = orderDate.getMonth();
+      const year = orderDate.getFullYear();
+      
+      // Find matching month in our data
+      const monthData = last6Months.find(m => 
+        m.monthIndex === monthIndex && m.year === year
+      );
+      
+      if (monthData) {
+        monthData.sales += order.totalAmount;
+        monthData.orders += 1;
+      }
+    });
+
+    return last6Months;
+  }, [orders]);
 
   const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("en-GH", {
       style: "currency",
-      currency: "USD",
+      currency: "GHS",
       minimumFractionDigits: 0,
       maximumFractionDigits: 0
     }).format(value);
@@ -49,7 +74,7 @@ export default function SalesChart() {
     <div className="w-full h-80">
       <ResponsiveContainer width="100%" height="100%">
         <AreaChart
-          data={sampleData}
+          data={monthlyData}
           margin={{
             top: 10,
             right: 30,
@@ -67,7 +92,7 @@ export default function SalesChart() {
           <YAxis 
             yAxisId="right" 
             orientation="right" 
-            domain={[0, 'dataMax + 20']}
+            domain={[0, 'dataMax + 5']}
           />
           <Tooltip 
             formatter={(value, name) => {
