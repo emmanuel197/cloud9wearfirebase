@@ -202,14 +202,18 @@ export default function AdminOrders() {
         const order = row.original;
         return (
           <div className="flex items-center space-x-2">
-            <Dialog>
+            <Dialog open={order.id === selectedOrder?.id} onOpenChange={(open) => {
+              if (!open) {
+                setSelectedOrder(null);
+              }
+            }}>
               <DialogTrigger asChild>
                 <Button 
                   variant="outline" 
                   size="sm"
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Directly fetch the order data when the button is clicked
+                    e.preventDefault();
                     handleViewOrder(order.id);
                   }}
                 >
@@ -217,7 +221,11 @@ export default function AdminOrders() {
                   {t("admin.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
+              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()} onEscapeKeyDown={() => {
+                console.log("[Dialog Debug] Dialog escape pressed");
+              }} onInteractOutside={() => {
+                console.log("[Dialog Debug] Dialog clicked outside");
+              }}>
                 {selectedOrder ? (
                   <>
                     <DialogHeader>
