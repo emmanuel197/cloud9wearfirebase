@@ -200,15 +200,21 @@ export default function SupplierOrders() {
           <div className="flex items-center space-x-2">
             <Dialog onOpenChange={(open) => {
               console.log("[Dialog Debug] Dialog state changed:", open);
+              console.log("[Dialog Debug] Selected order:", order.id);
+              console.log("[Dialog Debug] Current selected order state:", selectedOrder);
             }}>
               <DialogTrigger asChild>
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={(e) => {
-                    console.log("[Dialog Debug] View button clicked");
+                  onClick={async (e) => {
+                    console.log("[Dialog Debug] View button clicked for order:", order.id);
+                    console.log("[Dialog Debug] Event:", e);
                     e.stopPropagation();
-                    handleViewOrder(order.id);
+                    e.preventDefault();
+                    console.log("[Dialog Debug] Before fetching order");
+                    await handleViewOrder(order.id);
+                    console.log("[Dialog Debug] After fetching order");
                   }}
                 >
                   <Eye className="h-4 w-4 mr-1" />
