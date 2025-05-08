@@ -1,8 +1,14 @@
 /**
  * Utility function to normalize image URLs
  * Ensures URLs work correctly regardless of whether they are relative or absolute
+ * Also handles undefined or null values with a default placeholder
  */
-export function normalizeImageUrl(url: string): string {
+export function normalizeImageUrl(url?: string | null): string {
+  // Return a placeholder image if url is undefined or null
+  if (!url) {
+    return 'https://via.placeholder.com/300';
+  }
+  
   // If it's already an absolute URL (starts with http:// or https://), return it
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url;
