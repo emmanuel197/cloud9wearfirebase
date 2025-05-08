@@ -92,25 +92,25 @@ export default function Header() {
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-4 lg:space-x-8">
             <Link href="/">
-              <div className={`font-medium ${location === "/" ? "text-white font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
+              <div className={`font-medium ${location === "/" ? "text-[#ef0c11] font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
                 {t("navigation.home")}
               </div>
             </Link>
             <Link href="/products">
-              <div className={`font-medium ${location === "/products" ? "text-white font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
+              <div className={`font-medium ${location === "/products" ? "text-[#ef0c11] font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
                 {t("navigation.products")}
               </div>
             </Link>
             {user?.role === "admin" && (
               <Link href="/admin">
-                <div className={`font-medium ${location.startsWith("/admin") ? "text-white font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
+                <div className={`font-medium ${location.startsWith("/admin") ? "text-[#ef0c11] font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
                   {t("navigation.admin")}
                 </div>
               </Link>
             )}
             {user?.role === "supplier" && (
               <Link href="/supplier">
-                <div className={`font-medium ${location.startsWith("/supplier") ? "text-white font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
+                <div className={`font-medium ${location.startsWith("/supplier") ? "text-[#ef0c11] font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
                   {t("navigation.supplier")}
                 </div>
               </Link>
@@ -223,7 +223,7 @@ export default function Header() {
                   <nav className="flex flex-col space-y-4">
                     <SheetClose asChild>
                       <Link href="/">
-                        <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                        <div className={`flex items-center py-2 px-3 rounded-lg ${location === "/" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
                           <Home className="mr-2 h-4 w-4" />
                           {t("navigation.home")}
                         </div>
@@ -231,7 +231,7 @@ export default function Header() {
                     </SheetClose>
                     <SheetClose asChild>
                       <Link href="/products">
-                        <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                        <div className={`flex items-center py-2 px-3 rounded-lg ${location === "/products" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
                           <ShoppingBag className="mr-2 h-4 w-4" />
                           {t("navigation.products")}
                         </div>
@@ -242,7 +242,7 @@ export default function Header() {
                     {user?.role === "admin" && (
                       <SheetClose asChild>
                         <Link href="/admin">
-                          <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                          <div className={`flex items-center py-2 px-3 rounded-lg ${location.startsWith("/admin") ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
                             <LayoutDashboard className="mr-2 h-4 w-4" />
                             {t("navigation.adminDashboard")}
                           </div>
@@ -252,7 +252,7 @@ export default function Header() {
                     {user?.role === "supplier" && (
                       <SheetClose asChild>
                         <Link href="/supplier">
-                          <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                          <div className={`flex items-center py-2 px-3 rounded-lg ${location.startsWith("/supplier") ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
                             <Package className="mr-2 h-4 w-4" />
                             {t("navigation.supplierDashboard")}
                           </div>
@@ -262,7 +262,7 @@ export default function Header() {
                     {user?.role === "customer" && (
                       <SheetClose asChild>
                         <Link href="/cart">
-                          <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                          <div className={`flex items-center py-2 px-3 rounded-lg ${location === "/cart" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
                             <ShoppingCart className="mr-2 h-4 w-4" />
                             {t("navigation.cart")}
                           </div>
