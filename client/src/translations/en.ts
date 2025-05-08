@@ -152,6 +152,20 @@ const translations = {
     }
   },
   
+  reviews: {
+    title: "Customer Reviews",
+    writeReview: "Write a Review",
+    customerReviews: "Customer Reviews",
+    rating: "Rating",
+    comment: "Comment",
+    submit: "Submit Review",
+    noReviews: "No reviews yet. Be the first to review this product!",
+    successMessage: "Thank you for your review!",
+    errorMessage: "Error submitting review. Please try again.",
+    placeholder: "Share your experience with this product...",
+    topReviews: "Top Reviews"
+  },
+  
   auth: {
     login: {
       tabTitle: "Login",
