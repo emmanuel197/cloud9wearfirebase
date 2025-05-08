@@ -83,6 +83,7 @@ const productFormSchema = z.object({
   name: z.string().min(3, "Product name must be at least 3 characters"),
   description: z.string().min(10, "Description must be at least 10 characters"),
   price: z.coerce.number().positive("Price must be positive"),
+  discount: z.coerce.number().min(0, "Discount must be non-negative").max(100, "Discount cannot exceed 100%").default(0),
   category: z.string().min(1, "Category is required"),
   imageUrls: z.string().array().min(1, "At least one image URL is required"),
   availableSizes: z.string().array().min(1, "At least one size must be selected"),
@@ -144,6 +145,7 @@ export default function AdminProducts() {
         name: editProduct.name,
         description: editProduct.description,
         price: editProduct.price,
+        discount: editProduct.discount || 0,
         category: editProduct.category,
         imageUrls: editProduct.imageUrls,
         availableSizes: editProduct.availableSizes,
@@ -483,6 +485,30 @@ export default function AdminProducts() {
                         <FormControl>
                           <Input type="number" step="0.01" min="0" {...field} />
                         </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="discount"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>{t("admin.products.form.discount")}</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            step="0.1" 
+                            min="0" 
+                            max="100" 
+                            placeholder="0-100" 
+                            {...field} 
+                          />
+                        </FormControl>
+                        <FormDescription>
+                          {t("admin.products.form.discountDescription")}
+                        </FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
