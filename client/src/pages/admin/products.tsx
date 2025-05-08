@@ -98,7 +98,7 @@ export default function AdminProducts() {
   const { t } = useLanguage();
   const { user } = useAuth();
   const { toast } = useToast();
-  
+
   const [categoryFilter, setCategoryFilter] = useState<string>("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editProduct, setEditProduct] = useState<Product | null>(null);
@@ -106,7 +106,7 @@ export default function AdminProducts() {
   const [size, setSize] = useState("");
   const [color, setColor] = useState("");
   const [deleteId, setDeleteId] = useState<number | null>(null);
-  
+
   // Fetch products
   const { data: products, isLoading, refetch } = useQuery<Product[]>({
     queryKey: ["/api/products", categoryFilter],
@@ -118,7 +118,7 @@ export default function AdminProducts() {
       return fetch(url.toString()).then(res => res.json());
     }
   });
-  
+
   // Form for adding/editing products
   const form = useForm<ProductFormValues>({
     resolver: zodResolver(productFormSchema),
@@ -126,16 +126,17 @@ export default function AdminProducts() {
       name: "",
       description: "",
       price: 0,
+      discount: 0,
       category: "",
       imageUrls: [],
       availableSizes: [],
       availableColors: [],
-      supplierId: 0,
+      supplierId: user?.id || 0,
       stock: 0,
       isActive: true,
     },
   });
-  
+
   // Reset form when editProduct changes
   useEffect(() => {
     if (editProduct) {
@@ -156,6 +157,7 @@ export default function AdminProducts() {
         name: "",
         description: "",
         price: 0,
+        discount: 0,
         category: "",
         imageUrls: [],
         availableSizes: [],
@@ -166,7 +168,7 @@ export default function AdminProducts() {
       });
     }
   }, [editProduct, form, user?.id]);
-  
+
   // Add product mutation
   const addProductMutation = useMutation({
     mutationFn: async (data: ProductFormValues) => {
@@ -191,7 +193,7 @@ export default function AdminProducts() {
       });
     },
   });
-  
+
   // Update product mutation
   const updateProductMutation = useMutation({
     mutationFn: async ({ id, data }: { id: number, data: ProductFormValues }) => {
@@ -215,7 +217,7 @@ export default function AdminProducts() {
       });
     },
   });
-  
+
   // Delete product mutation
   const deleteProductMutation = useMutation({
     mutationFn: async (id: number) => {
@@ -238,7 +240,7 @@ export default function AdminProducts() {
       });
     },
   });
-  
+
   const onSubmit = (data: ProductFormValues) => {
     if (editProduct) {
       updateProductMutation.mutate({ id: editProduct.id, data });
@@ -246,19 +248,19 @@ export default function AdminProducts() {
       addProductMutation.mutate(data);
     }
   };
-  
+
   const handleAddImage = () => {
     if (!imageUrl.trim()) return;
     const currentImages = form.getValues("imageUrls") || [];
     form.setValue("imageUrls", [...currentImages, imageUrl]);
     setImageUrl("");
   };
-  
+
   const handleRemoveImage = (index: number) => {
     const currentImages = form.getValues("imageUrls") || [];
     form.setValue("imageUrls", currentImages.filter((_, i) => i !== index));
   };
-  
+
   const handleAddSize = () => {
     if (!size.trim()) return;
     const currentSizes = form.getValues("availableSizes") || [];
@@ -267,12 +269,12 @@ export default function AdminProducts() {
     }
     setSize("");
   };
-  
+
   const handleRemoveSize = (sizeToRemove: string) => {
     const currentSizes = form.getValues("availableSizes") || [];
     form.setValue("availableSizes", currentSizes.filter(s => s !== sizeToRemove));
   };
-  
+
   const handleAddColor = () => {
     if (!color.trim()) return;
     const currentColors = form.getValues("availableColors") || [];
@@ -281,12 +283,12 @@ export default function AdminProducts() {
     }
     setColor("");
   };
-  
+
   const handleRemoveColor = (colorToRemove: string) => {
     const currentColors = form.getValues("availableColors") || [];
     form.setValue("availableColors", currentColors.filter(c => c !== colorToRemove));
   };
-  
+
   // Product columns for data table
   const productColumns = [
     {
@@ -371,15 +373,15 @@ export default function AdminProducts() {
       },
     },
   ];
-  
+
   if (!user || user.role !== "admin") {
     return null; // Protected by ProtectedRoute component
   }
-  
+
   return (
     <div className="flex">
       <AdminSidebar />
-      
+
       <div className="flex-1 p-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">{t("admin.products.title")}</h1>
@@ -396,18 +398,18 @@ export default function AdminProducts() {
                 <SelectItem value="accessories">Accessories</SelectItem>
               </SelectContent>
             </Select>
-            
+
             <Button variant="outline" onClick={() => refetch()}>
               {t("admin.refresh")}
             </Button>
-            
+
             <Button onClick={() => setIsAddDialogOpen(true)}>
               <Plus className="h-4 w-4 mr-2" />
               {t("admin.products.add")}
             </Button>
           </div>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>{t("admin.products.title")}</CardTitle>
@@ -437,7 +439,7 @@ export default function AdminProducts() {
             )}
           </CardContent>
         </Card>
-        
+
         {/* Add/Edit Product Dialog */}
         <Dialog open={isAddDialogOpen || editProduct !== null} onOpenChange={(open) => {
           if (!open) {
@@ -454,7 +456,7 @@ export default function AdminProducts() {
                 {editProduct ? t("admin.products.editDescription") : t("admin.products.addDescription")}
               </DialogDescription>
             </DialogHeader>
-            
+
             <Form {...form}>
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -471,7 +473,7 @@ export default function AdminProducts() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="price"
@@ -485,7 +487,7 @@ export default function AdminProducts() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="category"
@@ -509,7 +511,7 @@ export default function AdminProducts() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="stock"
@@ -523,7 +525,7 @@ export default function AdminProducts() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="supplierId"
@@ -537,7 +539,7 @@ export default function AdminProducts() {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="isActive"
@@ -561,7 +563,7 @@ export default function AdminProducts() {
                     )}
                   />
                 </div>
-                
+
                 <FormField
                   control={form.control}
                   name="description"
@@ -575,7 +577,7 @@ export default function AdminProducts() {
                     </FormItem>
                   )}
                 />
-                
+
                 {/* Image URLs */}
                 <FormField
                   control={form.control}
@@ -594,7 +596,7 @@ export default function AdminProducts() {
                             {t("admin.products.form.addImage")}
                           </Button>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                           {field.value.map((url, index) => (
                             <div key={index} className="flex items-center justify-between p-2 border rounded">
@@ -618,7 +620,7 @@ export default function AdminProducts() {
                     </FormItem>
                   )}
                 />
-                
+
                 {/* Sizes */}
                 <FormField
                   control={form.control}
@@ -637,7 +639,7 @@ export default function AdminProducts() {
                             {t("admin.products.form.addSize")}
                           </Button>
                         </div>
-                        
+
                         <div className="flex flex-wrap gap-2 mt-2">
                           {field.value.map((size) => (
                             <div key={size} className="flex items-center p-2 bg-gray-100 rounded">
@@ -658,7 +660,7 @@ export default function AdminProducts() {
                     </FormItem>
                   )}
                 />
-                
+
                 {/* Colors */}
                 <FormField
                   control={form.control}
@@ -677,7 +679,7 @@ export default function AdminProducts() {
                             {t("admin.products.form.addColor")}
                           </Button>
                         </div>
-                        
+
                         <div className="flex flex-wrap gap-2 mt-2">
                           {field.value.map((color) => (
                             <div key={color} className="flex items-center p-2 bg-gray-100 rounded">
@@ -698,7 +700,7 @@ export default function AdminProducts() {
                     </FormItem>
                   )}
                 />
-                
+
                 <DialogFooter>
                   <Button
                     type="submit"
@@ -720,7 +722,7 @@ export default function AdminProducts() {
             </Form>
           </DialogContent>
         </Dialog>
-        
+
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={deleteId !== null} onOpenChange={(open) => {
           if (!open) setDeleteId(null);

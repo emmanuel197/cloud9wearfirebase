@@ -349,11 +349,12 @@ export class MemStorage implements IStorage {
       role: "customer"
     });
 
-    // Create initial products
+    // Create initial products with discounts
     const tShirt1 = await this.createProduct({
       name: "Urban Art Tee",
       description: "Premium cotton tee with exclusive urban art design",
       price: 29.99,
+      discount: 5, // Added discount
       category: "t-shirts",
       imageUrls: ["https://images.unsplash.com/photo-1503341733017-1901578f9f1e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
       availableSizes: ["S", "M", "L", "XL"],
@@ -367,6 +368,7 @@ export class MemStorage implements IStorage {
       name: "Graphic Designer Tee",
       description: "Limited edition graphic design inspired tee",
       price: 34.99,
+      discount: 7.50, // Added discount
       category: "t-shirts",
       imageUrls: ["https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
       availableSizes: ["S", "M", "L", "XL"],
@@ -380,6 +382,7 @@ export class MemStorage implements IStorage {
       name: "Vintage Pattern Collection",
       description: "Classic patterns with a modern twist",
       price: 39.99,
+      discount: 10, // Added discount
       category: "t-shirts",
       imageUrls: ["https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
       availableSizes: ["S", "M", "L", "XL"],
@@ -393,6 +396,7 @@ export class MemStorage implements IStorage {
       name: "Premium Essentials Pack",
       description: "Bundle of 3 premium basic tees - subscriber exclusive",
       price: 79.99,
+      discount: 15, // Added discount
       category: "t-shirts",
       imageUrls: ["https://images.unsplash.com/photo-1508427953056-b00b8d78ebf5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
       availableSizes: ["S", "M", "L", "XL"],
@@ -701,11 +705,12 @@ export class DatabaseStorage implements IStorage {
       role: "customer"
     });
 
-    // Create initial products
+    // Create initial products with discounts
     const tShirt1 = await this.createProduct({
       name: "Urban Art Tee",
       description: "Premium cotton tee with exclusive urban art design",
       price: 29.99,
+      discount: 5, // Added discount
       category: "t-shirts",
       imageUrls: ["https://images.unsplash.com/photo-1503341733017-1901578f9f1e?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
       availableSizes: ["S", "M", "L", "XL"],
@@ -719,6 +724,7 @@ export class DatabaseStorage implements IStorage {
       name: "Graphic Designer Tee",
       description: "Limited edition graphic design inspired tee",
       price: 34.99,
+      discount: 7.50, // Added discount
       category: "t-shirts",
       imageUrls: ["https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
       availableSizes: ["S", "M", "L", "XL"],
@@ -732,6 +738,7 @@ export class DatabaseStorage implements IStorage {
       name: "Vintage Pattern Collection",
       description: "Classic patterns with a modern twist",
       price: 39.99,
+      discount: 10, // Added discount
       category: "t-shirts",
       imageUrls: ["https://images.unsplash.com/photo-1529374255404-311a2a4f1fd9?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
       availableSizes: ["S", "M", "L", "XL"],
@@ -745,6 +752,7 @@ export class DatabaseStorage implements IStorage {
       name: "Premium Essentials Pack",
       description: "Bundle of 3 premium basic tees - subscriber exclusive",
       price: 79.99,
+      discount: 15, // Added discount
       category: "t-shirts",
       imageUrls: ["https://images.unsplash.com/photo-1508427953056-b00b8d78ebf5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
       availableSizes: ["S", "M", "L", "XL"],
