@@ -83,7 +83,7 @@ export default function Header() {
                 <img 
                   src={logoImage} 
                   alt="Cloud9wear Logo" 
-                  className="h-14 sm:h-16 w-auto object-contain"
+                  className="h-auto w-[100px] object-contain"
                 />
               </a>
             </Link>
@@ -212,7 +212,7 @@ export default function Header() {
                     <img 
                       src={logoImage} 
                       alt="Cloud9wear Logo" 
-                      className="h-16 w-auto object-contain"
+                      className="h-auto w-[100px] object-contain"
                     />
                   </SheetTitle>
                   <SheetDescription>
