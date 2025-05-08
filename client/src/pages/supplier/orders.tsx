@@ -209,14 +209,17 @@ export default function SupplierOrders() {
                   onClick={async (e) => {
                     e.preventDefault();
                     e.stopPropagation();
-                    await handleViewOrder(order.id);
                   }}
                 >
                   <Eye className="h-4 w-4 mr-1" />
                   {t("supplier.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent className="max-w-3xl" onOpenChange={async (open) => {
+                if (open) {
+                  await handleViewOrder(order.id);
+                }
+              }}>
                 <DialogHeader>
                   <DialogTitle>{t("supplier.orders.orderDetails", { id: selectedOrder?.id })}</DialogTitle>
                   <DialogDescription>
