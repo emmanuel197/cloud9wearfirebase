@@ -35,7 +35,7 @@ function App() {
               <Route path="/" component={HomePage} />
               <Route path="/auth" component={AuthPage} />
               <Route path="/products" component={ProductsPage} />
-              <Route path="/product/:id" component={ProductDetailPage} />
+              <Route path="/products/:id" component={ProductDetailPage} />
               <Route path="/cart" component={CartPage} />
               <Route path="/checkout" component={CheckoutPage} />
               <Route path="/payment-success" component={PaymentSuccessPage} />
