@@ -547,6 +547,61 @@ const translations = {
       availableSizes: "Größen",
       availableColors: "Farben",
       stock: "Bestand"
+    },
+    
+    orders: {
+      title: "Bestellungsverwaltung",
+      description: "Sieh dir Kundenbestellungen an und verwalte sie",
+      allOrders: "Alle Bestellungen",
+      fetchError: "Fehler beim Abrufen der Bestellung",
+      fetchErrorDesc: "Bestellungsdetails konnten nicht geladen werden",
+      statusUpdateSuccess: "Bestellungsstatus aktualisiert",
+      statusUpdateSuccessDesc: "Der Bestellungsstatus wurde erfolgreich aktualisiert",
+      statusUpdateError: "Fehler beim Aktualisieren des Status",
+      statusUpdateErrorDesc: "Bestellungsstatus konnte nicht aktualisiert werden",
+      selectStatus: "Status auswählen",
+      filterByStatus: "Nach Status filtern",
+      noOrders: "Keine Bestellungen gefunden",
+      noOrdersDesc: "Es gibt keine Bestellungen zum Anzeigen.",
+      waitingForPayment: "Warten auf Zahlung",
+      noActionsAvailable: "Keine Aktionen verfügbar",
+      viewAllOrders: "Alle Bestellungen anzeigen",
+      
+      status: {
+        pendingOrders: "Ausstehende Bestellungen",
+        processingOrders: "Bestellungen in Bearbeitung",
+        shippedOrders: "Versendete Bestellungen",
+        deliveredOrders: "Zugestellte Bestellungen",
+        cancelledOrders: "Stornierte Bestellungen",
+        pending: "Ausstehend",
+        processing: "In Bearbeitung",
+        shipped: "Versendet",
+        delivered: "Zugestellt",
+        cancelled: "Storniert"
+      },
+      
+      payment: {
+        paid: "Bezahlt",
+        pending: "Ausstehend",
+        failed: "Fehlgeschlagen",
+        refunded: "Erstattet"
+      },
+      
+      table: {
+        id: "Bestellungs-ID",
+        customer: "Kunde",
+        date: "Bestelldatum",
+        amount: "Betrag",
+        status: "Status",
+        payment: "Zahlung",
+        actions: "Aktionen"
+      },
+      
+      actions: {
+        startProcessing: "Bearbeiten",
+        markShipped: "Versenden",
+        markDelivered: "Zustellen"
+      }
     }
   },
   

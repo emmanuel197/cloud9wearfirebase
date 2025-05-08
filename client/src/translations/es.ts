@@ -561,6 +561,61 @@ const translations = {
       availableSizes: "Tallas",
       availableColors: "Colores",
       stock: "Stock"
+    },
+    
+    orders: {
+      title: "Gestión de Pedidos",
+      description: "Ver y gestionar pedidos de clientes",
+      allOrders: "Todos los Pedidos",
+      fetchError: "Error al obtener pedido",
+      fetchErrorDesc: "No se pudieron cargar los detalles del pedido",
+      statusUpdateSuccess: "Estado del pedido actualizado",
+      statusUpdateSuccessDesc: "El estado del pedido ha sido actualizado correctamente",
+      statusUpdateError: "Error al actualizar estado",
+      statusUpdateErrorDesc: "No se pudo actualizar el estado del pedido",
+      selectStatus: "Seleccionar estado",
+      filterByStatus: "Filtrar por estado",
+      noOrders: "No se encontraron pedidos",
+      noOrdersDesc: "No hay pedidos para mostrar.",
+      waitingForPayment: "Esperando pago",
+      noActionsAvailable: "No hay acciones disponibles",
+      viewAllOrders: "Viendo todos los pedidos",
+      
+      status: {
+        pendingOrders: "Pedidos Pendientes",
+        processingOrders: "Pedidos en Proceso",
+        shippedOrders: "Pedidos Enviados",
+        deliveredOrders: "Pedidos Entregados",
+        cancelledOrders: "Pedidos Cancelados",
+        pending: "Pendiente",
+        processing: "En Proceso",
+        shipped: "Enviado",
+        delivered: "Entregado",
+        cancelled: "Cancelado"
+      },
+      
+      payment: {
+        paid: "Pagado",
+        pending: "Pendiente",
+        failed: "Fallido",
+        refunded: "Reembolsado"
+      },
+      
+      table: {
+        id: "ID Pedido",
+        customer: "Cliente",
+        date: "Fecha de Pedido",
+        amount: "Importe",
+        status: "Estado",
+        payment: "Pago",
+        actions: "Acciones"
+      },
+      
+      actions: {
+        startProcessing: "Procesar",
+        markShipped: "Enviar",
+        markDelivered: "Entregado"
+      }
     }
   },
   

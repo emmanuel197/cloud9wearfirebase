@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, ReactNode } from "react";
+import React, { createContext, useState, useEffect, ReactNode, useContext } from "react";
 import enTranslations from "@/translations/en";
 import frTranslations from "@/translations/fr";
 import esTranslations from "@/translations/es";
@@ -30,7 +30,15 @@ interface LanguageProviderProps {
   children: ReactNode;
 }
 
-export function LanguageProvider({ children }: LanguageProviderProps) {
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error("useLanguage must be used within a LanguageProvider");
+  }
+  return context;
+}
+
+export const LanguageProvider = ({ children }: LanguageProviderProps) => {
   const [language, setLanguage] = useState(() => {
     // Try to get the saved language from localStorage, or fallback to browser language, or "en"
     const savedLanguage = localStorage.getItem("language");
