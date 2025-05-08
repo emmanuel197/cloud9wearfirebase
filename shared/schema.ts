@@ -32,6 +32,8 @@ export const products = pgTable("products", {
   stock: integer("stock").notNull().default(0),
   discount: doublePrecision("discount").default(0),
   isActive: boolean("is_active").notNull().default(true),
+  comingSoon: boolean("coming_soon").notNull().default(false),
+  releaseDate: timestamp("release_date"),
 });
 
 export const insertProductSchema = createInsertSchema(products).omit({

@@ -142,6 +142,7 @@ export class MemStorage implements IStorage {
     category?: string;
     supplierId?: number;
     isActive?: boolean;
+    comingSoon?: boolean;
   }): Promise<Product[]> {
     let products = Array.from(this.products.values());
 
@@ -154,6 +155,12 @@ export class MemStorage implements IStorage {
       }
       if (filters.isActive !== undefined) {
         products = products.filter(p => p.isActive === filters.isActive);
+      }
+      if (filters.comingSoon !== undefined) {
+        products = products.filter(p => 
+          // Handle products that might not have the comingSoon property yet
+          (p.comingSoon !== undefined ? p.comingSoon === filters.comingSoon : false)
+        );
       }
     }
 
