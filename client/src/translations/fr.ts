@@ -337,6 +337,7 @@ const translations = {
       products: "Produits",
       customers: "Clients",
       suppliers: "Fournisseurs",
+      reviews: "Avis",
       comingSoon: "Bientôt Disponible",
       settings: "Paramètres",
       storefront: "Visiter la Boutique",
