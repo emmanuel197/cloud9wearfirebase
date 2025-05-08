@@ -25,7 +25,7 @@ export default function ProductsPage() {
   const { t } = useLanguage();
   const [category, setCategory] = useState<string>("all");
   const [searchTerm, setSearchTerm] = useState<string>("");
-  
+
   // Fetch all products
   const { data: products, isLoading } = useQuery<Product[]>({
     queryKey: ["/api/products", category],
@@ -37,23 +37,23 @@ export default function ProductsPage() {
       return fetch(url.toString()).then(res => res.json());
     }
   });
-  
+
   // Filter products by search term
-  const filteredProducts = products?.filter(product => {
+  const filteredProducts = (products || []).filter(product => {
     if (!searchTerm) return true;
-    
+
     const search = searchTerm.toLowerCase();
     return (
       product.name.toLowerCase().includes(search) ||
       product.description.toLowerCase().includes(search) ||
       product.category.toLowerCase().includes(search)
     );
-  });
-  
+  }) || [];
+
   return (
     <div className="container mx-auto py-10 px-4">
       <h1 className="text-3xl font-bold mb-6">{t("products.title")}</h1>
-      
+
       {/* Filters and Search */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
         <div className="md:col-span-2">
@@ -67,7 +67,7 @@ export default function ProductsPage() {
             />
           </div>
         </div>
-        
+
         <div>
           <Select value={category} onValueChange={setCategory}>
             <SelectTrigger className="w-full">
@@ -82,7 +82,7 @@ export default function ProductsPage() {
             </SelectContent>
           </Select>
         </div>
-        
+
         <div>
           <Select defaultValue="latest">
             <SelectTrigger className="w-full">
@@ -97,7 +97,7 @@ export default function ProductsPage() {
           </Select>
         </div>
       </div>
-      
+
       {/* Products Grid */}
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
