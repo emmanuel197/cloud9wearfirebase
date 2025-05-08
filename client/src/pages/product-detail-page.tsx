@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, Link } from "wouter";
 import { Product, Review } from "@shared/schema";
@@ -28,7 +28,9 @@ import {
   ArrowLeftIcon,
   ChevronRight,
   HomeIcon,
-  InfoIcon
+  InfoIcon,
+  ChevronLeft,
+  RotateCw
 } from "lucide-react";
 import {
   Tabs,
@@ -46,6 +48,7 @@ export default function ProductDetailPage() {
   const [selectedSize, setSelectedSize] = useState<string>("");
   const [selectedColor, setSelectedColor] = useState<string>("");
   const [quantity, setQuantity] = useState<number>(1);
+  const [currentImageIndex, setCurrentImageIndex] = useState<number>(0);
   
   // Fetch product details
   const { data: product, isLoading, error } = useQuery<Product>({
@@ -128,21 +131,79 @@ export default function ProductDetailPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
         {/* Product Image */}
         <div>
-          <div className="rounded-lg overflow-hidden border border-gray-200">
+          <div className="relative rounded-lg overflow-hidden border border-gray-200">
             <img
-              src={product.imageUrls[0]}
-              alt={product.name}
+              src={product.imageUrls[currentImageIndex]}
+              alt={`${product.name} - ${currentImageIndex === 0 ? 'Front' : 'Back'} view`}
               className="w-full h-auto object-cover"
             />
+            
+            {product.imageUrls.length > 1 && (
+              <div className="absolute inset-0 flex items-center justify-between px-2">
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="h-8 w-8 rounded-full bg-white/80 hover:bg-white"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentImageIndex(prev => 
+                      prev === 0 ? product.imageUrls.length - 1 : prev - 1
+                    );
+                  }}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                </Button>
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="h-8 w-8 rounded-full bg-white/80 hover:bg-white"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentImageIndex(prev => 
+                      prev === product.imageUrls.length - 1 ? 0 : prev + 1
+                    );
+                  }}
+                >
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
+            )}
+            
+            {product.imageUrls.length > 1 && (
+              <div className="absolute bottom-2 left-0 right-0 flex justify-center">
+                <div className="flex gap-1 px-2 py-1 bg-black/40 rounded-full">
+                  {product.imageUrls.map((_, index) => (
+                    <div 
+                      key={index}
+                      className={`h-2 w-2 rounded-full cursor-pointer ${
+                        index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                      }`}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentImageIndex(index);
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
-          {/* Additional Images */}
+          {/* Thumbnail Images */}
           {product.imageUrls.length > 1 && (
             <div className="grid grid-cols-4 gap-2 mt-2">
               {product.imageUrls.map((url, index) => (
                 <div 
                   key={index}
-                  className="border border-gray-200 rounded cursor-pointer overflow-hidden"
+                  className={`border rounded cursor-pointer overflow-hidden ${
+                    index === currentImageIndex 
+                      ? 'border-black' 
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    setCurrentImageIndex(index);
+                  }}
                 >
                   <img
                     src={url}
