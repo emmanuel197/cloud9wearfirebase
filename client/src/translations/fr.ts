@@ -528,6 +528,10 @@ const translations = {
       commentMinLength: "Le commentaire doit comporter au moins 5 caractères",
       productRequired: "Le produit est requis",
       customerRequired: "Le client est requis",
+      customerOptional: "Laissez vide pour les avis généraux non liés à un client spécifique",
+      noCustomer: "Pas de client (avis général)",
+      adminCreated: "Avis Admin",
+      systemReview: "Avis Système",
       
       noReviews: "Aucun avis trouvé",
       noSearchResults: "Aucun avis correspondant à votre recherche",

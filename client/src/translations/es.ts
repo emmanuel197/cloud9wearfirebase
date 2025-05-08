@@ -542,6 +542,10 @@ const translations = {
       commentMinLength: "El comentario debe tener al menos 5 caracteres",
       productRequired: "El producto es requerido",
       customerRequired: "El cliente es requerido",
+      customerOptional: "Deje en blanco para reseñas generales no vinculadas a un cliente específico",
+      noCustomer: "Sin cliente (reseña general)",
+      adminCreated: "Reseña de Admin",
+      systemReview: "Reseña del Sistema",
       
       noReviews: "No se encontraron reseñas",
       noSearchResults: "No hay reseñas que coincidan con tu búsqueda",

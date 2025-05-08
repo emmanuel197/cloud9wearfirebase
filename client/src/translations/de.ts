@@ -528,6 +528,10 @@ const translations = {
       commentMinLength: "Kommentar muss mindestens 5 Zeichen haben",
       productRequired: "Produkt ist erforderlich",
       customerRequired: "Kunde ist erforderlich",
+      customerOptional: "Leer lassen für allgemeine Bewertungen, die nicht mit einem bestimmten Kunden verknüpft sind",
+      noCustomer: "Kein Kunde (allgemeine Bewertung)",
+      adminCreated: "Admin-Bewertung",
+      systemReview: "Systembewertung",
       
       noReviews: "Keine Bewertungen gefunden",
       noSearchResults: "Keine Bewertungen zu Ihrer Suche gefunden",
