@@ -212,7 +212,7 @@ export default function SupplierOrders() {
                   {t("supplier.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
+              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.stopPropagation()}>
                 <DialogHeader>
                   <DialogTitle>{t("supplier.orders.orderDetails", { id: selectedOrder?.id })}</DialogTitle>
                   <DialogDescription>
