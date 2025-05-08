@@ -336,6 +336,8 @@ const translations = {
       orders: "Bestellungen",
       products: "Produkte",
       customers: "Kunden",
+      suppliers: "Lieferanten",
+      comingSoon: "Demnächst",
       settings: "Einstellungen",
       storefront: "Shop Besuchen",
       logout: "Abmelden"
@@ -496,7 +498,7 @@ const translations = {
       supplierPanel: "Lieferant",
       dashboard: "Dashboard",
       inventory: "Inventar",
-      analytics: "Analysen",
+      orders: "Bestellungen",
       storefront: "Shop Besuchen",
       logout: "Abmelden"
     },

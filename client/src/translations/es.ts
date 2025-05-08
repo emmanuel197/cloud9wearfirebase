@@ -512,7 +512,7 @@ const translations = {
       supplierPanel: "Proveedor",
       dashboard: "Panel Principal",
       inventory: "Inventario",
-      analytics: "Analíticas",
+      orders: "Pedidos",
       storefront: "Visitar Tienda",
       logout: "Cerrar Sesión"
     },

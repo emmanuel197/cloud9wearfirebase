@@ -498,7 +498,7 @@ const translations = {
       supplierPanel: "Fournisseur",
       dashboard: "Tableau de Bord",
       inventory: "Inventaire",
-      analytics: "Analytiques",
+      orders: "Commandes",
       storefront: "Visiter la Boutique",
       logout: "Déconnexion"
     },
