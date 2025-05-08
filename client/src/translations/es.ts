@@ -448,6 +448,8 @@ const translations = {
       form: {
         name: "Nombre del Producto",
         price: "Precio",
+        discount: "Descuento (%)",
+        discountDescription: "Introduce porcentaje de descuento (0-100)",
         category: "Categoría",
         selectCategory: "Seleccionar una categoría",
         stock: "Stock",

@@ -448,6 +448,8 @@ const translations = {
       form: {
         name: "Produktname",
         price: "Preis",
+        discount: "Rabatt (%)",
+        discountDescription: "Rabatt in Prozent eingeben (0-100)",
         category: "Kategorie",
         selectCategory: "Kategorie auswählen",
         stock: "Bestand",
