@@ -11,6 +11,7 @@ import { Calendar, Clock, Plus, Pencil, Eye } from "lucide-react";
 import ComingSoonForm from "@/components/admin/coming-soon-form";
 import Loader from "@/components/ui/loader";
 import { Product } from "@shared/schema";
+import { normalizeImageUrl } from "@/lib/imageUtils";
 
 export default function ComingSoonPage() {
   const { t } = useLanguage();
@@ -133,9 +134,13 @@ export default function ComingSoonPage() {
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-3">
                                 <img 
-                                  src={product.imageUrls[0]} 
+                                  src={normalizeImageUrl(product.imageUrls[0])} 
                                   alt={product.name} 
                                   className="w-12 h-12 object-cover rounded"
+                                  onError={(e) => {
+                                    console.error('Coming soon product list image failed to load:', e.currentTarget.src);
+                                    e.currentTarget.src = 'https://via.placeholder.com/100?text=Product';
+                                  }}
                                 />
                                 <div>
                                   <div className="font-medium">{product.name}</div>
@@ -207,9 +212,13 @@ export default function ComingSoonPage() {
                       <Card key={product.id} className="overflow-hidden">
                         <div className="relative h-48">
                           <img 
-                            src={product.imageUrls[0]} 
+                            src={normalizeImageUrl(product.imageUrls[0])} 
                             alt={product.name} 
                             className="w-full h-full object-cover"
+                            onError={(e) => {
+                              console.error('Coming soon product grid image failed to load:', e.currentTarget.src);
+                              e.currentTarget.src = 'https://via.placeholder.com/300?text=Coming+Soon';
+                            }}
                           />
                           <Badge className="absolute top-2 right-2 bg-black text-white hover:bg-[#ef0c11]">
                             Coming Soon
