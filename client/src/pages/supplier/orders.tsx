@@ -208,13 +208,12 @@ export default function SupplierOrders() {
                     e.stopPropagation();
                     handleViewOrder(order.id);
                   }}
-                  type="button"
                 >
                   <Eye className="h-4 w-4 mr-1" />
                   {t("supplier.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent className="max-w-3xl" onInteractOutside={(e) => e.preventDefault()}>
                 <DialogHeader>
                   <DialogTitle>{t("supplier.orders.orderDetails", { id: selectedOrder?.id })}</DialogTitle>
                   <DialogDescription>
