@@ -14,9 +14,10 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 interface ProductReviewProps {
   productId: number;
+  showHeading?: boolean;
 }
 
-export default function ProductReview({ productId }: ProductReviewProps) {
+export default function ProductReview({ productId, showHeading = false }: ProductReviewProps) {
   const { t } = useLanguage();
   const { toast } = useToast();
   const { user } = useAuth();
@@ -133,7 +134,7 @@ export default function ProductReview({ productId }: ProductReviewProps) {
   if (isLoading) {
     return (
       <div className="mt-8">
-        <h2 className="text-2xl font-bold mb-4">{t("products.reviews")}</h2>
+        {showHeading && <h2 className="text-2xl font-bold mb-4">{t("products.reviews")}</h2>}
         <div className="flex justify-center p-10">
           <Loader2 className="animate-spin h-8 w-8 text-primary" />
         </div>
@@ -143,7 +144,7 @@ export default function ProductReview({ productId }: ProductReviewProps) {
 
   return (
     <div className="mt-8">
-      <h2 className="text-2xl font-bold mb-4">{t("products.reviews")}</h2>
+      {showHeading && <h2 className="text-2xl font-bold mb-4">{t("products.reviews")}</h2>}
       
       {reviews.length > 0 ? (
         <div className="flex flex-col md:flex-row gap-4 items-start">
