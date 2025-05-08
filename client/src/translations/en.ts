@@ -626,6 +626,8 @@ const translations = {
       customerRequired: "Customer is required",
       customerOptional: "Leave empty for general product reviews not tied to a specific customer",
       noCustomer: "No customer (general review)",
+      adminCreated: "Admin Review",
+      systemReview: "System Review",
       
       noReviews: "No reviews found",
       noSearchResults: "No reviews matching your search",
