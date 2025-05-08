@@ -155,7 +155,7 @@ export default function ProductReview({ productId, showHeading = false }: Produc
                 {renderStars(averageRating)}
               </div>
               <p className="text-sm text-gray-500">
-                {t("products.basedOn", { count: reviews.length.toString() })}
+                {t("Based On", { count: reviews.length.toString() })}
               </p>
             </div>
           </div>
@@ -164,10 +164,10 @@ export default function ProductReview({ productId, showHeading = false }: Produc
             {user && user.role === "customer" && (
               <>
                 <div className="mb-6 bg-slate-50 p-4 rounded-lg">
-                  <h3 className="font-medium mb-2">{t("products.writeReview")}</h3>
+                  <h3 className="font-medium mb-2">{t("Write Review")}</h3>
                   <div className="mb-2">{renderRatingSelector()}</div>
                   <Textarea
-                    placeholder={t("products.reviewPlaceholder")}
+                    placeholder={t("Review Placeholder")}
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
                     className="mb-2"
@@ -177,7 +177,7 @@ export default function ProductReview({ productId, showHeading = false }: Produc
                     disabled={postReviewMutation.isPending}
                     className="w-full md:w-auto"
                   >
-                    {postReviewMutation.isPending ? t("common.submitting") : t("products.submitReview")}
+                    {postReviewMutation.isPending ? t("common.submitting") : t("Submit Review")}
                   </Button>
                 </div>
                 <Separator className="my-4" />
@@ -206,11 +206,11 @@ export default function ProductReview({ productId, showHeading = false }: Produc
         </div>
       ) : (
         <div className="bg-slate-50 p-6 rounded-lg text-center">
-          <p className="text-lg mb-4">{t("products.noReviews")}</p>
+          <p className="text-lg mb-4">{t("No Reviews")}</p>
           
           {user && user.role === "customer" && (
             <>
-              <p className="mb-4">{t("products.beFirstReview")}</p>
+              <p className="mb-4">{t("Be First To Review")}</p>
               <div className="inline-block text-left">
                 <div className="mb-2">{renderRatingSelector()}</div>
                 <Textarea

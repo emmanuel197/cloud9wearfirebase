@@ -88,7 +88,7 @@ export function PaystackButton({
   // Create button text as a string instead of React element
   const buttonText = isLoading
     ? t("checkout.processingPayment")
-    : t("checkout.payNow");
+    : t("Pay Now");
 
   return (
     <div className={className}>
@@ -123,7 +123,7 @@ export function PaystackButton({
                 {t("checkout.processingPayment")}
               </div>
             ) : (
-              t("checkout.payNow")
+              t("Pay Now")
             )}
           </Button>
         )}

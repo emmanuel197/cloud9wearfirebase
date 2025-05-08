@@ -58,7 +58,7 @@ export default function SupplierSidebar() {
       {/* Header */}
       <div className="p-4 border-b">
         <div className="flex items-center">
-          <span className="text-xl font-bold text-primary">ExclusiveWear</span>
+          <span className="text-xl font-bold text-primary">Cloud9wear</span>
           <span className="ml-2 text-xs bg-green-500 text-white px-2 py-0.5 rounded">
             {t("supplier.sidebar.supplierPanel")}
           </span>

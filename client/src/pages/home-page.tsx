@@ -6,6 +6,7 @@ import ProductGrid from "@/components/product-grid";
 import { useQuery } from "@tanstack/react-query";
 import { Product } from "@shared/schema";
 import { Skeleton } from "@/components/ui/skeleton";
+import heroImage from "../assets/hero-image.jpeg";
 
 export default function HomePage() {
   const { t } = useLanguage();
@@ -51,7 +52,7 @@ export default function HomePage() {
             </div>
             <div className="md:w-1/2">
               <img
-                src="https://images.unsplash.com/photo-1562157873-818bc0726f68?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1200&h=800"
+                src={heroImage}
                 alt="Collection of exclusive designer t-shirts"
                 className="rounded-lg shadow-xl w-full h-auto"
               />

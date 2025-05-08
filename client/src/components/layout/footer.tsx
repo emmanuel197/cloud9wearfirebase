@@ -50,28 +50,28 @@ export default function Footer() {
               <li>
                 <Link href="/">
                   <a className="text-gray-400 hover:text-white transition-colors">
-                    {t("footer.links.home")}
+                    {t("home")}
                   </a>
                 </Link>
               </li>
               <li>
                 <Link href="/products">
                   <a className="text-gray-400 hover:text-white transition-colors">
-                    {t("footer.links.products")}
+                    {t("products")}
                   </a>
                 </Link>
               </li>
               <li>
                 <Link href="/">
                   <a className="text-gray-400 hover:text-white transition-colors">
-                    {t("footer.links.about")}
+                    {t("about")}
                   </a>
                 </Link>
               </li>
               <li>
                 <Link href="/">
                   <a className="text-gray-400 hover:text-white transition-colors">
-                    {t("footer.links.contact")}
+                    {t("contact")}
                   </a>
                 </Link>
               </li>
@@ -85,28 +85,28 @@ export default function Footer() {
               <li>
                 <Link href="/">
                   <a className="text-gray-400 hover:text-white transition-colors">
-                    {t("footer.support.faq")}
+                    {t("faq")}
                   </a>
                 </Link>
               </li>
               <li>
                 <Link href="/">
                   <a className="text-gray-400 hover:text-white transition-colors">
-                    {t("footer.support.shipping")}
+                    {t("shipping")}
                   </a>
                 </Link>
               </li>
               <li>
                 <Link href="/">
                   <a className="text-gray-400 hover:text-white transition-colors">
-                    {t("footer.support.returns")}
+                    {t("returns")}
                   </a>
                 </Link>
               </li>
               <li>
                 <Link href="/">
                   <a className="text-gray-400 hover:text-white transition-colors">
-                    {t("footer.support.privacy")}
+                    {t("privacy")}
                   </a>
                 </Link>
               </li>

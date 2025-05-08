@@ -158,7 +158,7 @@ const translations = {
     },
     
     hero: {
-      title: "Willkommen bei ExclusiveWear",
+      title: "Willkommen bei Cloud9wear",
       subtitle: "Dein Premium-Ziel für einzigartige Designerkleidung",
       benefit1: "Zugang zu exklusiven Designs, die anderswo nicht erhältlich sind",
       benefit2: "Frühzeitiger Zugang zu neuen Veröffentlichungen vor der Allgemeinheit",

@@ -218,7 +218,7 @@ export default function SupplierOrders() {
                   }}
                 >
                   <Eye className="h-4 w-4 mr-1" />
-                  {t("supplier.orders.view")}
+                  {t("View")}
                 </Button>
               </DialogTrigger>
               <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()} onEscapeKeyDown={() => {
@@ -227,7 +227,7 @@ export default function SupplierOrders() {
                 console.log("[Dialog Debug] Dialog clicked outside");
               }}>
                 <DialogHeader>
-                  <DialogTitle>{t("supplier.orders.orderDetails", { id: selectedOrder?.id })}</DialogTitle>
+                  <DialogTitle>{t("Order Details", { id: selectedOrder?.id })}</DialogTitle>
                   <DialogDescription>
                     {selectedOrder && new Date(selectedOrder.orderDate).toLocaleDateString()}
                   </DialogDescription>
@@ -237,15 +237,15 @@ export default function SupplierOrders() {
                   <>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
                       <div>
-                        <h3 className="font-medium mb-1">{t("supplier.orders.customerInfo")}</h3>
+                        <h3 className="font-medium mb-1">{t("Customer Info")}</h3>
                         <p>ID: {selectedOrder.customerId}</p>
-                        <p>{t("supplier.orders.address")}: {selectedOrder.shippingAddress}</p>
-                        <p>{t("supplier.orders.phone")}: {selectedOrder.contactPhone}</p>
+                        <p>{t("address")}: {selectedOrder.shippingAddress}</p>
+                        <p>{t("phone")}: {selectedOrder.contactPhone}</p>
                       </div>
                       <div>
-                        <h3 className="font-medium mb-1">{t("supplier.orders.orderInfo")}</h3>
+                        <h3 className="font-medium mb-1">{t("Order Info")}</h3>
                         <p>
-                          {t("supplier.orders.status")}: 
+                          {t("status")}: 
                           <Badge className={`ml-2 ${
                             selectedOrder.status === "pending" ? "bg-yellow-100 text-yellow-800" :
                             selectedOrder.status === "processing" ? "bg-blue-100 text-blue-800" :
@@ -257,9 +257,9 @@ export default function SupplierOrders() {
                             {selectedOrder.status}
                           </Badge>
                         </p>
-                        <p>{t("supplier.orders.payment")}: {selectedOrder.paymentMethod}</p>
+                        <p>{t("payment")}: {selectedOrder.paymentMethod}</p>
                         <p>
-                          {t("supplier.orders.paymentStatus")}: 
+                          {t("Payment Status")}: 
                           <Badge className={`ml-2 ${
                             selectedOrder.paymentStatus === "paid" ? "bg-green-100 text-green-800" :
                             selectedOrder.paymentStatus === "pending" ? "bg-yellow-100 text-yellow-800" :
@@ -272,7 +272,7 @@ export default function SupplierOrders() {
                     </div>
 
                     <div className="mb-4">
-                      <h3 className="font-medium mb-2">{t("supplier.orders.items")}</h3>
+                      <h3 className="font-medium mb-2">{t("items")}</h3>
                       {selectedOrder.items?.map((item: any, index: number) => (
                         <div key={index} className="flex justify-between py-2 border-b">
                           <div>
@@ -289,7 +289,7 @@ export default function SupplierOrders() {
                       ))}
 
                       <div className="flex justify-between mt-4 font-semibold">
-                        <span>{t("supplier.orders.total")}</span>
+                        <span>{t("total")}</span>
                         <PriceDisplay amount={selectedOrder.totalAmount} className="font-semibold" />
                       </div>
                     </div>
@@ -297,7 +297,7 @@ export default function SupplierOrders() {
                     {selectedOrder && !isCancelled && !isDelivered && (
                       <div className="space-y-4">
                         <div>
-                          <h3 className="font-medium mb-2">{t("supplier.orders.updateStatus")}</h3>
+                          <h3 className="font-medium mb-2">{t("Update Status")}</h3>
                           <Select 
                             defaultValue={selectedOrder.status}
                             onValueChange={(value) => {

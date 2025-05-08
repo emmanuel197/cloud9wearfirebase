@@ -213,10 +213,10 @@ export default function CheckoutPage() {
         <Card>
           <CardHeader>
             <CardTitle className="text-2xl">
-              {t("checkout.payment.title")}
+              {t("Checkout")}
             </CardTitle>
             <CardDescription>
-              {t("checkout.payment.description")}
+              {t("Complete Your Payment")}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -274,7 +274,7 @@ export default function CheckoutPage() {
                   className="mt-4"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
-                  {t("checkout.backToCheckout")}
+                  {t("Back To Checkout")}
                 </Button>
               </div>
             </div>
@@ -332,7 +332,7 @@ export default function CheckoutPage() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
               <Card>
                 <CardHeader>
-                  <CardTitle>{t("checkout.customerDetails")}</CardTitle>
+                  <CardTitle>{t("Customer Details")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -340,16 +340,16 @@ export default function CheckoutPage() {
                     name="customerEmail"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("checkout.form.email")}</FormLabel>
+                        <FormLabel>{t("Email")}</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
-                            placeholder={t("checkout.form.emailPlaceholder")}
+                            placeholder={t("Email Placeholder")}
                             {...field}
                           />
                         </FormControl>
                         <FormDescription>
-                          {t("checkout.form.emailDescription")}
+                          {t("Email Description")}
                         </FormDescription>
                         <FormMessage />
                       </FormItem>
@@ -445,7 +445,7 @@ export default function CheckoutPage() {
                       {t("checkout.processing")}
                     </>
                   ) : (
-                    t("checkout.proceedToPayment")
+                    t("Proceed To Payment")
                   )}
                 </Button>
               </div>

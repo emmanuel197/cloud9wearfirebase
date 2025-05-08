@@ -330,7 +330,7 @@ export default function ProductDetailPage() {
       
       {/* Product Reviews Section */}
       <div className="mb-16">
-        <h2 className="text-2xl font-bold mb-6">{t("products.reviews")}</h2>
+        <h2 className="text-2xl font-bold mb-6">{t("Reviews")}</h2>
         <ProductReview productId={product.id} showHeading={false} />
       </div>
       
