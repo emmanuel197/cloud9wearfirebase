@@ -1,10 +1,23 @@
-import { useState, useEffect, useContext } from "react";
+import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { LanguageContext } from "@/contexts/LanguageContext";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { StarIcon } from "lucide-react";
+import { Star } from "lucide-react";
+import { Link } from "wouter";
+import { useLanguage } from "@/hooks/use-language";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 
 interface TopReviewData {
   id: number;
@@ -23,95 +36,121 @@ interface TopReviewData {
 }
 
 export default function TopReviews() {
-  const langContext = useContext(LanguageContext);
-  const t = langContext ? langContext.t : (key: string) => key;
-  const [limit, setLimit] = useState(5);
+  const { t } = useLanguage();
   
-  const { data: reviews, isLoading } = useQuery<TopReviewData[]>({
-    queryKey: ["/api/reviews/top", limit],
-    enabled: true,
+  // Fetch top reviews
+  const { data: reviews = [], isLoading } = useQuery<TopReviewData[]>({
+    queryKey: ["/api/reviews/top"],
+    queryFn: () => fetch('/api/reviews/top?limit=8').then(res => res.json()),
   });
-  
+
+  // Function to render stars for a rating
   const renderStars = (rating: number) => {
     return (
-      <div className="flex space-x-1">
-        {[...Array(5)].map((_, index) => (
-          <StarIcon 
-            key={index} 
-            className={`h-4 w-4 ${index < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} 
+      <div className="flex">
+        {[...Array(5)].map((_, i) => (
+          <Star 
+            key={i} 
+            className={`w-4 h-4 ${i < rating ? "text-yellow-500 fill-yellow-500" : "text-gray-300"}`} 
           />
         ))}
       </div>
     );
   };
-  
-  const renderInitials = (name: string) => {
-    if (!name) return "CU";
-    return name
-      .split(" ")
-      .map((part) => part[0])
-      .join("")
-      .toUpperCase()
-      .substring(0, 2);
-  };
-  
+
   if (isLoading) {
     return (
-      <div className="py-10">
-        <h2 className="text-2xl font-bold text-center mb-8">{t("topReviews")}</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(3)].map((_, i) => (
-            <Card key={i} className="overflow-hidden">
-              <CardContent className="p-6">
-                <div className="flex items-center space-x-4 mb-4">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                  <div className="space-y-2">
-                    <Skeleton className="h-4 w-24" />
-                    <Skeleton className="h-4 w-16" />
-                  </div>
-                </div>
-                <Skeleton className="h-4 w-full mb-2" />
-                <Skeleton className="h-4 w-5/6 mb-2" />
-                <Skeleton className="h-4 w-4/6" />
-              </CardContent>
-            </Card>
-          ))}
+      <div className="py-12">
+        <div className="container">
+          <h2 className="text-3xl font-bold text-center mb-8">
+            {t("home.topReviews")}
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="animate-pulse">
+                <CardHeader className="h-24 bg-gray-200 rounded-t-lg" />
+                <CardContent className="space-y-2 pt-4">
+                  <div className="h-4 bg-gray-200 rounded w-3/4" />
+                  <div className="h-4 bg-gray-200 rounded w-1/2" />
+                  <div className="h-20 bg-gray-200 rounded mt-4" />
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
       </div>
     );
   }
-  
-  if (!reviews || reviews.length === 0) {
+
+  if (reviews.length === 0) {
     return null;
   }
-  
+
   return (
-    <div className="py-10">
-      <h2 className="text-2xl font-bold text-center mb-8">{t("topReviews")}</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {reviews.map((review) => (
-          <Card key={review.id} className="overflow-hidden">
-            <CardContent className="p-6">
-              <div className="flex items-center space-x-4 mb-4">
-                <Avatar>
-                  <AvatarFallback>
-                    {renderInitials(review.customer?.fullName || "")}
-                  </AvatarFallback>
-                </Avatar>
-                <div>
-                  <div className="font-medium">
-                    {review.customer?.fullName || t("customer")}
-                  </div>
-                  <div className="text-sm text-muted-foreground">
-                    {review.product?.name || ""}
-                  </div>
-                </div>
-              </div>
-              <div className="mb-2">{renderStars(review.rating)}</div>
-              <p className="text-sm text-gray-600">{review.comment}</p>
-            </CardContent>
-          </Card>
-        ))}
+    <div className="py-12 bg-slate-50">
+      <div className="container">
+        <h2 className="text-3xl font-bold text-center mb-2">
+          {t("home.topReviews")}
+        </h2>
+        <p className="text-center text-muted-foreground mb-8">
+          {t("home.topReviewsSubtitle")}
+        </p>
+
+        <Carousel
+          opts={{
+            align: "start",
+            loop: true,
+          }}
+          className="w-full"
+        >
+          <CarouselContent>
+            {reviews.map((review) => (
+              <CarouselItem key={review.id} className="md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                <Card className="h-full flex flex-col">
+                  <CardHeader className="pb-2">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-base font-medium">
+                          {review.customer?.fullName || t("reviews.anonymousUser")}
+                        </CardTitle>
+                        <CardDescription className="text-xs">
+                          {new Date(review.createdAt).toLocaleDateString()}
+                        </CardDescription>
+                      </div>
+                      {renderStars(review.rating)}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <p className="text-sm text-gray-700 line-clamp-4">
+                      "{review.comment}"
+                    </p>
+                  </CardContent>
+                  {review.product && (
+                    <CardFooter className="border-t pt-4 mt-auto">
+                      <Link to={`/products/${review.product.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity w-full">
+                        <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
+                          <img 
+                            src={review.product.imageUrl} 
+                            alt={review.product.name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm font-medium line-clamp-1">{review.product.name}</p>
+                          <p className="text-xs text-muted-foreground">{t("reviews.viewProduct")}</p>
+                        </div>
+                      </Link>
+                    </CardFooter>
+                  )}
+                </Card>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <div className="flex justify-center mt-4">
+            <CarouselPrevious className="relative mr-2 static left-auto translate-x-0" />
+            <CarouselNext className="relative ml-2 static right-auto translate-x-0" />
+          </div>
+        </Carousel>
       </div>
     </div>
   );
