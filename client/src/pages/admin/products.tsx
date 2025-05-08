@@ -177,8 +177,13 @@ export default function AdminProducts() {
       const res = await apiRequest("POST", "/api/products", data);
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Invalidate the general products list
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      
+      // Also invalidate the specific product detail if it exists
+      queryClient.invalidateQueries({ queryKey: [`/api/products/${data.id}`] });
+      
       toast({
         title: t("admin.products.addSuccess"),
         description: t("admin.products.addSuccessDesc"),
@@ -202,8 +207,13 @@ export default function AdminProducts() {
       const res = await apiRequest("PUT", `/api/products/${id}`, data);
       return await res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Invalidate the general products list
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      
+      // Also invalidate the specific product detail to update product detail page
+      queryClient.invalidateQueries({ queryKey: [`/api/products/${data.id}`] });
+      
       toast({
         title: t("admin.products.updateSuccess"),
         description: t("admin.products.updateSuccessDesc"),
@@ -224,9 +234,15 @@ export default function AdminProducts() {
   const deleteProductMutation = useMutation({
     mutationFn: async (id: number) => {
       await apiRequest("DELETE", `/api/products/${id}`);
+      return id; // Return the id for use in onSuccess
     },
-    onSuccess: () => {
+    onSuccess: (id) => {
+      // Invalidate the general products list
       queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      
+      // Also invalidate the specific product detail to properly handle any open product detail pages
+      queryClient.invalidateQueries({ queryKey: [`/api/products/${id}`] });
+      
       toast({
         title: t("admin.products.deleteSuccess"),
         description: t("admin.products.deleteSuccessDesc"),
@@ -306,7 +322,7 @@ export default function AdminProducts() {
       header: t("admin.products.table.price"),
       cell: ({ row }: any) => (
         <span className="font-medium">
-          ${Number(row.getValue("price")).toFixed(2)}
+          ₵{Number(row.getValue("price")).toFixed(2)}
         </span>
       ),
     },
