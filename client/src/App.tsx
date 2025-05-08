@@ -19,6 +19,7 @@ import AdminOrders from "@/pages/admin/orders";
 import AdminProducts from "@/pages/admin/products";
 import AdminCustomers from "@/pages/admin/customers";
 import AdminSuppliers from "@/pages/admin/suppliers";
+import AdminComingSoon from "@/pages/admin/coming-soon-page";
 import SupplierDashboard from "@/pages/supplier/dashboard";
 import SupplierInventory from "@/pages/supplier/inventory";
 import SupplierOrders from "@/pages/supplier/orders";
@@ -50,6 +51,7 @@ function App() {
               <Route path="/admin" component={() => <ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/orders" component={() => <ProtectedRoute role="admin"><AdminOrders /></ProtectedRoute>} />
               <Route path="/admin/products" component={() => <ProtectedRoute role="admin"><AdminProducts /></ProtectedRoute>} />
+              <Route path="/admin/coming-soon" component={() => <ProtectedRoute role="admin"><AdminComingSoon /></ProtectedRoute>} />
               <Route path="/admin/customers" component={() => <ProtectedRoute role="admin"><AdminCustomers /></ProtectedRoute>} />
               <Route path="/admin/suppliers" component={() => <ProtectedRoute role="admin"><AdminSuppliers /></ProtectedRoute>} />
               <Route path="/supplier" component={() => <ProtectedRoute role="supplier"><SupplierDashboard /></ProtectedRoute>} />

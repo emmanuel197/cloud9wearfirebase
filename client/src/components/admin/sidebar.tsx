@@ -11,7 +11,8 @@ import {
   Users,
   Settings,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  Clock
 } from "lucide-react";
 
 export default function AdminSidebar() {
@@ -50,6 +51,11 @@ export default function AdminSidebar() {
       href: "/admin/products",
       label: t("admin.sidebar.products"),
       icon: <Package className="h-5 w-5 mr-2" />
+    },
+    {
+      href: "/admin/coming-soon",
+      label: t("admin.sidebar.comingSoon") || "Coming Soon",
+      icon: <Clock className="h-5 w-5 mr-2" />
     },
     {
       href: "/admin/customers",

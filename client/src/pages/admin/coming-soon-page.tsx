@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet";
-import { useTranslation } from "react-i18next";
+import { useLanguage } from "@/hooks/use-language";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -9,11 +9,11 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Badge } from "@/components/ui/badge";
 import { Calendar, Clock, Plus } from "lucide-react";
 import ComingSoonForm from "@/components/admin/coming-soon-form";
-import Loader from "@/components/loader";
+import Loader from "@/components/ui/loader";
 import { Product } from "@shared/schema";
 
 export default function ComingSoonPage() {
-  const { t } = useTranslation();
+  const { t } = useLanguage();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   
   const { data: comingSoonProducts, isLoading, isError } = useQuery<Product[]>({
