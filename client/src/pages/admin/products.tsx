@@ -11,6 +11,8 @@ import { Product, insertProductSchema } from "@shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import ColorPicker from "@/components/admin/color-picker";
+import { getColorHex } from "@/lib/colorUtils";
 import { 
   Pencil, 
   Trash2, 
@@ -306,6 +308,10 @@ export default function AdminProducts() {
   const handleRemoveColor = (colorToRemove: string) => {
     const currentColors = form.getValues("availableColors") || [];
     form.setValue("availableColors", currentColors.filter(c => c !== colorToRemove));
+  };
+  
+  const handleColorSelect = (colorName: string) => {
+    setColor(colorName);
   };
 
   // Product columns for data table
@@ -724,7 +730,9 @@ export default function AdminProducts() {
                             placeholder={t("admin.products.form.colorPlaceholder")}
                             value={color}
                             onChange={(e) => setColor(e.target.value)}
+                            className="flex-1"
                           />
+                          <ColorPicker onColorSelect={handleColorSelect} currentColor={color} buttonText="Pick" />
                           <Button type="button" onClick={handleAddColor}>
                             {t("admin.products.form.addColor")}
                           </Button>
@@ -733,6 +741,10 @@ export default function AdminProducts() {
                         <div className="flex flex-wrap gap-2 mt-2">
                           {field.value.map((color) => (
                             <div key={color} className="flex items-center p-2 bg-gray-100 rounded">
+                              <span 
+                                className="inline-block w-3 h-3 rounded-full mr-1" 
+                                style={{ backgroundColor: getColorHex(color) }}
+                              ></span>
                               <span>{color}</span>
                               <Button 
                                 type="button" 
