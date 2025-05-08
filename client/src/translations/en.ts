@@ -580,7 +580,9 @@ const translations = {
         addSize: "Add Size",
         colors: "Available Colors",
         colorPlaceholder: "Enter color name or hex code",
-        addColor: "Add Color"
+        addColor: "Add Color",
+        chooseColor: "Choose Color",
+        selectAColor: "Select a Color"
       },
       
       table: {
