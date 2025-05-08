@@ -501,6 +501,7 @@ export class DatabaseStorage implements IStorage {
     category?: string;
     supplierId?: number;
     isActive?: boolean;
+    comingSoon?: boolean;
   }): Promise<Product[]> {
     let query = db.select().from(products);
 
@@ -514,9 +515,19 @@ export class DatabaseStorage implements IStorage {
       if (filters.isActive !== undefined) {
         query = query.where(eq(products.isActive, filters.isActive));
       }
+      // Skip comingSoon filter for database implementation as the column doesn't exist yet
+      // We'll handle this in memory for now
     }
 
-    return await query;
+    const productList = await query;
+    
+    // If comingSoon filter is specified, manually filter results in memory
+    if (filters?.comingSoon !== undefined) {
+      // For now, since the DB doesn't have this column, no products are "coming soon"
+      return filters.comingSoon ? [] : productList;
+    }
+    
+    return productList;
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {

@@ -97,19 +97,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Products API
   app.get("/api/products", async (req, res) => {
     try {
-      const { category, supplierId } = req.query;
+      const { category, supplierId, comingSoon } = req.query;
       const filters: any = {
         isActive: true,
       };
 
       if (category) filters.category = category;
       if (supplierId) filters.supplierId = Number(supplierId);
+      if (comingSoon !== undefined) filters.comingSoon = comingSoon === 'true';
 
       const products = await dbStorage.getProducts(filters);
       res.json(products);
     } catch (error) {
       console.error("Error fetching products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
+    }
+  });
+  
+  // Endpoint to get coming soon products
+  app.get("/api/coming-soon-products", async (req, res) => {
+    try {
+      const filters = {
+        isActive: true,
+        comingSoon: true
+      };
+      
+      const products = await dbStorage.getProducts(filters);
+      res.json(products);
+    } catch (error) {
+      console.error("Error fetching coming soon products:", error);
+      res.status(500).json({ message: "Failed to fetch coming soon products" });
     }
   });
 
@@ -131,7 +148,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/products", requireRole(["admin", "supplier"]), async (req, res) => {
     try {
-      const productData = insertProductSchema.parse(req.body);
+      // Add default false value for comingSoon if not provided 
+      const productData = insertProductSchema.parse({
+        ...req.body,
+        comingSoon: req.body.comingSoon || false
+      });
 
       // If supplier is creating product, ensure supplierId is their own ID
       if (req.user.role === "supplier") {
