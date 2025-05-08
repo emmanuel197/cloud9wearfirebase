@@ -52,10 +52,7 @@ export default function SupplierOrders() {
     try {
       const response = await apiRequest("GET", `/api/orders/${orderId}`);
       const orderData = await response.json();
-      await new Promise(resolve => {
-        setSelectedOrder(orderData);
-        setTimeout(resolve, 0);
-      });
+      setSelectedOrder(orderData);
     } catch (error) {
       console.error("Error fetching order details:", error);
       toast({
@@ -206,20 +203,17 @@ export default function SupplierOrders() {
                 <Button 
                   variant="outline" 
                   size="sm"
-                  onClick={async (e) => {
+                  onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
+                    handleViewOrder(order.id);
                   }}
                 >
                   <Eye className="h-4 w-4 mr-1" />
                   {t("supplier.orders.view")}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl" onOpenChange={async (open) => {
-                if (open) {
-                  await handleViewOrder(order.id);
-                }
-              }}>
+              <DialogContent className="max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                   <DialogTitle>{t("supplier.orders.orderDetails", { id: selectedOrder?.id })}</DialogTitle>
                   <DialogDescription>
