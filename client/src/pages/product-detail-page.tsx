@@ -161,9 +161,9 @@ export default function ProductDetailPage() {
             {product.discount ? (
               <>
                 <p className="text-2xl font-semibold text-primary">
-                  ${(product.price * (1 - product.discount / 100)).toFixed(2)}
+                  ₵{(product.price * (1 - product.discount / 100)).toFixed(2)}
                   <span className="ml-2 text-lg line-through text-gray-400">
-                    ${product.price.toFixed(2)}
+                    ₵{product.price.toFixed(2)}
                   </span>
                   <span className="ml-2 text-sm text-green-600">
                     ({Math.round(product.discount)}% off)
@@ -171,7 +171,7 @@ export default function ProductDetailPage() {
                 </p>
               </>
             ) : (
-              <p className="text-2xl font-semibold text-primary">${product.price.toFixed(2)}</p>
+              <p className="text-2xl font-semibold text-primary">₵{product.price.toFixed(2)}</p>
             )}
           </div>
           <p className="text-gray-600 mb-6">{product.description}</p>
