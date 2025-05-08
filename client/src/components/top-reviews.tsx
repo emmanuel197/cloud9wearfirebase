@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { LanguageContext } from "@/contexts/LanguageContext";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -23,7 +23,8 @@ interface TopReviewData {
 }
 
 export default function TopReviews() {
-  const { t } = useLanguage();
+  const langContext = useContext(LanguageContext);
+  const t = langContext ? langContext.t : (key: string) => key;
   const [limit, setLimit] = useState(5);
   
   const { data: reviews, isLoading } = useQuery<TopReviewData[]>({

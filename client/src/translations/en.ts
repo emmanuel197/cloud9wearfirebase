@@ -242,7 +242,7 @@ const translations = {
     selectColor: "Select color",
     addToCart: "Add to Cart",
     outOfStock: "Out of Stock",
-    shipping: "Free shipping on orders over $50",
+    shipping: "Free shipping on orders over ₵50",
     category: "Category",
     
     validation: {
@@ -290,7 +290,7 @@ const translations = {
     
     promoAlert: {
       title: "Free Shipping",
-      description: "Enjoy free shipping on orders over $50!"
+      description: "Enjoy free shipping on orders over ₵50!"
     },
     
     notifications: {

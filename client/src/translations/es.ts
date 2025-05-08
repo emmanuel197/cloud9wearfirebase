@@ -129,6 +129,20 @@ const translations = {
     }
   },
   
+  reviews: {
+    title: "Reseñas de Clientes",
+    writeReview: "Escribir una Reseña",
+    customerReviews: "Reseñas de Clientes",
+    rating: "Calificación",
+    comment: "Comentario",
+    submit: "Enviar Reseña",
+    noReviews: "Aún no hay reseñas. ¡Sé el primero en dejar una reseña para este producto!",
+    successMessage: "¡Gracias por tu reseña!",
+    errorMessage: "Error al enviar la reseña. Por favor intenta de nuevo.",
+    placeholder: "Comparte tu experiencia con este producto...",
+    topReviews: "Mejores Reseñas"
+  },
+  
   auth: {
     login: {
       tabTitle: "Iniciar Sesión",
@@ -205,7 +219,7 @@ const translations = {
     selectColor: "Seleccionar color",
     addToCart: "Añadir al Carrito",
     outOfStock: "Agotado",
-    shipping: "Envío gratuito en pedidos superiores a $50",
+    shipping: "Envío gratuito en pedidos superiores a ₵50",
     category: "Categoría",
     
     validation: {
@@ -253,7 +267,7 @@ const translations = {
     
     promoAlert: {
       title: "Envío Gratuito",
-      description: "¡Disfruta de envío gratuito en pedidos superiores a $50!"
+      description: "¡Disfruta de envío gratuito en pedidos superiores a ₵50!"
     },
     
     notifications: {
