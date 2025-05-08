@@ -499,11 +499,12 @@ export default function AdminProducts() {
                         <FormControl>
                           <Input 
                             type="number" 
-                            step="0.1" 
+                            step="1" 
                             min="0" 
                             max="100" 
                             placeholder="0-100" 
-                            {...field} 
+                            value={Math.round(parseFloat(field.value.toString()))}
+                            onChange={(e) => field.onChange(e.target.value)}
                           />
                         </FormControl>
                         <FormDescription>
