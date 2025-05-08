@@ -23,7 +23,6 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import { 
-  TruckIcon, 
   ShoppingCart, 
   ArrowLeftIcon,
   ChevronRight,
@@ -311,12 +310,6 @@ export default function ProductDetailPage() {
               : t("productDetail.addToCart")
             }
           </Button>
-          
-          {/* Shipping Info */}
-          <div className="flex items-center text-sm text-gray-500 mb-6">
-            <TruckIcon className="h-4 w-4 mr-2" />
-            <span>{t("productDetail.shipping")}</span>
-          </div>
           
           {/* Category */}
           <div className="text-sm text-gray-500">
