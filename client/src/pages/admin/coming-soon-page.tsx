@@ -15,6 +15,8 @@ import { Product } from "@shared/schema";
 export default function ComingSoonPage() {
   const { t } = useLanguage();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
   const { data: comingSoonProducts, isLoading, isError } = useQuery<Product[]>({
     queryKey: ["/api/coming-soon-products"],
@@ -23,6 +25,16 @@ export default function ComingSoonPage() {
   
   const handleCreateSuccess = () => {
     setIsCreateModalOpen(false);
+  };
+  
+  const handleEditSuccess = () => {
+    setIsEditModalOpen(false);
+    setSelectedProduct(null);
+  };
+  
+  const handleEditClick = (product: Product) => {
+    setSelectedProduct(product);
+    setIsEditModalOpen(true);
   };
   
   if (isLoading) return <Loader />;
@@ -48,6 +60,7 @@ export default function ComingSoonPage() {
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold">Coming Soon Products</h1>
           
+          {/* Create Modal */}
           <Dialog open={isCreateModalOpen} onOpenChange={setIsCreateModalOpen}>
             <DialogTrigger asChild>
               <Button className="flex items-center gap-2">
@@ -63,6 +76,25 @@ export default function ComingSoonPage() {
                 </DialogDescription>
               </DialogHeader>
               <ComingSoonForm onSuccess={handleCreateSuccess} />
+            </DialogContent>
+          </Dialog>
+          
+          {/* Edit Modal */}
+          <Dialog open={isEditModalOpen} onOpenChange={setIsEditModalOpen}>
+            <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle>Edit Coming Soon Product</DialogTitle>
+                <DialogDescription>
+                  Update your coming soon product details. Changes will be immediately reflected on the storefront.
+                </DialogDescription>
+              </DialogHeader>
+              {selectedProduct && (
+                <ComingSoonForm 
+                  product={selectedProduct}
+                  isEditing={true}
+                  onSuccess={handleEditSuccess}
+                />
+              )}
             </DialogContent>
           </Dialog>
         </div>
@@ -91,6 +123,7 @@ export default function ComingSoonPage() {
                         <th className="py-3 px-4 text-left">Category</th>
                         <th className="py-3 px-4 text-left">Release Date</th>
                         <th className="py-3 px-4 text-left">Status</th>
+                        <th className="py-3 px-4 text-left">Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -131,11 +164,33 @@ export default function ComingSoonPage() {
                                 Coming Soon
                               </Badge>
                             </td>
+                            <td className="py-3 px-4">
+                              <div className="flex items-center gap-2">
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0 text-gray-600 hover:text-[#ef0c11]"
+                                  title="Edit"
+                                  onClick={() => handleEditClick(product)}
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0 text-gray-600 hover:text-[#ef0c11]"
+                                  title="View details"
+                                  onClick={() => window.open(`/products/${product.id}`, '_blank')}
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
+                            </td>
                           </tr>
                         ))
                       ) : (
                         <tr>
-                          <td colSpan={5} className="py-6 text-center text-gray-500">
+                          <td colSpan={6} className="py-6 text-center text-gray-500">
                             No coming soon products found. Add one to get started.
                           </td>
                         </tr>
@@ -165,7 +220,7 @@ export default function ComingSoonPage() {
                           <p className="text-sm text-gray-500 mb-2 line-clamp-2">
                             {product.description}
                           </p>
-                          <div className="flex justify-between items-center">
+                          <div className="flex justify-between items-center mb-3">
                             <span className="font-bold">₵{product.price.toFixed(2)}</span>
                             {'releaseDate' in product && product.releaseDate && (
                               <div className="flex items-center gap-1 text-xs text-gray-500">
@@ -176,6 +231,26 @@ export default function ComingSoonPage() {
                                 })}
                               </div>
                             )}
+                          </div>
+                          <div className="flex justify-end gap-2 border-t pt-3">
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 p-0 px-2 text-gray-600 hover:text-[#ef0c11]"
+                              onClick={() => handleEditClick(product)}
+                            >
+                              <Pencil className="h-4 w-4 mr-1" />
+                              Edit
+                            </Button>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-8 p-0 px-2 text-gray-600 hover:text-[#ef0c11]"
+                              onClick={() => window.open(`/products/${product.id}`, '_blank')}
+                            >
+                              <Eye className="h-4 w-4 mr-1" />
+                              View
+                            </Button>
                           </div>
                         </CardContent>
                       </Card>
