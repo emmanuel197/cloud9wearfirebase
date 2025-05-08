@@ -211,12 +211,22 @@ export default function AdminReviews() {
     return product ? product.name : `Product #${productId}`;
   };
   
-  const getCustomerName = (customerId: number) => {
+  const getCustomerName = (customerId: number | null) => {
+    // Handle admin-created reviews (no customer)
+    if (customerId === null || customerId === undefined || customerId === 0) {
+      return t("admin.reviews.adminCreated");
+    }
+    
     const customer = customers?.find(c => c.id === customerId);
     return customer ? customer.fullName : `Customer #${customerId}`;
   };
   
-  const getCustomerEmail = (customerId: number) => {
+  const getCustomerEmail = (customerId: number | null) => {
+    // Handle admin-created reviews (no customer)
+    if (customerId === null || customerId === undefined || customerId === 0) {
+      return t("admin.reviews.systemReview");
+    }
+    
     const customer = customers?.find(c => c.id === customerId);
     return customer ? customer.email : '-';
   };
@@ -230,11 +240,13 @@ export default function AdminReviews() {
       // Search by product ID, customer ID, content, product name, or customer name
       return (
         review.productId.toString().includes(searchTerm) ||
-        review.customerId.toString().includes(searchTerm) ||
+        (review.customerId ? review.customerId.toString().includes(searchTerm) : false) ||
         review.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
         getProductName(review.productId).toLowerCase().includes(searchTerm.toLowerCase()) ||
         getCustomerName(review.customerId).toLowerCase().includes(searchTerm.toLowerCase()) ||
-        getCustomerEmail(review.customerId).toLowerCase().includes(searchTerm.toLowerCase())
+        getCustomerEmail(review.customerId).toLowerCase().includes(searchTerm.toLowerCase()) ||
+        // Allow searching for admin-created reviews
+        (review.customerId === null && t("admin.reviews.adminCreated").toLowerCase().includes(searchTerm.toLowerCase()))
       );
     });
     
@@ -433,16 +445,32 @@ export default function AdminReviews() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="space-y-1">
-                            <div className="flex items-center text-sm font-medium">
-                              <UserIcon className="h-3 w-3 mr-1 text-gray-500" />
-                              {getCustomerName(review.customerId)}
+                          {review.customerId ? (
+                            // Regular customer review
+                            <div className="space-y-1">
+                              <div className="flex items-center text-sm font-medium">
+                                <UserIcon className="h-3 w-3 mr-1 text-gray-500" />
+                                {getCustomerName(review.customerId)}
+                              </div>
+                              <div className="flex items-center text-xs text-gray-500">
+                                <Mail className="h-3 w-3 mr-1" />
+                                {getCustomerEmail(review.customerId)}
+                              </div>
                             </div>
-                            <div className="flex items-center text-xs text-gray-500">
-                              <Mail className="h-3 w-3 mr-1" />
-                              {getCustomerEmail(review.customerId)}
+                          ) : (
+                            // Admin-created review
+                            <div className="space-y-1">
+                              <div className="flex items-center text-sm font-medium text-primary">
+                                <UserIcon className="h-3 w-3 mr-1" />
+                                {getCustomerName(review.customerId)}
+                              </div>
+                              <div className="flex items-center text-xs">
+                                <span className="px-1.5 py-0.5 rounded-sm bg-gray-100 text-gray-800 text-[10px] font-medium">
+                                  {getCustomerEmail(review.customerId)}
+                                </span>
+                              </div>
                             </div>
-                          </div>
+                          )}
                         </TableCell>
                         <TableCell>
                           <div className="max-w-xs truncate" title={review.comment}>
