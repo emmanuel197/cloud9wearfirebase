@@ -494,7 +494,14 @@ export class DatabaseStorage implements IStorage {
   // Product management
   async getProduct(id: number): Promise<Product | undefined> {
     const [product] = await db.select().from(products).where(eq(products.id, id));
-    return product || undefined;
+    if (!product) return undefined;
+    
+    // Return the product with comingSoon and releaseDate properties
+    return {
+      ...product,
+      comingSoon: false, // Default value
+      releaseDate: null
+    };
   }
 
   async getProducts(filters?: {
@@ -519,11 +526,20 @@ export class DatabaseStorage implements IStorage {
       // We'll handle this in memory for now
     }
 
-    const productList = await query;
+    let productList = await query;
+    
+    // Add comingSoon property to each product
+    productList = productList.map(product => ({
+      ...product,
+      comingSoon: false, // Default value
+      releaseDate: null
+    }));
     
     // If comingSoon filter is specified, manually filter results in memory
     if (filters?.comingSoon !== undefined) {
-      // For now, since the DB doesn't have this column, no products are "coming soon"
+      // For now, we have a dummy implementation until the DB schema is updated
+      // We'll return an empty array for comingSoon=true as no products have been set as coming soon
+      // When we have real data, we'll need to remove this
       return filters.comingSoon ? [] : productList;
     }
     
@@ -531,20 +547,45 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
+    // Remove comingSoon and releaseDate fields for database insertion since they don't exist in the schema yet
+    const { comingSoon, releaseDate, ...dbProduct } = product as any;
+    
     const [newProduct] = await db
       .insert(products)
-      .values(product)
+      .values(dbProduct)
       .returning();
-    return newProduct;
+      
+    // Add the comingSoon property back to the returned object
+    return { 
+      ...newProduct, 
+      comingSoon: comingSoon || false,
+      releaseDate: releaseDate || null
+    };
   }
 
   async updateProduct(id: number, product: Partial<Product>): Promise<Product | undefined> {
+    // Remove comingSoon and releaseDate fields for database update
+    const { comingSoon, releaseDate, ...dbProduct } = product as any;
+    
     const [updatedProduct] = await db
       .update(products)
-      .set(product)
+      .set(dbProduct)
       .where(eq(products.id, id))
       .returning();
-    return updatedProduct || undefined;
+      
+    if (!updatedProduct) return undefined;
+    
+    // Get the current product first to check if it has comingSoon property
+    const existingProduct = await this.getProduct(id);
+    const existingComingSoon = existingProduct?.comingSoon || false;
+    const existingReleaseDate = existingProduct?.releaseDate || null;
+    
+    // Return the product with comingSoon property properly set
+    return { 
+      ...updatedProduct,
+      comingSoon: comingSoon !== undefined ? comingSoon : existingComingSoon,
+      releaseDate: releaseDate !== undefined ? releaseDate : existingReleaseDate
+    };
   }
 
   async deleteProduct(id: number): Promise<boolean> {
