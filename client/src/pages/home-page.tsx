@@ -159,7 +159,7 @@ export default function HomePage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 pb-24 bg-black w-full max-w-none">
+      <section className="py-20 pb-32 bg-black w-full max-w-none mb-12">
         <div className="max-w-[1980px] mx-auto px-4 text-center w-full">
           <h2 className="text-3xl md:text-4xl font-bold mb-6 text-white">{t("cta.title")}</h2>
           <p className="text-white opacity-90 text-lg mb-12 max-w-3xl mx-auto">{t("cta.description")}</p>
