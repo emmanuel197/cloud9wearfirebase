@@ -24,22 +24,22 @@ export default function Footer() {
             <h3 className="text-xl font-bold mb-3 md:mb-4">Cloud9wear</h3>
             <p className="text-gray-400 mb-4 text-sm md:text-base">{t("footer.description")}</p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                 <Facebook size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="sr-only">Facebook</span>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              </div>
+              <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                 <Twitter size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="sr-only">Twitter</span>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              </div>
+              <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                 <Instagram size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="sr-only">Instagram</span>
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
+              </div>
+              <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                 <Youtube size={16} className="sm:w-[18px] sm:h-[18px]" />
                 <span className="sr-only">YouTube</span>
-              </a>
+              </div>
             </div>
           </div>
           
@@ -49,30 +49,30 @@ export default function Footer() {
             <ul className="space-y-1 md:space-y-2 text-sm md:text-base">
               <li>
                 <Link href="/">
-                  <a className="text-gray-400 hover:text-white transition-colors">
+                  <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                     {t("home")}
-                  </a>
+                  </div>
                 </Link>
               </li>
               <li>
                 <Link href="/products">
-                  <a className="text-gray-400 hover:text-white transition-colors">
+                  <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                     {t("products")}
-                  </a>
+                  </div>
                 </Link>
               </li>
               <li>
                 <Link href="/about">
-                  <a className="text-gray-400 hover:text-white transition-colors">
+                  <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                     {t("about")}
-                  </a>
+                  </div>
                 </Link>
               </li>
               <li>
                 <Link href="/contact">
-                  <a className="text-gray-400 hover:text-white transition-colors">
+                  <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                     {t("contact")}
-                  </a>
+                  </div>
                 </Link>
               </li>
             </ul>
@@ -84,30 +84,30 @@ export default function Footer() {
             <ul className="space-y-1 md:space-y-2 text-sm md:text-base">
               <li>
                 <Link href="/faq">
-                  <a className="text-gray-400 hover:text-white transition-colors">
+                  <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                     {t("faq")}
-                  </a>
+                  </div>
                 </Link>
               </li>
               <li>
                 <Link href="/shipping">
-                  <a className="text-gray-400 hover:text-white transition-colors">
+                  <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                     {t("shipping")}
-                  </a>
+                  </div>
                 </Link>
               </li>
               <li>
                 <Link href="/returns">
-                  <a className="text-gray-400 hover:text-white transition-colors">
+                  <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                     {t("returns")}
-                  </a>
+                  </div>
                 </Link>
               </li>
               <li>
                 <Link href="/privacy">
-                  <a className="text-gray-400 hover:text-white transition-colors">
+                  <div className="text-gray-400 hover:text-white transition-colors cursor-pointer">
                     {t("privacy")}
-                  </a>
+                  </div>
                 </Link>
               </li>
             </ul>

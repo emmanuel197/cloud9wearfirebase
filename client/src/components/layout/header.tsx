@@ -79,40 +79,40 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/">
-              <a className="flex items-center">
+              <div className="flex items-center cursor-pointer">
                 <img 
                   src={logoImage} 
                   alt="Cloud9wear Logo" 
                   className="h-[50px] w-[170px] object-cover"
                 />
-              </a>
+              </div>
             </Link>
           </div>
           
           {/* Desktop Navigation */}
           <nav className="hidden md:flex space-x-4 lg:space-x-8">
             <Link href="/">
-              <a className={`font-medium ${location === "/" ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors`}>
+              <div className={`font-medium ${location === "/" ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors cursor-pointer`}>
                 {t("navigation.home")}
-              </a>
+              </div>
             </Link>
             <Link href="/products">
-              <a className={`font-medium ${location === "/products" ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors`}>
+              <div className={`font-medium ${location === "/products" ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors cursor-pointer`}>
                 {t("navigation.products")}
-              </a>
+              </div>
             </Link>
             {user?.role === "admin" && (
               <Link href="/admin">
-                <a className={`font-medium ${location.startsWith("/admin") ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors`}>
+                <div className={`font-medium ${location.startsWith("/admin") ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors cursor-pointer`}>
                   {t("navigation.admin")}
-                </a>
+                </div>
               </Link>
             )}
             {user?.role === "supplier" && (
               <Link href="/supplier">
-                <a className={`font-medium ${location.startsWith("/supplier") ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors`}>
+                <div className={`font-medium ${location.startsWith("/supplier") ? "text-white font-bold" : "text-gray-300 hover:text-white"} transition-colors cursor-pointer`}>
                   {t("navigation.supplier")}
-                </a>
+                </div>
               </Link>
             )}
           </nav>
@@ -223,18 +223,18 @@ export default function Header() {
                   <nav className="flex flex-col space-y-4">
                     <SheetClose asChild>
                       <Link href="/">
-                        <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
+                        <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
                           <Home className="mr-2 h-4 w-4" />
                           {t("navigation.home")}
-                        </a>
+                        </div>
                       </Link>
                     </SheetClose>
                     <SheetClose asChild>
                       <Link href="/products">
-                        <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
+                        <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
                           <ShoppingBag className="mr-2 h-4 w-4" />
                           {t("navigation.products")}
-                        </a>
+                        </div>
                       </Link>
                     </SheetClose>
                     
@@ -242,30 +242,30 @@ export default function Header() {
                     {user?.role === "admin" && (
                       <SheetClose asChild>
                         <Link href="/admin">
-                          <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
+                          <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
                             <LayoutDashboard className="mr-2 h-4 w-4" />
                             {t("navigation.adminDashboard")}
-                          </a>
+                          </div>
                         </Link>
                       </SheetClose>
                     )}
                     {user?.role === "supplier" && (
                       <SheetClose asChild>
                         <Link href="/supplier">
-                          <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
+                          <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
                             <Package className="mr-2 h-4 w-4" />
                             {t("navigation.supplierDashboard")}
-                          </a>
+                          </div>
                         </Link>
                       </SheetClose>
                     )}
                     {user?.role === "customer" && (
                       <SheetClose asChild>
                         <Link href="/cart">
-                          <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
+                          <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
                             <ShoppingCart className="mr-2 h-4 w-4" />
                             {t("navigation.cart")}
-                          </a>
+                          </div>
                         </Link>
                       </SheetClose>
                     )}
@@ -284,10 +284,10 @@ export default function Header() {
                     ) : (
                       <SheetClose asChild>
                         <Link href="/auth">
-                          <a className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100">
+                          <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
                             <LogIn className="mr-2 h-4 w-4" />
                             {t("navigation.login")}
-                          </a>
+                          </div>
                         </Link>
                       </SheetClose>
                     )}
