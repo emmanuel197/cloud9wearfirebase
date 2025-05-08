@@ -5,6 +5,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useLanguage } from "@/hooks/use-language";
 import LanguageSwitcher from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
+import logoImage from "../../assets/logo.jpeg";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -78,7 +79,14 @@ export default function Header() {
           {/* Logo */}
           <div className="flex items-center">
             <Link href="/">
-              <a className="text-primary text-xl sm:text-2xl font-bold truncate">Cloud9wear</a>
+              <a className="flex items-center">
+                <img 
+                  src={logoImage} 
+                  alt="Cloud9wear Logo" 
+                  className="h-8 sm:h-10 w-auto object-contain mr-2"
+                />
+                <span className="text-primary text-xl sm:text-2xl font-bold truncate">Cloud9wear</span>
+              </a>
             </Link>
           </div>
           
@@ -201,7 +209,14 @@ export default function Header() {
               </SheetTrigger>
               <SheetContent side="right">
                 <SheetHeader>
-                  <SheetTitle>Cloud9wear</SheetTitle>
+                  <SheetTitle className="flex items-center">
+                    <img 
+                      src={logoImage} 
+                      alt="Cloud9wear Logo" 
+                      className="h-6 w-auto object-contain mr-2"
+                    />
+                    Cloud9wear
+                  </SheetTitle>
                   <SheetDescription>
                     {t("navigation.mobileMenuDescription")}
                   </SheetDescription>
