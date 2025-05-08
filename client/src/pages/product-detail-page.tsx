@@ -157,7 +157,23 @@ export default function ProductDetailPage() {
         {/* Product Info */}
         <div>
           <h1 className="text-3xl font-bold mb-2">{product.name}</h1>
-          <p className="text-2xl font-semibold text-primary mb-4">${product.price.toFixed(2)}</p>
+          <div className="mb-4">
+            {product.discount ? (
+              <>
+                <p className="text-2xl font-semibold text-primary">
+                  ${(product.price - product.discount).toFixed(2)}
+                  <span className="ml-2 text-lg line-through text-gray-400">
+                    ${product.price.toFixed(2)}
+                  </span>
+                  <span className="ml-2 text-sm text-green-600">
+                    ({Math.round((product.discount / product.price) * 100)}% off)
+                  </span>
+                </p>
+              </>
+            ) : (
+              <p className="text-2xl font-semibold text-primary">${product.price.toFixed(2)}</p>
+            )}
+          </div>
           <p className="text-gray-600 mb-6">{product.description}</p>
           
           {/* Size Selector */}

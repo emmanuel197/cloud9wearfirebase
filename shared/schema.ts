@@ -30,6 +30,7 @@ export const products = pgTable("products", {
   availableColors: text("available_colors").array().notNull(),
   supplierId: integer("supplier_id").notNull(),
   stock: integer("stock").notNull().default(0),
+  discount: doublePrecision("discount"),
   isActive: boolean("is_active").notNull().default(true),
 });
 

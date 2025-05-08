@@ -30,9 +30,9 @@ export default function AdminSuppliers() {
   const { t } = useLanguage();
   const { user } = useAuth();
   const { toast } = useToast();
-  
+
   const [selectedSupplier, setSelectedSupplier] = useState<any>(null);
-  
+
   // Fetch suppliers
   const { data: suppliers, isLoading } = useQuery({
     queryKey: ["/api/admin/suppliers"],
@@ -40,7 +40,7 @@ export default function AdminSuppliers() {
       return fetch("/api/admin/suppliers").then(res => res.json());
     }
   });
-  
+
   // Fetch supplier inventory when a supplier is selected
   const { data: inventory, isLoading: isLoadingInventory } = useQuery({
     queryKey: ["/api/supplier/inventory", selectedSupplier?.id],
@@ -50,7 +50,7 @@ export default function AdminSuppliers() {
     },
     enabled: !!selectedSupplier
   });
-  
+
   const handleViewSupplier = async (id: number) => {
     try {
       const response = await fetch(`/api/users/${id}`);
@@ -67,7 +67,7 @@ export default function AdminSuppliers() {
       });
     }
   };
-  
+
   // Supplier columns for data table
   const supplierColumns = [
     {
@@ -151,7 +151,7 @@ export default function AdminSuppliers() {
                         })}
                       </DialogDescription>
                     </DialogHeader>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
                       <div className="md:col-span-1">
                         <div className="flex flex-col items-center p-4 border rounded-lg">
@@ -162,20 +162,20 @@ export default function AdminSuppliers() {
                           </Avatar>
                           <h3 className="text-xl font-semibold">{selectedSupplier.fullName}</h3>
                           <p className="text-gray-500">{selectedSupplier.username}</p>
-                          
+
                           <div className="w-full mt-4 space-y-2">
                             <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
                               <Mail className="h-4 w-4 text-gray-500" />
                               <span className="text-sm">{selectedSupplier.email}</span>
                             </div>
-                            
+
                             {selectedSupplier.phone && (
                               <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
                                 <Phone className="h-4 w-4 text-gray-500" />
                                 <span className="text-sm">{selectedSupplier.phone}</span>
                               </div>
                             )}
-                            
+
                             <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
                               <Calendar className="h-4 w-4 text-gray-500" />
                               <span className="text-sm">{new Date(selectedSupplier.createdAt).toLocaleDateString()}</span>
@@ -183,7 +183,7 @@ export default function AdminSuppliers() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="md:col-span-2">
                         <Card>
                           <CardHeader className="pb-2">
@@ -212,11 +212,14 @@ export default function AdminSuppliers() {
                                         </p>
                                       </div>
                                     </div>
-                                    <div>
-                                      <Badge className={item.stock > 10 ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-amber-100 text-amber-800 hover:bg-amber-100"}>
-                                        {t("admin.suppliers.stock")}: {item.stock}
-                                      </Badge>
-                                    </div>
+                                    <div className="flex items-center space-x-2">
+                                        <Badge className={item.stock > 10 ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-amber-100 text-amber-800 hover:bg-amber-100"}>
+                                          {t("admin.suppliers.stock")}: {item.stock}
+                                        </Badge>
+                                        <span className="text-sm text-gray-500">
+                                          {t("admin.suppliers.availableStock")}: {item.availableStock}
+                                        </span>
+                                      </div>
                                   </div>
                                 ))}
                               </div>
@@ -244,7 +247,7 @@ export default function AdminSuppliers() {
       },
     },
   ];
-  
+
   const getInitials = (name: string) => {
     if (!name) return "?";
     return name
@@ -253,20 +256,20 @@ export default function AdminSuppliers() {
       .join("")
       .toUpperCase();
   };
-  
+
   if (!user || user.role !== "admin") {
     return null; // Protected by ProtectedRoute component
   }
-  
+
   return (
     <div className="flex">
       <AdminSidebar />
-      
+
       <div className="flex-1 p-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">{t("admin.suppliers.title")}</h1>
         </div>
-        
+
         <Card>
           <CardHeader>
             <CardTitle>{t("admin.suppliers.title")}</CardTitle>
