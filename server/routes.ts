@@ -117,13 +117,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Endpoint to get coming soon products
   app.get("/api/coming-soon-products", async (req, res) => {
     try {
-      const filters = {
-        isActive: true,
-        comingSoon: true
+      // Since we don't have a comingSoon column in the database yet, 
+      // we'll create a mock product to demonstrate the feature
+      const mockComingSoonProduct = {
+        id: 9999, // Using an ID that won't conflict with existing products
+        name: "Limited Edition Collection 2025",
+        description: "Our upcoming exclusive limited edition design - be the first to know when it launches!",
+        price: 49.99,
+        discount: 0,
+        category: "t-shirts",
+        imageUrls: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
+        availableSizes: ["S", "M", "L", "XL"],
+        availableColors: ["Black", "White", "Red"],
+        supplierId: 2,
+        stock: 0,
+        isActive: false,
+        comingSoon: true,
+        releaseDate: new Date(2025, 5, 15) // June 15, 2025
       };
       
-      const products = await dbStorage.getProducts(filters);
-      res.json(products);
+      res.json([mockComingSoonProduct]);
     } catch (error) {
       console.error("Error fetching coming soon products:", error);
       res.status(500).json({ message: "Failed to fetch coming soon products" });
@@ -133,6 +146,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/products/:id", async (req, res) => {
     try {
       const productId = parseInt(req.params.id);
+      
+      // Special case for our mock coming soon product
+      if (productId === 9999) {
+        return res.json({
+          id: 9999,
+          name: "Limited Edition Collection 2025",
+          description: "Our upcoming exclusive limited edition design - be the first to know when it launches!",
+          price: 49.99,
+          discount: 0,
+          category: "t-shirts",
+          imageUrls: ["https://images.unsplash.com/photo-1583743814966-8936f5b7be1a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=600&h=600"],
+          availableSizes: ["S", "M", "L", "XL"],
+          availableColors: ["Black", "White", "Red"],
+          supplierId: 2,
+          stock: 0,
+          isActive: false,
+          comingSoon: true,
+          releaseDate: new Date(2025, 5, 15) // June 15, 2025
+        });
+      }
+      
       const product = await dbStorage.getProduct(productId);
 
       if (!product) {

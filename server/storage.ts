@@ -493,7 +493,21 @@ export class DatabaseStorage implements IStorage {
 
   // Product management
   async getProduct(id: number): Promise<Product | undefined> {
-    const [product] = await db.select().from(products).where(eq(products.id, id));
+    const [product] = await db.select({
+      id: products.id,
+      name: products.name,
+      description: products.description,
+      price: products.price,
+      category: products.category,
+      imageUrls: products.imageUrls,
+      availableSizes: products.availableSizes,
+      availableColors: products.availableColors,
+      supplierId: products.supplierId,
+      stock: products.stock,
+      discount: products.discount,
+      isActive: products.isActive
+    }).from(products).where(eq(products.id, id));
+    
     if (!product) return undefined;
     
     // Return the product with comingSoon and releaseDate properties
@@ -510,7 +524,21 @@ export class DatabaseStorage implements IStorage {
     isActive?: boolean;
     comingSoon?: boolean;
   }): Promise<Product[]> {
-    let query = db.select().from(products);
+    // Explicitly select only the columns we know exist in the database
+    let query = db.select({
+      id: products.id,
+      name: products.name,
+      description: products.description,
+      price: products.price,
+      category: products.category,
+      imageUrls: products.imageUrls,
+      availableSizes: products.availableSizes,
+      availableColors: products.availableColors,
+      supplierId: products.supplierId,
+      stock: products.stock,
+      discount: products.discount,
+      isActive: products.isActive
+    }).from(products);
 
     if (filters) {
       if (filters.category) {
