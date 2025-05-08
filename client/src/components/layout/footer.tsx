@@ -62,14 +62,14 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/">
+                <Link href="/about">
                   <a className="text-gray-400 hover:text-white transition-colors">
                     {t("about")}
                   </a>
                 </Link>
               </li>
               <li>
-                <Link href="/">
+                <Link href="/contact">
                   <a className="text-gray-400 hover:text-white transition-colors">
                     {t("contact")}
                   </a>
@@ -83,28 +83,28 @@ export default function Footer() {
             <h4 className="text-base md:text-lg font-semibold mb-2 md:mb-4">{t("footer.support")}</h4>
             <ul className="space-y-1 md:space-y-2 text-sm md:text-base">
               <li>
-                <Link href="/">
+                <Link href="/faq">
                   <a className="text-gray-400 hover:text-white transition-colors">
                     {t("faq")}
                   </a>
                 </Link>
               </li>
               <li>
-                <Link href="/">
+                <Link href="/shipping">
                   <a className="text-gray-400 hover:text-white transition-colors">
                     {t("shipping")}
                   </a>
                 </Link>
               </li>
               <li>
-                <Link href="/">
+                <Link href="/returns">
                   <a className="text-gray-400 hover:text-white transition-colors">
                     {t("returns")}
                   </a>
                 </Link>
               </li>
               <li>
-                <Link href="/">
+                <Link href="/privacy">
                   <a className="text-gray-400 hover:text-white transition-colors">
                     {t("privacy")}
                   </a>

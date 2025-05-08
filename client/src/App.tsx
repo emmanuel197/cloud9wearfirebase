@@ -10,6 +10,10 @@ import ProductDetailPage from "@/pages/product-detail-page";
 import CartPage from "@/pages/cart-page";
 import CheckoutPage from "@/pages/checkout-page";
 import PaymentSuccessPage from "@/pages/payment-success-page";
+import AboutPage from "@/pages/about-page";
+import FAQPage from "@/pages/faq-page";
+import ContactPage from "@/pages/contact-page";
+import PrivacyPage from "@/pages/privacy-page";
 import AdminDashboard from "@/pages/admin/dashboard";
 import AdminOrders from "@/pages/admin/orders";
 import AdminProducts from "@/pages/admin/products";
@@ -39,6 +43,10 @@ function App() {
               <Route path="/cart" component={CartPage} />
               <Route path="/checkout" component={CheckoutPage} />
               <Route path="/payment-success" component={PaymentSuccessPage} />
+              <Route path="/about" component={AboutPage} />
+              <Route path="/faq" component={FAQPage} />
+              <Route path="/contact" component={ContactPage} />
+              <Route path="/privacy" component={PrivacyPage} />
               <Route path="/admin" component={() => <ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/orders" component={() => <ProtectedRoute role="admin"><AdminOrders /></ProtectedRoute>} />
               <Route path="/admin/products" component={() => <ProtectedRoute role="admin"><AdminProducts /></ProtectedRoute>} />
