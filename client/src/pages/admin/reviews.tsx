@@ -16,6 +16,25 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import {
   Table,
   TableBody,
   TableCell,
@@ -97,6 +116,54 @@ export default function AdminReviews() {
       return await res.json();
     }
   });
+
+  // Form schema for create review dialog
+  const formSchema = z.object({
+    productId: z.coerce.number().min(1, t("admin.reviews.productRequired")),
+    customerId: z.coerce.number().min(1, t("admin.reviews.customerRequired")),
+    rating: z.coerce.number().min(1).max(5),
+    comment: z.string().min(5, t("admin.reviews.commentMinLength"))
+  });
+
+  type FormData = z.infer<typeof formSchema>;
+
+  // React Hook Form setup
+  const form = useForm<FormData>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      productId: 0,
+      customerId: 0,
+      rating: 5,
+      comment: "",
+    },
+  });
+
+  // Create review mutation
+  const createReviewMutation = useMutation({
+    mutationFn: async (data: FormData) => {
+      await apiRequest("POST", "/api/admin/reviews", data);
+    },
+    onSuccess: () => {
+      toast({
+        title: t("admin.reviews.createSuccess"),
+        description: t("admin.reviews.createSuccessDesc"),
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/admin/reviews"] });
+      setReviewToAdd(false);
+      form.reset();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t("admin.reviews.createError"),
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const onSubmit = (data: FormData) => {
+    createReviewMutation.mutate(data);
+  };
 
   // Delete review mutation
   const deleteReviewMutation = useMutation({
@@ -442,6 +509,157 @@ export default function AdminReviews() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      {/* Create Review Dialog */}
+      <Dialog open={reviewToAdd} onOpenChange={setReviewToAdd}>
+        <DialogContent className="sm:max-w-[550px]">
+          <DialogHeader>
+            <DialogTitle>{t("admin.reviews.addReview")}</DialogTitle>
+            <DialogDescription>
+              {t("admin.reviews.addReviewDesc")}
+            </DialogDescription>
+          </DialogHeader>
+          
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              {/* Product selection */}
+              <FormField
+                control={form.control}
+                name="productId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("admin.reviews.product")}</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={field.value > 0 ? field.value.toString() : ""}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("admin.reviews.selectProduct")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {products?.map((product) => (
+                          <SelectItem key={product.id} value={product.id.toString()}>
+                            {product.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Customer selection */}
+              <FormField
+                control={form.control}
+                name="customerId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("admin.reviews.customer")}</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={field.value > 0 ? field.value.toString() : ""}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder={t("admin.reviews.selectCustomer")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {customers?.filter(c => c.role === "customer").map((customer) => (
+                          <SelectItem key={customer.id} value={customer.id.toString()}>
+                            {customer.fullName} ({customer.email})
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Rating */}
+              <FormField
+                control={form.control}
+                name="rating"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("admin.reviews.rating")}</FormLabel>
+                    <div className="flex gap-2 items-center">
+                      <FormControl>
+                        <Select
+                          onValueChange={(value) => field.onChange(parseInt(value))}
+                          defaultValue={field.value.toString()}
+                        >
+                          <SelectTrigger className="w-[100px]">
+                            <SelectValue placeholder={t("admin.reviews.selectRating")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="5">5 ★★★★★</SelectItem>
+                            <SelectItem value="4">4 ★★★★☆</SelectItem>
+                            <SelectItem value="3">3 ★★★☆☆</SelectItem>
+                            <SelectItem value="2">2 ★★☆☆☆</SelectItem>
+                            <SelectItem value="1">1 ★☆☆☆☆</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </FormControl>
+                      <div className="flex">
+                        {renderStars(field.value)}
+                      </div>
+                    </div>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              {/* Comment */}
+              <FormField
+                control={form.control}
+                name="comment"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("admin.reviews.comment")}</FormLabel>
+                    <FormControl>
+                      <Textarea
+                        placeholder={t("admin.reviews.commentPlaceholder")}
+                        className="resize-none"
+                        rows={4}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      {t("admin.reviews.commentDesc")}
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              
+              <DialogFooter>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setReviewToAdd(false)}
+                >
+                  {t("common.cancel")}
+                </Button>
+                
+                <Button 
+                  type="submit"
+                  disabled={createReviewMutation.isPending}
+                >
+                  {createReviewMutation.isPending ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  ) : null}
+                  {t("admin.reviews.addReview")}
+                </Button>
+              </DialogFooter>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
