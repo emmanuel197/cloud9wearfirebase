@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Plus } from "lucide-react";
+import { Calendar, Clock, Plus, Pencil, Eye } from "lucide-react";
 import ComingSoonForm from "@/components/admin/coming-soon-form";
 import Loader from "@/components/ui/loader";
 import { Product } from "@shared/schema";

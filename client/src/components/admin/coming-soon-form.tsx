@@ -37,49 +37,67 @@ type ComingSoonFormValues = z.infer<typeof comingSoonFormSchema>;
 interface ComingSoonFormProps {
   supplierId?: number;
   onSuccess?: () => void;
+  product?: any; // Existing product data for editing
+  isEditing?: boolean;
 }
 
-export default function ComingSoonForm({ supplierId = 1, onSuccess }: ComingSoonFormProps) {
+export default function ComingSoonForm({ 
+  supplierId = 1, 
+  onSuccess, 
+  product, 
+  isEditing = false 
+}: ComingSoonFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const [imageUrls, setImageUrls] = useState<string[]>([]);
-  const [sizes, setSizes] = useState<string[]>([]);
-  const [colors, setColors] = useState<string[]>([]);
+  const [imageUrls, setImageUrls] = useState<string[]>(product?.imageUrls || []);
+  const [sizes, setSizes] = useState<string[]>(product?.availableSizes || []);
+  const [colors, setColors] = useState<string[]>(product?.availableColors || []);
   const [newSize, setNewSize] = useState("");
   const [newColor, setNewColor] = useState("");
 
   const form = useForm<ComingSoonFormValues>({
     resolver: zodResolver(comingSoonFormSchema),
     defaultValues: {
-      name: "",
-      description: "",
-      price: 0,
-      category: "t-shirts",
-      supplierId: supplierId,
-      discount: 0,
-      availableSizes: [],
-      availableColors: [],
-      imageUrls: [],
-      releaseDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default to 30 days from now
+      name: product?.name || "",
+      description: product?.description || "",
+      price: product?.price || 0,
+      category: product?.category || "t-shirts",
+      supplierId: product?.supplierId || supplierId,
+      discount: product?.discount || 0,
+      availableSizes: product?.availableSizes || [],
+      availableColors: product?.availableColors || [],
+      imageUrls: product?.imageUrls || [],
+      releaseDate: product?.releaseDate ? new Date(product.releaseDate) : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // Default to 30 days from now
     },
   });
 
   const createMutation = useMutation({
-    mutationFn: async (data: ComingSoonFormValues & { comingSoon: boolean }) => {
-      const response = await apiRequest("POST", "/api/products/coming-soon", data);
+    mutationFn: async (data: ComingSoonFormValues & { comingSoon: boolean; id?: number }) => {
+      let response;
+      if (isEditing && product?.id) {
+        // Update existing product
+        response = await apiRequest("PUT", `/api/products/coming-soon/${product.id}`, data);
+      } else {
+        // Create new product
+        response = await apiRequest("POST", "/api/products/coming-soon", data);
+      }
       return response.json();
     },
     onSuccess: () => {
       toast({
-        title: "Coming Soon product created",
-        description: "The product has been added to the Coming Soon section",
+        title: isEditing ? "Coming Soon product updated" : "Coming Soon product created",
+        description: isEditing 
+          ? "The product has been updated successfully" 
+          : "The product has been added to the Coming Soon section",
       });
       
-      // Reset form
-      form.reset();
-      setImageUrls([]);
-      setSizes([]);
-      setColors([]);
+      if (!isEditing) {
+        // Only reset form for new products
+        form.reset();
+        setImageUrls([]);
+        setSizes([]);
+        setColors([]);
+      }
       
       // Invalidate queries
       queryClient.invalidateQueries({ queryKey: ["/api/coming-soon-products"] });
@@ -91,7 +109,7 @@ export default function ComingSoonForm({ supplierId = 1, onSuccess }: ComingSoon
     },
     onError: (error: Error) => {
       toast({
-        title: "Error creating product",
+        title: isEditing ? "Error updating product" : "Error creating product",
         description: error.message,
         variant: "destructive",
       });
@@ -427,7 +445,10 @@ export default function ComingSoonForm({ supplierId = 1, onSuccess }: ComingSoon
           className="w-full"
           disabled={createMutation.isPending}
         >
-          {createMutation.isPending ? "Creating..." : "Create Coming Soon Product"}
+          {createMutation.isPending 
+            ? (isEditing ? "Updating..." : "Creating...") 
+            : (isEditing ? "Update Coming Soon Product" : "Create Coming Soon Product")
+          }
         </Button>
       </form>
     </Form>
