@@ -7,15 +7,40 @@ async function throwIfResNotOk(res: Response) {
   }
 }
 
+interface ApiRequestOptions {
+  headers?: Record<string, string>;
+  isFormData?: boolean;
+}
+
 export async function apiRequest(
   method: string,
   url: string,
   data?: unknown | undefined,
+  options?: ApiRequestOptions
 ): Promise<Response> {
+  // Determine headers based on data type
+  let headers: Record<string, string> = {};
+  let body: any = undefined;
+
+  if (data) {
+    if (options?.isFormData) {
+      // FormData will automatically set the correct Content-Type with boundary
+      body = data;
+    } else {
+      headers["Content-Type"] = "application/json";
+      body = JSON.stringify(data);
+    }
+  }
+
+  // Merge with custom headers if provided
+  if (options?.headers) {
+    headers = { ...headers, ...options.headers };
+  }
+
   const res = await fetch(url, {
     method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
+    headers,
+    body,
     credentials: "include",
   });
 
