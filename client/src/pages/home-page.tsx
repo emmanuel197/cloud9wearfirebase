@@ -64,10 +64,10 @@ export default function HomePage() {
       {/* Featured Products Section */}
       <section id="products" className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-2 text-center">
+          <h2 className="text-3xl font-bold mb-2 text-center text-black">
             {t("featuredProducts.title")}
           </h2>
-          <p className="text-gray-500 text-center mb-12">
+          <p className="text-gray-700 text-center mb-12">
             {t("featuredProducts.subtitle")}
           </p>
 
@@ -106,8 +106,8 @@ export default function HomePage() {
       {/* Payment Options Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold mb-2 text-center">{t("payment.title")}</h2>
-          <p className="text-gray-500 text-center mb-12">{t("payment.subtitle")}</p>
+          <h2 className="text-3xl font-bold mb-2 text-center text-black">{t("payment.title")}</h2>
+          <p className="text-gray-700 text-center mb-12">{t("payment.subtitle")}</p>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Credit Card Payment */}
@@ -116,8 +116,8 @@ export default function HomePage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-50 rounded-full mb-4">
                   <CreditCardIcon className="text-[#ef0c11] text-2xl" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">{t("payment.creditCard.title")}</h3>
-                <p className="text-gray-500">{t("payment.creditCard.description")}</p>
+                <h3 className="text-xl font-bold mb-2 text-black">{t("payment.creditCard.title")}</h3>
+                <p className="text-gray-700">{t("payment.creditCard.description")}</p>
               </div>
               <div className="flex justify-center space-x-4 mt-6">
                 <IconVisa className="text-gray-800 text-3xl" />
@@ -132,8 +132,8 @@ export default function HomePage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-yellow-50 rounded-full mb-4">
                   <SmartphoneIcon className="text-[#ef0c11] text-2xl" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">{t("payment.mobileMoney.title")}</h3>
-                <p className="text-gray-500">{t("payment.mobileMoney.description")}</p>
+                <h3 className="text-xl font-bold mb-2 text-black">{t("payment.mobileMoney.title")}</h3>
+                <p className="text-gray-700">{t("payment.mobileMoney.description")}</p>
               </div>
               <div className="flex justify-center space-x-4 mt-6">
                 <span className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">MTN Money</span>
@@ -147,8 +147,8 @@ export default function HomePage() {
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-green-50 rounded-full mb-4">
                   <BuildingIcon className="text-[#ef0c11] text-2xl" />
                 </div>
-                <h3 className="text-xl font-bold mb-2">{t("payment.bankTransfer.title")}</h3>
-                <p className="text-gray-500">{t("payment.bankTransfer.description")}</p>
+                <h3 className="text-xl font-bold mb-2 text-black">{t("payment.bankTransfer.title")}</h3>
+                <p className="text-gray-700">{t("payment.bankTransfer.description")}</p>
               </div>
               <div className="flex justify-center mt-6">
                 <span className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">{t("payment.bankTransfer.badge")}</span>
