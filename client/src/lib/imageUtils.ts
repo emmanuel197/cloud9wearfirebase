@@ -8,6 +8,11 @@ export function normalizeImageUrl(url: string): string {
     return url;
   }
 
+  // Convert GitHub blob URLs to raw URLs
+  if (url.includes('github.com') && url.includes('/blob/')) {
+    return url.replace('github.com', 'raw.githubusercontent.com').replace('/blob/', '/');
+  }
+
   // Extract the relative path from replit domain URLs
   try {
     const urlObj = new URL(url);
