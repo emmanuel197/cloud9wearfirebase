@@ -11,6 +11,7 @@ import { Calendar, Clock, Plus, Pencil, Eye } from "lucide-react";
 import ComingSoonForm from "@/components/admin/coming-soon-form";
 import Loader from "@/components/ui/loader";
 import { Product } from "@shared/schema";
+import { normalizeImageUrl } from "@/lib/imageUtils";
 
 export default function ComingSoonPage() {
   const { t } = useLanguage();
@@ -133,7 +134,7 @@ export default function ComingSoonPage() {
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-3">
                                 <img 
-                                  src={product.imageUrls[0]} 
+                                  src={normalizeImageUrl(product.imageUrls[0])} 
                                   alt={product.name} 
                                   className="w-12 h-12 object-cover rounded"
                                 />
@@ -207,7 +208,7 @@ export default function ComingSoonPage() {
                       <Card key={product.id} className="overflow-hidden">
                         <div className="relative h-48">
                           <img 
-                            src={product.imageUrls[0]} 
+                            src={normalizeImageUrl(product.imageUrls[0])} 
                             alt={product.name} 
                             className="w-full h-full object-cover"
                           />
