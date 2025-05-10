@@ -530,7 +530,7 @@ export class MemStorage implements IStorage {
   }
 }
 
-export class DatabaseStorage implements IStorage {
+export class DatabaseStorage implements Partial<IStorage> {
   sessionStore: session.Store;
 
   constructor() {
