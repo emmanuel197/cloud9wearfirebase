@@ -455,9 +455,9 @@ export default function CheckoutPage() {
 
         {/* Order Summary */}
         <div>
-          <Card className="sticky top-4">
+          <Card className="sticky top-4 dark-mode-card">
             <CardHeader>
-              <CardTitle>{t("checkout.orderSummary")}</CardTitle>
+              <CardTitle className="text-on-dark">{t("checkout.orderSummary")}</CardTitle>
             </CardHeader>
             <CardContent>
               {/* Order items summary */}
@@ -468,8 +468,8 @@ export default function CheckoutPage() {
                     className="flex justify-between"
                   >
                     <div>
-                      <p className="font-medium">{item.product.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="font-medium text-on-dark">{item.product.name}</p>
+                      <p className="text-sm text-subtle-on-dark">
                         {item.size}, {item.color} × {item.quantity}
                       </p>
                     </div>
@@ -477,7 +477,7 @@ export default function CheckoutPage() {
                       <div className="flex flex-col items-end">
                         <PriceDisplay 
                           amount={item.product.price * (1 - Math.round(item.product.discount) / 100) * item.quantity}
-                          className="font-medium" 
+                          className="font-medium text-on-dark" 
                         />
                         <PriceDisplay 
                           amount={item.product.price * item.quantity}
@@ -487,7 +487,7 @@ export default function CheckoutPage() {
                     ) : (
                       <PriceDisplay
                         amount={item.product.price * item.quantity}
-                        className="font-medium"
+                        className="font-medium text-on-dark"
                       />
                     )}
                   </div>
@@ -499,25 +499,25 @@ export default function CheckoutPage() {
               {/* Totals */}
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">
+                  <span className="text-subtle-on-dark">
                     {t("checkout.subtotal")}
                   </span>
-                  <PriceDisplay amount={total} />
+                  <PriceDisplay amount={total} className="text-on-dark" />
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">
+                  <span className="text-subtle-on-dark">
                     {t("checkout.shipping")}
                   </span>
-                  <PriceDisplay amount={shippingCost} />
+                  <PriceDisplay amount={shippingCost} className="text-on-dark" />
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">{t("checkout.tax")}</span>
-                  <PriceDisplay amount={taxAmount} />
+                  <span className="text-subtle-on-dark">{t("checkout.tax")}</span>
+                  <PriceDisplay amount={taxAmount} className="text-on-dark" />
                 </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between font-semibold">
-                  <span>{t("checkout.total")}</span>
-                  <PriceDisplay amount={grandTotal} className="text-lg" />
+                  <span className="text-on-dark">{t("checkout.total")}</span>
+                  <PriceDisplay amount={grandTotal} className="text-lg text-on-dark" />
                 </div>
               </div>
             </CardContent>

@@ -70,28 +70,28 @@ export default function CartPage() {
         
         {/* Order Summary */}
         <div>
-          <Card>
+          <Card className="dark-mode-card">
             <CardHeader>
-              <CardTitle>{t("cart.orderSummary")}</CardTitle>
+              <CardTitle className="text-on-dark">{t("cart.orderSummary")}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">{t("cart.subtotal")}</span>
-                  <PriceDisplay amount={total} />
+                  <span className="text-subtle-on-dark">{t("cart.subtotal")}</span>
+                  <PriceDisplay amount={total} className="text-on-dark" />
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">{t("cart.shipping")}</span>
-                  <PriceDisplay amount={5} />
+                  <span className="text-subtle-on-dark">{t("cart.shipping")}</span>
+                  <PriceDisplay amount={5} className="text-on-dark" />
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">{t("cart.tax")}</span>
-                  <PriceDisplay amount={total * 0.1} />
+                  <span className="text-subtle-on-dark">{t("cart.tax")}</span>
+                  <PriceDisplay amount={total * 0.1} className="text-on-dark" />
                 </div>
                 <Separator className="my-2" />
                 <div className="flex justify-between font-semibold">
-                  <span>{t("cart.total")}</span>
-                  <PriceDisplay amount={total + 5 + total * 0.1} />
+                  <span className="text-on-dark">{t("cart.total")}</span>
+                  <PriceDisplay amount={total + 5 + total * 0.1} className="text-on-dark" />
                 </div>
               </div>
             </CardContent>
