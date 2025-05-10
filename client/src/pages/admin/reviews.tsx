@@ -120,7 +120,7 @@ export default function AdminReviews() {
   // Form schema for create review dialog
   const formSchema = z.object({
     productId: z.coerce.number().min(1, t("admin.reviews.productRequired")),
-    customerId: z.coerce.number().min(1, t("admin.reviews.customerRequired")),
+    customerId: z.coerce.number().optional(),
     rating: z.coerce.number().min(1).max(5),
     comment: z.string().min(5, t("admin.reviews.commentMinLength"))
   });
