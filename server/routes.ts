@@ -40,15 +40,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
   
   // Configure multer for image upload
-  // Ensure upload directory exists
-  const uploadDir = path.join(process.cwd(), 'uploads', 'products');
-  if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-  }
-  
   const multerStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, uploadDir);
+      cb(null, './uploads/products');
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -75,12 +69,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Role-based authorization middleware
   const requireRole = (roles: string[]) => {
     return (req: Request, res: Response, next: NextFunction) => {
-      if (!req.isAuthenticated() || !req.user) {
+      if (!req.isAuthenticated()) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
-      const userRole = req.user?.role;
-      if (!userRole || !roles.includes(userRole)) {
+      if (!roles.includes(req.user.role)) {
         return res.status(403).json({ message: "Forbidden: Insufficient permissions" });
       }
 
@@ -99,14 +92,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
     console.error("Unexpected error:", error);
     return res.status(500).json({ message: "Internal server error" });
-  };
-  
-  // Helper function to safely access req.user properties with TypeScript safety
-  const safeUser = (req: Request) => {
-    if (!req.isAuthenticated() || !req.user) {
-      return null;
-    }
-    return req.user;
   };
 
   // Products API
@@ -175,9 +160,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
       
       // If supplier is creating product, ensure supplierId is their own ID
-      const productUser = safeUser(req);
-      if (productUser?.role === "supplier") {
-        productData.supplierId = productUser.id;
+      if (req.user?.role === "supplier") {
+        productData.supplierId = req.user.id;
       }
       
       const product = await dbStorage.createProduct(productData);
@@ -233,9 +217,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       // If supplier is creating product, ensure supplierId is their own ID
-      const user = safeUser(req);
-      if (user?.role === "supplier") {
-        productData.supplierId = user.id;
+      if (req.user.role === "supplier") {
+        productData.supplierId = req.user.id;
       }
 
       const product = await dbStorage.createProduct(productData);
@@ -259,8 +242,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Suppliers can only update their own products
-      const user = safeUser(req);
-      if (user?.role === "supplier" && product.supplierId !== user.id) {
+      if (req.user.role === "supplier" && product.supplierId !== req.user.id) {
         return res.status(403).json({ message: "You can only update your own products" });
       }
 
@@ -300,9 +282,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const filters: any = {};
 
       // Customers can only see their own orders
-      const currentUser = safeUser(req);
-      if (currentUser?.role === "customer") {
-        filters.customerId = currentUser.id;
+      if (req.user.role === "customer") {
+        filters.customerId = req.user.id;
       } else if (req.query.customerId) {
         filters.customerId = Number(req.query.customerId);
       }
@@ -314,10 +295,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const orders = await dbStorage.getOrders(filters);
 
       // If supplier, filter orders that contain products they supply
-      const supplierUser = safeUser(req);
-      if (supplierUser?.role === "supplier") {
+      if (req.user.role === "supplier") {
         // Get all products by the supplier
-        const supplierProducts = await dbStorage.getProducts({ supplierId: supplierUser.id });
+        const supplierProducts = await dbStorage.getProducts({ supplierId: req.user.id });
         const supplierProductIds = supplierProducts.map(product => product.id);
 
         // For each order, get the items and check if any product is supplied by this supplier
@@ -360,8 +340,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Customers can only view their own orders
-      const orderUser = safeUser(req);
-      if (orderUser?.role === "customer" && order.customerId !== orderUser.id) {
+      if (req.user.role === "customer" && order.customerId !== req.user.id) {
         return res.status(403).json({ message: "You can only view your own orders" });
       }
 
@@ -369,10 +348,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const orderItems = await dbStorage.getOrderItems(orderId);
 
       // Suppliers can only view orders containing their products
-      const itemsUser = safeUser(req);
-      if (itemsUser?.role === "supplier") {
+      if (req.user.role === "supplier") {
         // Get all products by the supplier
-        const supplierProducts = await dbStorage.getProducts({ supplierId: itemsUser.id });
+        const supplierProducts = await dbStorage.getProducts({ supplierId: req.user.id });
         const supplierProductIds = supplierProducts.map(product => product.id);
 
         // Check if any order item is from this supplier
@@ -401,14 +379,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post("/api/orders", requireRole(["customer"]), async (req, res) => {
     try {
-      const createOrderUser = safeUser(req);
-      if (!createOrderUser) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
       const orderData = insertOrderSchema.parse({
         ...req.body,
-        customerId: createOrderUser.id
+        customerId: req.user.id
       });
 
       // Create the order
@@ -434,10 +407,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Clear user's cart
-      const cartUser = safeUser(req);
-      if (cartUser) {
-        await dbStorage.updateCart(cartUser.id, []);
-      }
+      await dbStorage.updateCart(req.user.id, []);
 
       res.status(201).json(order);
     } catch (error) {
@@ -484,10 +454,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // For suppliers, we need to check if this order contains their products
-      const orderUser = safeUser(req);
-      if (orderUser?.role === "supplier") {
+      if (req.user?.role === "supplier") {
         const orderItems = await dbStorage.getOrderItems(orderId);
-        const supplierProducts = await dbStorage.getProducts({ supplierId: orderUser.id });
+        const supplierProducts = await dbStorage.getProducts({ supplierId: req.user.id });
         const supplierProductIds = supplierProducts.map(product => product.id);
 
         // Check if any order item is from this supplier
@@ -511,13 +480,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Cart API
   app.get("/api/cart", requireRole(["customer"]), async (req, res) => {
     try {
-      const cartViewUser = safeUser(req);
-      if (!cartViewUser) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
-      const cart = await dbStorage.getCart(cartViewUser.id);
-      res.json(cart || { userId: cartViewUser.id, items: [] });
+      const cart = await dbStorage.getCart(req.user.id);
+      res.json(cart || { userId: req.user.id, items: [] });
     } catch (error) {
       console.error("Error fetching cart:", error);
       res.status(500).json({ message: "Failed to fetch cart" });
@@ -527,12 +491,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/cart", requireRole(["customer"]), async (req, res) => {
     try {
       const items = req.body.items as CartItem[];
-      const updateCartUser = safeUser(req);
-      if (!updateCartUser) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
-      const cart = await dbStorage.updateCart(updateCartUser.id, items);
+      const cart = await dbStorage.updateCart(req.user.id, items);
       res.json(cart);
     } catch (error) {
       console.error("Error updating cart:", error);
@@ -543,12 +502,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Supplier inventory API
   app.get("/api/inventory", requireRole(["supplier"]), async (req, res) => {
     try {
-      const inventoryUser = safeUser(req);
-      if (!inventoryUser) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
-      const inventory = await dbStorage.getInventory(inventoryUser.id);
+      const inventory = await dbStorage.getInventory(req.user.id);
       res.json(inventory);
     } catch (error) {
       console.error("Error fetching inventory:", error);
@@ -572,16 +526,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Product not found" });
       }
 
-      const inventoryUser = safeUser(req);
-      if (!inventoryUser) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
-      if (product.supplierId !== inventoryUser.id) {
+      if (product.supplierId !== req.user.id) {
         return res.status(403).json({ message: "You can only update your own inventory" });
       }
 
-      const inventory = await dbStorage.updateInventory(inventoryUser.id, productId, stock);
+      const inventory = await dbStorage.updateInventory(req.user.id, productId, stock);
 
       // Also update the product stock
       await dbStorage.updateProduct(productId, { stock });
@@ -960,15 +909,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.post("/api/products/:id/reviews", requireRole(["customer"]), async (req, res) => {
     try {
       const productId = parseInt(req.params.id);
-      const reviewUser = safeUser(req);
-      if (!reviewUser) {
-        return res.status(401).json({ message: "Unauthorized" });
-      }
-      
       const review = insertReviewSchema.parse({
         ...req.body,
         productId,
-        customerId: reviewUser.id,
+        customerId: req.user.id,
       });
 
       const newReview = await dbStorage.createReview(review);
@@ -1000,10 +944,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const reviewsWithProducts = await Promise.all(
         reviews.map(async (review) => {
           const product = await dbStorage.getProduct(review.productId);
-          let customer = null;
-          if (review.customerId !== null) {
-            customer = await dbStorage.getUser(review.customerId);
-          }
+          const customer = await dbStorage.getUser(review.customerId);
           
           return {
             ...review,
@@ -1036,10 +977,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const reviewsWithDetails = await Promise.all(
         reviews.map(async (review) => {
           const product = await dbStorage.getProduct(review.productId);
-          let customer = null;
-          if (review.customerId !== null) {
-            customer = await dbStorage.getUser(review.customerId);
-          }
+          const customer = await dbStorage.getUser(review.customerId);
           
           return {
             ...review,
@@ -1091,8 +1029,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
       
       // Create URL for uploaded image
-      // Use relative URL path to avoid hardcoded domain issues
-      const imageUrl = `/uploads/products/${req.file.filename}`;
+      const baseUrl = req.protocol + '://' + req.get('host');
+      const imageUrl = `${baseUrl}/uploads/products/${req.file.filename}`;
       
       res.status(201).json({ 
         url: imageUrl,
@@ -1106,7 +1044,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Serve uploaded files statically
-  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+  app.use('/uploads', express.static('./uploads'));
 
   const httpServer = createServer(app);
   return httpServer;

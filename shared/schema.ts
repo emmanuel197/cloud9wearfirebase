@@ -125,7 +125,7 @@ export type InsertSupplierInventory = z.infer<typeof insertSupplierInventorySche
 export const reviews = pgTable("reviews", {
   id: serial("id").primaryKey(),
   productId: integer("product_id").notNull(),
-  customerId: integer("customer_id"),  // Making this nullable for admin-created reviews
+  customerId: integer("customer_id").notNull(),
   rating: integer("rating").notNull(),
   comment: text("comment").notNull(),
   createdAt: timestamp("created_at").defaultNow(),

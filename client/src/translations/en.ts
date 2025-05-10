@@ -376,7 +376,6 @@ const translations = {
       products: "Products",
       customers: "Customers",
       suppliers: "Suppliers",
-      reviews: "Reviews",
       comingSoon: "Coming Soon",
       settings: "Settings",
       storefront: "Visit Store",
@@ -595,52 +594,6 @@ const translations = {
         status: "Status",
         actions: "Actions"
       }
-    },
-    
-    reviews: {
-      title: "Review Management",
-      description: "Manage product reviews across your store",
-      allReviews: "All Reviews",
-      addReview: "Add Review",
-      addReviewDesc: "Create a new product review",
-      viewProduct: "View Product",
-      deleteReview: "Delete Review",
-      search: "Search reviews...",
-      sortBy: "Sort by",
-      sortField: "Sort field",
-      date: "Date",
-      rating: "Rating",
-      product: "Product",
-      customer: "Customer", 
-      comment: "Comment",
-      actions: "Actions",
-      id: "ID",
-      
-      selectProduct: "Select a product",
-      selectCustomer: "Select a customer",
-      selectRating: "Rating",
-      commentPlaceholder: "Enter review comment...",
-      commentDesc: "This will be displayed publicly on the product page",
-      commentMinLength: "Comment must be at least 5 characters",
-      productRequired: "Product is required",
-      customerRequired: "Customer is required",
-      customerOptional: "Leave empty for general product reviews not tied to a specific customer",
-      noCustomer: "No customer (general review)",
-      adminCreated: "Admin Review",
-      systemReview: "System Review",
-      
-      noReviews: "No reviews found",
-      noSearchResults: "No reviews matching your search",
-      
-      createSuccess: "Review created successfully",
-      createSuccessDesc: "The review has been added to the product",
-      createError: "Failed to create review",
-      
-      deleteConfirmTitle: "Delete Review?",
-      deleteConfirmDesc: "This action cannot be undone. The review will be permanently deleted.",
-      deleteSuccess: "Review deleted successfully",
-      deleteSuccessDesc: "The review has been removed",
-      deleteError: "Failed to delete review"
     }
   },
   
@@ -779,8 +732,7 @@ const translations = {
     none: "None",
     back: "Back",
     next: "Next",
-    previous: "Previous",
-    optional: "Optional"
+    previous: "Previous"
   },
   
   // About Page

@@ -8,7 +8,7 @@ import { useLanguage } from "@/hooks/use-language";
 // Define custom Paystack metadata interface
 interface PaystackMetadata {
   paymentMethod: string;
-  custom_fields: Array<{
+  custom_fields?: Array<{
     display_name: string;
     variable_name: string;
     value: string;
@@ -26,7 +26,6 @@ interface PaystackButtonProps {
   metadata?: Record<string, any>;
   reference?: string;
   disabled?: boolean;
-  callback?: (response: { reference: string }) => void;
 }
 
 export function PaystackButton({

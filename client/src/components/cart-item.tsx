@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Minus, Plus, Trash2 } from "lucide-react";
 import PriceDisplay from "@/components/price-display";
 import { getColorHex } from "@/lib/colorUtils";
-import { normalizeImageUrl } from "@/lib/imageUtils";
 
 interface CartItemProps {
   item: {
@@ -35,7 +34,7 @@ export default function CartItem({ item }: CartItemProps) {
     <div className="flex py-6 px-4">
       <div className="h-24 w-24 flex-shrink-0 overflow-hidden rounded-md border border-gray-200">
         <img
-          src={normalizeImageUrl(item.product.imageUrls[0])}
+          src={item.product.imageUrls[0]}
           alt={item.product.name}
           className="h-full w-full object-cover object-center"
         />

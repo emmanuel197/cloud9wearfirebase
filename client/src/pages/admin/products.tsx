@@ -13,7 +13,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import ColorPicker from "@/components/admin/color-picker";
 import { getColorHex } from "@/lib/colorUtils";
-import { normalizeImageUrl } from "@/lib/imageUtils";
 import { 
   Pencil, 
   Trash2, 
@@ -658,7 +657,7 @@ export default function AdminProducts() {
                           {field.value.map((url, index) => (
                             <div key={index} className="flex items-center justify-between p-2 border rounded">
                               <div className="flex items-center overflow-hidden">
-                                <img src={normalizeImageUrl(url)} alt="" className="w-10 h-10 object-cover mr-2" />
+                                <img src={url} alt="" className="w-10 h-10 object-cover mr-2" />
                                 <span className="truncate">{url}</span>
                               </div>
                               <Button 

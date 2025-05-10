@@ -22,7 +22,6 @@ import {
   SelectValue 
 } from "@/components/ui/select";
 import PriceDisplay from "@/components/price-display";
-import { normalizeImageUrl } from "@/lib/imageUtils";
 
 interface ProductCardProps {
   product: Product;
@@ -72,7 +71,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <Card className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer group">
         <div className="relative">
           <img 
-            src={normalizeImageUrl(product.imageUrls[0])} 
+            src={product.imageUrls[0]} 
             alt={product.name} 
             className="w-full h-64 object-cover"
           />
@@ -142,7 +141,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             <div className="grid grid-cols-1 items-center gap-4">
               <div className="flex items-center gap-4">
                 <img 
-                  src={normalizeImageUrl(product.imageUrls[0])} 
+                  src={product.imageUrls[0]} 
                   alt={product.name} 
                   className="w-16 h-16 object-cover rounded"
                 />

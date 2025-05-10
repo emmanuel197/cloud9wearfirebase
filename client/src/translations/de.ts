@@ -337,7 +337,6 @@ const translations = {
       products: "Produkte",
       customers: "Kunden",
       suppliers: "Lieferanten",
-      reviews: "Bewertungen",
       comingSoon: "Demnächst",
       settings: "Einstellungen",
       storefront: "Shop Besuchen",
@@ -499,52 +498,6 @@ const translations = {
         status: "Status",
         actions: "Aktionen"
       }
-    },
-    
-    reviews: {
-      title: "Bewertungsverwaltung",
-      description: "Verwalten Sie Produktbewertungen in Ihrem Shop",
-      allReviews: "Alle Bewertungen",
-      addReview: "Bewertung hinzufügen",
-      addReviewDesc: "Erstellen Sie eine neue Produktbewertung",
-      viewProduct: "Produkt anzeigen",
-      deleteReview: "Bewertung löschen",
-      search: "Bewertungen durchsuchen...",
-      sortBy: "Sortieren nach",
-      sortField: "Sortierfeld",
-      date: "Datum",
-      rating: "Bewertung",
-      product: "Produkt",
-      customer: "Kunde", 
-      comment: "Kommentar",
-      actions: "Aktionen",
-      id: "ID",
-      
-      selectProduct: "Produkt auswählen",
-      selectCustomer: "Kunde auswählen",
-      selectRating: "Bewertung",
-      commentPlaceholder: "Kommentar eingeben...",
-      commentDesc: "Wird öffentlich auf der Produktseite angezeigt",
-      commentMinLength: "Kommentar muss mindestens 5 Zeichen haben",
-      productRequired: "Produkt ist erforderlich",
-      customerRequired: "Kunde ist erforderlich",
-      customerOptional: "Leer lassen für allgemeine Bewertungen, die nicht mit einem bestimmten Kunden verknüpft sind",
-      noCustomer: "Kein Kunde (allgemeine Bewertung)",
-      adminCreated: "Admin-Bewertung",
-      systemReview: "Systembewertung",
-      
-      noReviews: "Keine Bewertungen gefunden",
-      noSearchResults: "Keine Bewertungen zu Ihrer Suche gefunden",
-      
-      createSuccess: "Bewertung erfolgreich erstellt",
-      createSuccessDesc: "Die Bewertung wurde zum Produkt hinzugefügt",
-      createError: "Fehler beim Erstellen der Bewertung",
-      
-      deleteConfirmTitle: "Bewertung löschen?",
-      deleteConfirmDesc: "Diese Aktion kann nicht rückgängig gemacht werden. Die Bewertung wird dauerhaft gelöscht.",
-      deleteSuccess: "Bewertung erfolgreich gelöscht",
-      deleteSuccessDesc: "Die Bewertung wurde entfernt",
-      deleteError: "Fehler beim Löschen der Bewertung"
     }
   },
   

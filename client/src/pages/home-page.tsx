@@ -9,7 +9,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import heroImage from "../assets/hero-image.jpeg";
 import ProductCard from "@/components/product-card";
 import { AlertCircle, Clock } from "lucide-react";
-import { normalizeImageUrl } from "@/lib/imageUtils";
 
 export default function HomePage() {
   const { t } = useLanguage();
@@ -146,7 +145,7 @@ export default function HomePage() {
                   <div className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
                     <div className="relative">
                       <img
-                        src={normalizeImageUrl(product.imageUrls[0])}
+                        src={product.imageUrls[0] || "https://via.placeholder.com/300"}
                         alt={product.name}
                         className="w-full h-64 object-cover"
                       />

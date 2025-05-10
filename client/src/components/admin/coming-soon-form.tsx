@@ -18,7 +18,6 @@ import { CalendarIcon, Trash2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import ImageUpload from "@/components/image-upload";
 import ColorPicker from "./color-picker";
-import { normalizeImageUrl } from "@/lib/imageUtils";
 
 const comingSoonFormSchema = z.object({
   name: z.string().min(3, { message: "Product name must be at least 3 characters" }),
@@ -336,7 +335,7 @@ export default function ComingSoonForm({
             {imageUrls.map((url, index) => (
               <div key={index} className="relative group">
                 <img
-                  src={normalizeImageUrl(url)}
+                  src={url}
                   alt={`Product ${index + 1}`}
                   className="h-20 w-full object-cover rounded border border-gray-200"
                 />

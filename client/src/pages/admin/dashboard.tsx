@@ -14,21 +14,21 @@ import PriceDisplay from "@/components/price-display";
 export default function AdminDashboard() {
   const { t } = useLanguage();
   const { user } = useAuth();
-
+  
   // Fetch admin stats
   const { data: stats, isLoading } = useQuery({
     queryKey: ["/api/admin/stats"],
   });
-
+  
   // Fetch recent orders
   const { data: recentOrders, isLoading: isLoadingOrders } = useQuery({
     queryKey: ["/api/orders"],
   });
-
+  
   if (!user || user.role !== "admin") {
     return null; // Protected by ProtectedRoute component
   }
-
+  
   const orderStatusColors: Record<string, string> = {
     "pending": "bg-amber-100 text-amber-800",
     "processing": "bg-blue-100 text-blue-800",
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
     "delivered": "bg-green-100 text-green-800",
     "cancelled": "bg-red-100 text-red-800"
   };
-
+  
   const orderColumns = [
     {
       accessorKey: "id",
@@ -77,11 +77,11 @@ export default function AdminDashboard() {
       },
     },
   ];
-
+  
   return (
     <div className="flex">
       <AdminSidebar />
-
+      
       <div className="flex-1 p-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">{t("admin.dashboard.title")}</h1>
@@ -89,7 +89,7 @@ export default function AdminDashboard() {
             {new Date().toLocaleDateString()} | {user.fullName}
           </span>
         </div>
-
+        
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {isLoading ? (
@@ -131,7 +131,7 @@ export default function AdminDashboard() {
             </>
           )}
         </div>
-
+        
         {/* Sales Analytics */}
         <Card className="mb-8">
           <CardHeader>
@@ -142,7 +142,7 @@ export default function AdminDashboard() {
             <SalesChart />
           </CardContent>
         </Card>
-
+        
         {/* Recent Orders */}
         <Card>
           <CardHeader>

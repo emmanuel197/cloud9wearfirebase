@@ -7,7 +7,6 @@ import { useCart } from "@/contexts/CartContext";
 import ProductReview from "@/components/product-review";
 import ColorPalette from "@/components/color-palette";
 import { getColorHex } from "@/lib/colorUtils";
-import { normalizeImageUrl } from "@/lib/imageUtils";
 import { 
   Breadcrumb, 
   BreadcrumbItem, 
@@ -135,7 +134,7 @@ export default function ProductDetailPage() {
         <div>
           <div className="relative rounded-lg overflow-hidden border border-gray-200">
             <img
-              src={normalizeImageUrl(product.imageUrls[currentImageIndex])}
+              src={product.imageUrls[currentImageIndex]}
               alt={`${product.name} - ${currentImageIndex === 0 ? 'Front' : 'Back'} view`}
               className="w-full h-auto object-cover"
             />
@@ -208,7 +207,7 @@ export default function ProductDetailPage() {
                   }}
                 >
                   <img
-                    src={normalizeImageUrl(url)}
+                    src={url}
                     alt={`${product.name} view ${index + 1}`}
                     className="w-full h-20 object-cover"
                   />

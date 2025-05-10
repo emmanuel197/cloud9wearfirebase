@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { Star } from "lucide-react";
 import { Link } from "wouter";
 import { useLanguage } from "@/hooks/use-language";
-import { normalizeImageUrl } from "@/lib/imageUtils";
 import {
   Carousel,
   CarouselContent,
@@ -131,7 +130,7 @@ export default function TopReviews() {
                       <Link to={`/products/${review.product.id}`} className="flex items-center gap-3 hover:opacity-80 transition-opacity w-full">
                         <div className="w-12 h-12 bg-gray-100 rounded overflow-hidden flex items-center justify-center">
                           <img 
-                            src={normalizeImageUrl(review.product.imageUrl)} 
+                            src={review.product.imageUrl} 
                             alt={review.product.name}
                             className="w-full h-full object-cover"
                           />
