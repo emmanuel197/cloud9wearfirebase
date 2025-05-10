@@ -1,0 +1,135 @@
+[05:05:41.661] Running build in Washington, D.C., USA (East) – iad1
+[05:05:41.705] Cloning github.com/emmanuel197/Cloud9wear (Branch: main, Commit: c764c81)
+[05:05:42.732] Cloning completed: 1.027s
+[05:05:43.586] Restored build cache from previous deployment (BuJYXeXJ528827JCZSmcA6GoS6WA)
+[05:05:44.158] Running "vercel build"
+[05:05:44.542] Vercel CLI 41.7.3
+[05:05:44.663] WARN! Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
+[05:05:48.411] Installing dependencies...
+[05:05:50.014] 
+[05:05:50.015] up to date in 1s
+[05:05:50.016] 
+[05:05:50.016] 72 packages are looking for funding
+[05:05:50.016]   run `npm fund` for details
+[05:05:50.049] Running "npm run build"
+[05:05:50.165] 
+[05:05:50.165] > rest-express@1.0.0 build
+[05:05:50.166] > tsc && vite build && esbuild server/index.ts --bundle --platform=node --target=node18 --format=esm --outdir=dist --external:@babel/* --external:lightningcss --loader:.ts=tsx
+[05:05:50.166] 
+[05:06:03.129] client/src/App.tsx(53,76): error TS2322: Type '{ children: Element; role: string; }' is not assignable to type 'IntrinsicAttributes & ProtectedRouteProps'.
+[05:06:03.130]   Property 'role' does not exist on type 'IntrinsicAttributes & ProtectedRouteProps'. Did you mean 'roles'?
+[05:06:03.130] client/src/App.tsx(54,78): error TS2322: Type '{ children: Element; role: string; }' is not assignable to type 'IntrinsicAttributes & ProtectedRouteProps'.
+[05:06:03.131]   Property 'role' does not exist on type 'IntrinsicAttributes & ProtectedRouteProps'. Did you mean 'roles'?
+[05:06:03.131] client/src/App.tsx(55,81): error TS2322: Type '{ children: Element; role: string; }' is not assignable to type 'IntrinsicAttributes & ProtectedRouteProps'.
+[05:06:03.131]   Property 'role' does not exist on type 'IntrinsicAttributes & ProtectedRouteProps'. Did you mean 'roles'?
+[05:06:03.131] client/src/App.tsx(56,77): error TS2322: Type '{ children: Element; role: string; }' is not assignable to type 'IntrinsicAttributes & ProtectedRouteProps'.
+[05:06:03.132]   Property 'role' does not exist on type 'IntrinsicAttributes & ProtectedRouteProps'. Did you mean 'roles'?
+[05:06:03.132] client/src/App.tsx(57,79): error TS2322: Type '{ children: Element; role: string; }' is not assignable to type 'IntrinsicAttributes & ProtectedRouteProps'.
+[05:06:03.132]   Property 'role' does not exist on type 'IntrinsicAttributes & ProtectedRouteProps'. Did you mean 'roles'?
+[05:06:03.132] client/src/App.tsx(58,79): error TS2322: Type '{ children: Element; role: string; }' is not assignable to type 'IntrinsicAttributes & ProtectedRouteProps'.
+[05:06:03.133]   Property 'role' does not exist on type 'IntrinsicAttributes & ProtectedRouteProps'. Did you mean 'roles'?
+[05:06:03.133] client/src/App.tsx(59,72): error TS2322: Type '{ children: Element; role: string; }' is not assignable to type 'IntrinsicAttributes & ProtectedRouteProps'.
+[05:06:03.133]   Property 'role' does not exist on type 'IntrinsicAttributes & ProtectedRouteProps'. Did you mean 'roles'?
+[05:06:03.133] client/src/App.tsx(60,82): error TS2322: Type '{ children: Element; role: string; }' is not assignable to type 'IntrinsicAttributes & ProtectedRouteProps'.
+[05:06:03.133]   Property 'role' does not exist on type 'IntrinsicAttributes & ProtectedRouteProps'. Did you mean 'roles'?
+[05:06:03.134] client/src/App.tsx(61,79): error TS2322: Type '{ children: Element; role: string; }' is not assignable to type 'IntrinsicAttributes & ProtectedRouteProps'.
+[05:06:03.134]   Property 'role' does not exist on type 'IntrinsicAttributes & ProtectedRouteProps'. Did you mean 'roles'?
+[05:06:03.134] client/src/components/admin/color-picker.tsx(85,49): error TS2339: Property 'form' does not exist on type 'string | Translations'.
+[05:06:03.134]   Property 'form' does not exist on type 'string'.
+[05:06:03.134] client/src/components/admin/sales-chart.tsx(45,5): error TS18046: 'orders' is of type 'unknown'.
+[05:06:03.135] client/src/components/paystack-button.tsx(106,9): error TS2322: Type '{ text: string; className: string; onSuccess: (reference: { reference: string; }) => void; onClose: () => void; reference: string; email: string; amount: number; publicKey: any; currency: string; metadata: PaystackMetadata; callback: (response: { ...; }) => void; disabled: boolean; customButton: (props: any) => Elem...' is not assignable to type 'IntrinsicAttributes & PaystackButtonProps'.
+[05:06:03.137]   Property 'callback' does not exist on type 'IntrinsicAttributes & PaystackButtonProps'.
+[05:06:03.138] client/src/contexts/LanguageContext.tsx(61,22): error TS7053: Element implicitly has an 'any' type because expression of type 'string' can't be used to index type '{ en: { navigation: { home: string; products: string; admin: string; supplier: string; cart: string; login: string; logout: string; adminDashboard: string; supplierDashboard: string; mobileMenuDescription: string; language: string; }; ... 19 more ...; privacy: { ...; }; }; fr: { ...; }; es: { ...; }; de: { ...; }; }'.
+[05:06:03.138]   No index signature with a parameter of type 'string' was found on type '{ en: { navigation: { home: string; products: string; admin: string; supplier: string; cart: string; login: string; logout: string; adminDashboard: string; supplierDashboard: string; mobileMenuDescription: string; language: string; }; ... 19 more ...; privacy: { ...; }; }; fr: { ...; }; es: { ...; }; de: { ...; }; }'.
+[05:06:03.138] client/src/pages/admin/dashboard.tsx(106,31): error TS2339: Property 'totalSales' does not exist on type '{}'.
+[05:06:03.138] client/src/pages/admin/dashboard.tsx(111,35): error TS2339: Property 'totalSales' does not exist on type '{}'.
+[05:06:03.138] client/src/pages/admin/dashboard.tsx(117,31): error TS2339: Property 'totalOrders' does not exist on type '{}'.
+[05:06:03.138] client/src/pages/admin/dashboard.tsx(118,40): error TS2339: Property 'pendingOrders' does not exist on type '{}'.
+[05:06:03.138] client/src/pages/admin/dashboard.tsx(123,31): error TS2339: Property 'totalCustomers' does not exist on type '{}'.
+[05:06:03.138] client/src/pages/admin/dashboard.tsx(128,31): error TS2339: Property 'totalProducts' does not exist on type '{}'.
+[05:06:03.138] client/src/pages/admin/dashboard.tsx(164,37): error TS2339: Property 'slice' does not exist on type '{}'.
+[05:06:03.138] client/src/pages/admin/products.tsx(647,79): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Record<string, string>'.
+[05:06:03.138] client/src/pages/admin/products.tsx(649,77): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Record<string, string>'.
+[05:06:03.139] client/src/pages/admin/products.tsx(650,79): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Record<string, string>'.
+[05:06:03.139] client/src/pages/admin/products.tsx(651,69): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Record<string, string>'.
+[05:06:03.139] client/src/pages/admin/products.tsx(652,75): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Record<string, string>'.
+[05:06:03.139] client/src/pages/admin/products.tsx(653,75): error TS2345: Argument of type 'string' is not assignable to parameter of type 'Record<string, string>'.
+[05:06:03.139] client/src/pages/admin/reviews.tsx(594,37): error TS18048: 'field.value' is possibly 'undefined'.
+[05:06:03.139] client/src/pages/admin/reviews.tsx(594,55): error TS18048: 'field.value' is possibly 'undefined'.
+[05:06:03.139] client/src/pages/supplier/dashboard.tsx(24,36): error TS2339: Property 'filter' does not exist on type '{}'.
+[05:06:03.139] client/src/pages/supplier/dashboard.tsx(24,43): error TS7006: Parameter 'item' implicitly has an 'any' type.
+[05:06:03.139] client/src/pages/supplier/dashboard.tsx(94,35): error TS2339: Property 'length' does not exist on type '{}'.
+[05:06:03.139] client/src/pages/supplier/dashboard.tsx(105,35): error TS2339: Property 'reduce' does not exist on type '{}'.
+[05:06:03.139] client/src/pages/supplier/dashboard.tsx(105,43): error TS7006: Parameter 'sum' implicitly has an 'any' type.
+[05:06:03.139] client/src/pages/supplier/dashboard.tsx(105,48): error TS7006: Parameter 'item' implicitly has an 'any' type.
+[05:06:03.139] server/auth.ts(151,72): error TS2694: Namespace 'global.Express' has no exported member 'NextFunction'.
+[05:06:03.139] server/auth.ts(153,20): error TS2339: Property 'status' does not exist on type 'Response'.
+[05:06:03.139] server/auth.ts(157,20): error TS2339: Property 'status' does not exist on type 'Response'.
+[05:06:03.139] server/routes.ts(221,11): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.139] server/routes.ts(222,34): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.139] server/routes.ts(246,11): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.140] server/routes.ts(246,66): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.140] server/routes.ts(286,11): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.140] server/routes.ts(287,30): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.140] server/routes.ts(299,11): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.140] server/routes.ts(301,76): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.140] server/routes.ts(344,11): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.140] server/routes.ts(344,64): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.140] server/routes.ts(352,11): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(354,76): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(385,21): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(411,34): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(484,44): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(485,34): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(495,47): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(506,54): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(530,34): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(534,57): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(916,21): error TS18048: 'req.user' is possibly 'undefined'.
+[05:06:03.141] server/routes.ts(948,52): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+[05:06:03.141]   Type 'null' is not assignable to type 'number'.
+[05:06:03.141] server/routes.ts(981,52): error TS2345: Argument of type 'number | null' is not assignable to parameter of type 'number'.
+[05:06:03.141]   Type 'null' is not assignable to type 'number'.
+[05:06:03.141] server/storage.ts(136,11): error TS2322: Type '{ id: number; createdAt: Date; email: string; username: string; password: string; fullName: string; role?: string | undefined; }' is not assignable to type '{ id: number; role: string; email: string; username: string; password: string; fullName: string; createdAt: Date | null; }'.
+[05:06:03.141]   Types of property 'role' are incompatible.
+[05:06:03.141]     Type 'string | undefined' is not assignable to type 'string'.
+[05:06:03.141]       Type 'undefined' is not assignable to type 'string'.
+[05:06:03.141] server/storage.ts(177,11): error TS2322: Type '{ id: number; name: string; description: string; category: string; price: number; availableSizes: string[]; availableColors: string[]; imageUrls: string[]; supplierId: number; discount?: number | null | undefined; comingSoon?: boolean | undefined; stock?: number | undefined; isActive?: boolean | undefined; releaseDa...' is not assignable to type '{ id: number; name: string; description: string; discount: number | null; comingSoon: boolean; category: string; stock: number; price: number; availableSizes: string[]; availableColors: string[]; imageUrls: string[]; supplierId: number; isActive: boolean; releaseDate: Date | null; }'.
+[05:06:03.141]   Types of property 'discount' are incompatible.
+[05:06:03.141]     Type 'number | null | undefined' is not assignable to type 'number | null'.
+[05:06:03.141]       Type 'undefined' is not assignable to type 'number | null'.
+[05:06:03.142] server/storage.ts(221,11): error TS2322: Type '{ id: number; orderDate: Date; paymentMethod: string; customerId: number; totalAmount: number; shippingAddress: string; contactPhone: string; status?: string | undefined; paymentStatus?: string | undefined; deliveryTrackingCode?: string | ... 1 more ... | undefined; estimatedDeliveryDate?: Date | ... 1 more ... | un...' is not assignable to type '{ id: number; status: string; paymentMethod: string; paymentStatus: string; customerId: number; totalAmount: number; shippingAddress: string; contactPhone: string; orderDate: Date | null; deliveryTrackingCode: string | null; estimatedDeliveryDate: Date | null; }'.
+[05:06:03.142]   Types of property 'status' are incompatible.
+[05:06:03.142]     Type 'string | undefined' is not assignable to type 'string'.
+[05:06:03.149]       Type 'undefined' is not assignable to type 'string'.
+[05:06:03.150] server/storage.ts(355,16): error TS2769: No overload matches this call.
+[05:06:03.150]   Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+[05:06:03.150]     Argument of type 'Date | null' is not assignable to parameter of type 'string | number | Date'.
+[05:06:03.150]       Type 'null' is not assignable to type 'string | number | Date'.
+[05:06:03.150]   Overload 2 of 4, '(value: string | number): Date', gave the following error.
+[05:06:03.150]     Argument of type 'Date | null' is not assignable to parameter of type 'string | number'.
+[05:06:03.150]       Type 'null' is not assignable to type 'string | number'.
+[05:06:03.150] server/storage.ts(355,50): error TS2769: No overload matches this call.
+[05:06:03.150]   Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+[05:06:03.150]     Argument of type 'Date | null' is not assignable to parameter of type 'string | number | Date'.
+[05:06:03.150]       Type 'null' is not assignable to type 'string | number | Date'.
+[05:06:03.150]   Overload 2 of 4, '(value: string | number): Date', gave the following error.
+[05:06:03.150]     Argument of type 'Date | null' is not assignable to parameter of type 'string | number'.
+[05:06:03.150]       Type 'null' is not assignable to type 'string | number'.
+[05:06:03.156] server/storage.ts(617,9): error TS2740: Type 'Omit<PgSelectBase<"products", { id: PgColumn<{ name: "id"; tableName: "products"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; isActive: PgColumn<...>; }, ... 5 mo...' is missing the following properties from type 'PgSelectBase<"products", { id: PgColumn<{ name: "id"; tableName: "products"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; isActive: PgColum...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+[05:06:03.156] server/storage.ts(620,9): error TS2740: Type 'Omit<PgSelectBase<"products", { id: PgColumn<{ name: "id"; tableName: "products"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; isActive: PgColumn<...>; }, ... 5 mo...' is missing the following properties from type 'PgSelectBase<"products", { id: PgColumn<{ name: "id"; tableName: "products"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; isActive: PgColum...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+[05:06:03.156] server/storage.ts(623,9): error TS2740: Type 'Omit<PgSelectBase<"products", { id: PgColumn<{ name: "id"; tableName: "products"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; ... 5 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; isActive: PgColumn<...>; }, ... 5 mo...' is missing the following properties from type 'PgSelectBase<"products", { id: PgColumn<{ name: "id"; tableName: "products"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 10 more ...; isActive: PgColum...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+[05:06:03.156] server/storage.ts(643,7): error TS2322: Type '{ id: number; name: string; description: string; price: number; category: string; imageUrls: string[]; availableSizes: string[]; availableColors: string[]; supplierId: number; stock: number; discount: number | null; isActive: boolean; }[]' is not assignable to type '{ id: number; name: string; description: string; discount: number | null; comingSoon: boolean; category: string; stock: number; price: number; availableSizes: string[]; availableColors: string[]; imageUrls: string[]; supplierId: number; isActive: boolean; releaseDate: Date | null; }[]'.
+[05:06:03.156]   Type '{ id: number; name: string; description: string; price: number; category: string; imageUrls: string[]; availableSizes: string[]; availableColors: string[]; supplierId: number; stock: number; discount: number | null; isActive: boolean; }' is missing the following properties from type '{ id: number; name: string; description: string; discount: number | null; comingSoon: boolean; category: string; stock: number; price: number; availableSizes: string[]; availableColors: string[]; imageUrls: string[]; supplierId: number; isActive: boolean; releaseDate: Date | null; }': comingSoon, releaseDate
+[05:06:03.156] server/storage.ts(646,5): error TS2322: Type '{ id: number; name: string; description: string; price: number; category: string; imageUrls: string[]; availableSizes: string[]; availableColors: string[]; supplierId: number; stock: number; discount: number | null; isActive: boolean; }[]' is not assignable to type '{ id: number; name: string; description: string; discount: number | null; comingSoon: boolean; category: string; stock: number; price: number; availableSizes: string[]; availableColors: string[]; imageUrls: string[]; supplierId: number; isActive: boolean; releaseDate: Date | null; }[]'.
+[05:06:03.156]   Type '{ id: number; name: string; description: string; price: number; category: string; imageUrls: string[]; availableSizes: string[]; availableColors: string[]; supplierId: number; stock: number; discount: number | null; isActive: boolean; }' is missing the following properties from type '{ id: number; name: string; description: string; discount: number | null; comingSoon: boolean; category: string; stock: number; price: number; availableSizes: string[]; availableColors: string[]; imageUrls: string[]; supplierId: number; isActive: boolean; releaseDate: Date | null; }': comingSoon, releaseDate
+[05:06:03.156] server/storage.ts(743,9): error TS2740: Type 'Omit<PgSelectBase<"orders", { id: PgColumn<{ name: "id"; tableName: "orders"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; estimatedDelivery...' is missing the following properties from type 'PgSelectBase<"orders", { id: PgColumn<{ name: "id"; tableName: "orders"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; estimatedDeliveryDate:...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+[05:06:03.157] server/storage.ts(746,9): error TS2740: Type 'Omit<PgSelectBase<"orders", { id: PgColumn<{ name: "id"; tableName: "orders"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; estimatedDelivery...' is missing the following properties from type 'PgSelectBase<"orders", { id: PgColumn<{ name: "id"; tableName: "orders"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 9 more ...; estimatedDeliveryDate:...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+[05:06:03.157] server/storage.ts(903,7): error TS2740: Type 'Omit<PgSelectBase<"reviews", { id: PgColumn<{ name: "id"; tableName: "reviews"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 4 more ...; createdAt: PgCo...' is missing the following properties from type 'PgSelectBase<"reviews", { id: PgColumn<{ name: "id"; tableName: "reviews"; dataType: "number"; columnType: "PgSerial"; data: number; driverParam: number; notNull: true; hasDefault: true; isPrimaryKey: true; isAutoincrement: false; ... 4 more ...; generated: undefined; }, {}, {}>; ... 4 more ...; createdAt: PgColumn<...': config, joinsNotNullableMap, tableName, isPartialSelect, and 5 more.
+[05:06:03.157] server/vite.ts(39,5): error TS2322: Type '{ middlewareMode: boolean; hmr: { server: Server<typeof IncomingMessage, typeof ServerResponse>; }; allowedHosts: boolean; }' is not assignable to type 'ServerOptions'.
+[05:06:03.157]   Types of property 'allowedHosts' are incompatible.
+[05:06:03.157]     Type 'boolean' is not assignable to type 'true | string[] | undefined'.
+[05:06:03.157] server/vite.ts(59,9): error TS2304: Cannot find name 'src'.
+[05:06:03.186] Error: Command "npm run build" exited with 2
+[05:06:03.928] 
+[05:06:07.461] Exiting build container
