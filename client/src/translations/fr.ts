@@ -10,7 +10,53 @@ const translations = {
     adminDashboard: "Tableau de Bord Admin",
     supplierDashboard: "Tableau de Bord Fournisseur",
     mobileMenuDescription: "Menu de navigation",
-    language: "Langue"
+    language: "Langue",
+    trackOrder: "Suivi de Commande"
+  },
+  
+  customer: {
+    trackOrder: {
+      title: "Suivre Votre Commande",
+      description: "Entrez votre numéro de commande ou code de suivi pour vérifier l'état de votre commande.",
+      byOrderId: "Par Numéro de Commande",
+      byTracking: "Par Code de Suivi",
+      orderIdPlaceholder: "Entrez votre numéro de commande",
+      trackingCodePlaceholder: "Entrez votre code de suivi",
+      search: "Rechercher",
+      notFound: "Commande Non Trouvée",
+      notFoundDesc: "Nous n'avons pas pu trouver de commande correspondant aux informations fournies. Veuillez vérifier et réessayer.",
+      yourOrders: "Vos Commandes",
+      noOrders: "Aucune Commande Trouvée",
+      noOrdersDesc: "Vous n'avez pas encore passé de commande.",
+      shopNow: "Acheter Maintenant"
+    },
+    order: {
+      details: "Détails de la Commande",
+      orderDate: "Commandé le {date}",
+      timeline: "Chronologie de la Commande",
+      cancelled: "Commande Annulée",
+      cancelledDesc: "Cette commande a été annulée. Veuillez contacter le service client si vous avez des questions.",
+      shippingInfo: "Informations d'Expédition",
+      paymentInfo: "Informations de Paiement",
+      items: "Articles Commandés",
+      size: "Taille",
+      color: "Couleur",
+      quantity: "Qté",
+      total: "Total",
+      trackingCode: "Code de Suivi",
+      estimatedDelivery: "Livraison Estimée",
+      statuses: {
+        pending: "En Attente",
+        processing: "En Traitement",
+        shipped: "Expédiée",
+        delivered: "Livrée",
+        cancelled: "Annulée"
+      },
+      paymentStatus: {
+        paid: "Payée",
+        pending: "Paiement en Attente"
+      }
+    }
   },
   
   hero: {

@@ -48,9 +48,9 @@ export default function Navbar() {
   // Links based on user role
   const getLinks = () => {
     const commonLinks = [
-      { href: "/", label: t("nav.home"), icon: <Home className="h-4 w-4 mr-2" /> },
-      { href: "/products", label: t("nav.products"), icon: <Search className="h-4 w-4 mr-2" /> },
-      { href: "/order-tracking", label: t("nav.trackOrder"), icon: <Package className="h-4 w-4 mr-2" /> },
+      { href: "/", label: t("navigation.home"), icon: <Home className="h-4 w-4 mr-2" /> },
+      { href: "/products", label: t("navigation.products"), icon: <Search className="h-4 w-4 mr-2" /> },
+      { href: "/order-tracking", label: t("navigation.trackOrder"), icon: <Package className="h-4 w-4 mr-2" /> },
     ];
 
     if (user) {
@@ -133,14 +133,14 @@ export default function Navbar() {
               className="flex items-center gap-1 border-white/30 text-white hover:text-primary hover:border-primary"
             >
               <LogOut className="h-4 w-4" />
-              {t("nav.logout")}
+              {t("navigation.logout")}
             </Button>
           ) : (
             <Button asChild variant="default">
               <Link href="/auth">
                 <a className="flex items-center gap-1">
                   <LogIn className="h-4 w-4" />
-                  {t("nav.login")}
+                  {t("navigation.login")}
                 </a>
               </Link>
             </Button>
@@ -189,14 +189,14 @@ export default function Navbar() {
                       className="w-full flex items-center justify-center gap-2"
                     >
                       <LogOut className="h-4 w-4" />
-                      {t("nav.logout")}
+                      {t("navigation.logout")}
                     </Button>
                   ) : (
                     <Button asChild className="w-full flex items-center justify-center gap-2">
                       <Link href="/auth">
                         <a>
                           <LogIn className="h-4 w-4 mr-2" />
-                          {t("nav.login")}
+                          {t("navigation.login")}
                         </a>
                       </Link>
                     </Button>

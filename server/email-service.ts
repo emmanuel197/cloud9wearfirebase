@@ -27,14 +27,22 @@ export async function sendEmail(params: EmailParams): Promise<boolean> {
   }
 
   try {
+    // Use sandbox mode for testing - emails won't actually be sent
+    // but will be validated by the SendGrid API
     await mailService.send({
       to: params.to,
       from: SENDER_EMAIL,
       subject: params.subject,
       text: params.text,
       html: params.html,
+      mail_settings: {
+        sandbox_mode: {
+          enable: true
+        }
+      }
     });
-    console.log(`Email sent to ${params.to}`);
+    console.log(`Email notification would be sent to ${params.to} (sandbox mode)`);
+    console.log(`Subject: ${params.subject}`);
     return true;
   } catch (error) {
     console.error('SendGrid email error:', error);

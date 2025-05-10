@@ -143,6 +143,11 @@ export default function PaymentSuccessPage() {
                 {t("payment.success.view_order")}
               </Button>
             </Link>
+            <Link href="/order-tracking">
+              <Button variant="secondary">
+                {t("navigation.trackOrder")}
+              </Button>
+            </Link>
             <Link href="/">
               <Button variant="outline">
                 {t("payment.success.continue_shopping")}
