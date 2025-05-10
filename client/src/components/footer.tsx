@@ -126,7 +126,7 @@ export default function Footer() {
           <div className="flex items-center">
             <div className="text-gray-400 mr-4">{t("footer.paymentMethods")}</div>
             <div className="flex space-x-3">
-              <SiPaystack className="h-8 w-8 text-gray-400" />
+              <FaCreditCard className="h-8 w-8 text-gray-400" />
             </div>
           </div>
         </div>
