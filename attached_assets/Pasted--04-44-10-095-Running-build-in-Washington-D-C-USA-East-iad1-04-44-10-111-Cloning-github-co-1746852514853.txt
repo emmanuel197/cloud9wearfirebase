@@ -1,0 +1,35 @@
+[04:44:10.095] Running build in Washington, D.C., USA (East) – iad1
+[04:44:10.111] Cloning github.com/emmanuel197/Cloud9wear (Branch: main, Commit: 46c74e6)
+[04:44:11.236] Cloning completed: 1.124s
+[04:44:11.664] Restored build cache from previous deployment (BuJYXeXJ528827JCZSmcA6GoS6WA)
+[04:44:12.235] Running "vercel build"
+[04:44:12.604] Vercel CLI 41.7.3
+[04:44:12.715] WARN! Due to `builds` existing in your configuration file, the Build and Development Settings defined in your Project Settings will not apply. Learn More: https://vercel.link/unused-build-settings
+[04:44:13.128] Installing dependencies...
+[04:44:14.642] 
+[04:44:14.643] up to date in 1s
+[04:44:14.643] 
+[04:44:14.643] 72 packages are looking for funding
+[04:44:14.643]   run `npm fund` for details
+[04:44:14.678] Running "npm run build"
+[04:44:14.796] 
+[04:44:14.797] > rest-express@1.0.0 build
+[04:44:14.797] > tsc && vite build && esbuild server/index.ts --bundle --platform=node --target=node18 --format=esm --outdir=dist --external:@babel/* --external:lightningcss --loader:.ts=tsx
+[04:44:14.797] 
+[04:44:18.315] server/storage.ts(1039,46): error TS1160: Unterminated template literal.
+[04:44:18.315] server/vite.ts(75,13): error TS1005: ',' expected.
+[04:44:18.315] server/vite.ts(75,17): error TS1005: ',' expected.
+[04:44:18.315] server/vite.ts(75,22): error TS1005: ',' expected.
+[04:44:18.315] server/vite.ts(75,26): error TS1005: ',' expected.
+[04:44:18.315] server/vite.ts(75,32): error TS1005: ',' expected.
+[04:44:18.315] server/vite.ts(75,41): error TS1005: ',' expected.
+[04:44:18.315] server/vite.ts(75,44): error TS1005: ',' expected.
+[04:44:18.316] server/vite.ts(75,61): error TS1005: ',' expected.
+[04:44:18.316] server/vite.ts(75,66): error TS1005: ',' expected.
+[04:44:18.316] server/vite.ts(75,69): error TS1005: ',' expected.
+[04:44:18.317] server/vite.ts(75,75): error TS1005: ',' expected.
+[04:44:18.317] server/vite.ts(75,79): error TS1005: ',' expected.
+[04:44:18.317] server/vite.ts(75,86): error TS1005: ',' expected.
+[04:44:18.344] Error: Command "npm run build" exited with 2
+[04:44:18.709] 
+[04:44:21.701] Exiting build container
