@@ -4,6 +4,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useLanguage } from "@/hooks/use-language";
 import LanguageSwitcher from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
+import { useQuery } from "@tanstack/react-query";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -45,6 +46,18 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Query to check if user has any orders
+  const { data: orders } = useQuery({
+    queryKey: ["/api/user-orders"],
+    queryFn: async () => {
+      if (!user || user.role !== "customer") return null;
+      const res = await fetch("/api/orders?customerId=" + user.id);
+      if (!res.ok) return [];
+      return await res.json();
+    },
+    enabled: !!user && user.role === "customer",
+  });
+  
   // Links based on user role
   const getLinks = () => {
     const commonLinks = [
@@ -52,6 +65,7 @@ export default function Navbar() {
       { href: "/products", label: t("navigation.products"), icon: <Search className="h-4 w-4 mr-2" /> },
     ];
     
+    // Only create this link if needed
     const trackOrderLink = { 
       href: "/order-tracking", 
       label: t("navigation.trackOrder"), 
@@ -63,6 +77,7 @@ export default function Navbar() {
       if (user.role === "admin") {
         return [
           ...commonLinks,
+          trackOrderLink, // Admin can always see/test this
           { href: "/admin", label: t("navigation.adminDashboard"), icon: <User className="h-4 w-4 mr-2" /> },
         ];
       } else if (user.role === "supplier") {
@@ -72,12 +87,14 @@ export default function Navbar() {
         ];
       } else {
         // Customer links
-        // Always show trackOrder for logged-in customers
-        return [
+        const customerLinks = [
           ...commonLinks,
-          trackOrderLink,
           { href: "/cart", label: t("navigation.cart"), icon: <ShoppingCart className="h-4 w-4 mr-2" /> },
         ];
+        
+        // Always show track order link for customers
+        customerLinks.splice(2, 0, trackOrderLink);
+        return customerLinks;
       }
     }
 
