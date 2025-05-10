@@ -93,3 +93,22 @@
     @apply font-sans antialiased bg-background text-foreground;
   }
 }
+
+/* Custom utility classes for visibility on dark backgrounds */
+.text-on-dark {
+  @apply text-white;
+}
+
+.text-subtle-on-dark {
+  @apply text-gray-200;
+}
+
+/* Fix text colors in checkout and cart pages with dark backgrounds */
+.dark-mode-card {
+  @apply bg-gray-800 text-white;
+}
+.dark-mode-card .text-gray-600,
+.dark-mode-card .text-gray-500,
+.dark-mode-card .text-gray-700 {
+  @apply text-gray-300;
+}
