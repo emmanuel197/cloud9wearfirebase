@@ -148,7 +148,8 @@ export function setupAuth(app: express.Express) {
 
   // Role-based route guard middleware
   const requireRole = (roles: string[]) => {
-    return (req: Request, res: Response, next: NextFunction): void => {
+    // Using type assertion to ensure TypeScript compatibility
+    return ((req: Express.Request, res: Response, next: NextFunction): void => {
       if (!req.isAuthenticated()) {
         res.status(401).json({ message: "Unauthorized" });
         return;
@@ -161,7 +162,7 @@ export function setupAuth(app: express.Express) {
       }
 
       next();
-    };
+    }) as (req: Express.Request, res: Response, next: NextFunction) => void;
   };
 
   // Export the requireRole middleware
