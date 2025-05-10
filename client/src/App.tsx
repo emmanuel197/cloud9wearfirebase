@@ -49,7 +49,7 @@ function App() {
               <Route path="/faq" component={FAQPage} />
               <Route path="/contact" component={ContactPage} />
               <Route path="/privacy" component={PrivacyPage} />
-              <Route path="/admin" component={() => <ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin" component={() => <ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
               <Route path="/admin/orders" component={() => <ProtectedRoute role="admin"><AdminOrders /></ProtectedRoute>} />
               <Route path="/admin/products" component={() => <ProtectedRoute role="admin"><AdminProducts /></ProtectedRoute>} />
               <Route path="/admin/coming-soon" component={() => <ProtectedRoute role="admin"><AdminComingSoon /></ProtectedRoute>} />
