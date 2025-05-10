@@ -148,6 +148,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Endpoint to delete a coming soon product
+  app.delete("/api/coming-soon-products/:id", requireRole(["admin"]), async (req, res) => {
+    try {
+      const productId = parseInt(req.params.id);
+      
+      // Verify it's a coming soon product first
+      const product = await dbStorage.getProduct(productId);
+      
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      if (!product.comingSoon) {
+        return res.status(400).json({ message: "This is not a coming soon product" });
+      }
+      
+      const deleted = await dbStorage.deleteProduct(productId);
+
+      if (!deleted) {
+        return res.status(404).json({ message: "Failed to delete product" });
+      }
+
+      res.status(204).send();
+    } catch (error) {
+      console.error("Error deleting coming soon product:", error);
+      res.status(500).json({ message: "Failed to delete coming soon product" });
+    }
+  });
+  
   // Create coming soon product
   app.post("/api/products/coming-soon", requireRole(["admin", "supplier"]), async (req, res) => {
     try {
