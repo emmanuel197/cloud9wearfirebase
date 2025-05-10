@@ -1,0 +1,25 @@
+{
+  "version": 2,
+  "buildCommand": "node vercel-scripts/cleanup-uploads.js && npm run build",
+  "outputDirectory": "dist",
+  "builds": [
+    {
+      "src": "server/index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/uploads/(.*)",
+      "dest": "/uploads/$1"
+    },
+    {
+      "src": "/api/(.*)",
+      "dest": "server/index.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/dist/$1"
+    }
+  ]
+}

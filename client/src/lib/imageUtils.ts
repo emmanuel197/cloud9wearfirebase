@@ -1,24 +1,38 @@
 /**
  * Utility function to normalize image URLs
  * Ensures URLs work correctly regardless of whether they are relative or absolute
+ * and across different environments (development, production, Vercel)
  */
 export function normalizeImageUrl(url: string): string {
-  // If it's already a relative path or GitHub Pages URL, return as is
-  if (url.startsWith('/') || url.includes('.github.io/')) {
+  if (!url) return ''; // Handle null or undefined URLs
+  
+  // If it's already a relative path starting with / (like /uploads/), return as is
+  if (url.startsWith('/uploads/')) {
     return url;
   }
-
-  // For uploads through the admin panel or full URLs, use as is
+  
   try {
-    const urlObj = new URL(url);
-    if (urlObj.pathname.includes('/uploads/products/')) {
-      return url; // Keep the full URL for uploaded product images
+    // Try to parse as URL to see if it's absolute
+    new URL(url);
+    
+    // If URL contains our Replit domain but we're deployed elsewhere,
+    // extract just the path portion for Vercel deployment
+    if (url.includes('.replit.app/uploads/') || url.includes('replit.dev/uploads/')) {
+      const match = url.match(/\/uploads\/.*$/);
+      if (match) {
+        return match[0]; // Return just the /uploads/... part
+      }
     }
+    
+    // For other absolute URLs (like third-party CDNs) return as is
     return url;
   } catch (e) {
-    // Invalid URL, return as is
-    console.warn('Invalid image URL:', url);
+    // If it's not a valid URL (like a relative path without leading slash)
+    if (url.includes('uploads/products/')) {
+      return `/${url}`; // Add leading slash
+    }
+    
+    // For any other case, return as is
+    return url;
   }
-
-  return url;
 }

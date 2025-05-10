@@ -40,9 +40,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
   }
   
   // Configure multer for image upload
+  // Ensure upload directory exists
+  const uploadDir = path.join(process.cwd(), 'uploads', 'products');
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+  
   const multerStorage = multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, './uploads/products');
+      cb(null, uploadDir);
     },
     filename: (req, file, cb) => {
       const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
@@ -1044,7 +1050,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
   
   // Serve uploaded files statically
-  app.use('/uploads', express.static('./uploads'));
+  app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
 
   const httpServer = createServer(app);
   return httpServer;
