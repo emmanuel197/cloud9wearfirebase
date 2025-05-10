@@ -49,13 +49,33 @@ function App() {
               <Route path="/faq" component={FAQPage} />
               <Route path="/contact" component={ContactPage} />
               <Route path="/privacy" component={PrivacyPage} />
-              <Route path="/admin" component={() => <ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/admin/orders" component={() => <ProtectedRoute role="admin"><AdminOrders /></ProtectedRoute>} />
-              <Route path="/admin/products" component={() => <ProtectedRoute role="admin"><AdminProducts /></ProtectedRoute>} />
-              <Route path="/admin/coming-soon" component={() => <ProtectedRoute role="admin"><AdminComingSoon /></ProtectedRoute>} />
-              <Route path="/admin/reviews" component={() => <ProtectedRoute role="admin"><AdminReviews /></ProtectedRoute>} />
-              <Route path="/admin/customers" component={() => <ProtectedRoute role="admin"><AdminCustomers /></ProtectedRoute>} />
-              <Route path="/admin/suppliers" component={() => <ProtectedRoute role="admin"><AdminSuppliers /></ProtectedRoute>} />
+              <Route path="/admin">
+            <ProtectedRoute roles={["admin"]}>
+              <AdminDashboard />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/admin/products">
+            <ProtectedRoute roles={["admin"]}>
+              <AdminProducts />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/admin/coming-soon">
+            <ProtectedRoute roles={["admin"]}>
+              <AdminComingSoon />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/admin/orders">
+            <ProtectedRoute roles={["admin"]}>
+              <AdminOrders />
+            </ProtectedRoute>
+          </Route>
+          <Route path="/admin/reviews">
+            <ProtectedRoute roles={["admin"]}>
+              <AdminReviews />
+            </ProtectedRoute>
+              </Route>
+              <Route path="/admin/customers" component={() => <ProtectedRoute roles={["admin"]}><AdminCustomers /></ProtectedRoute>} />
+              <Route path="/admin/suppliers" component={() => <ProtectedRoute roles={["admin"]}><AdminSuppliers /></ProtectedRoute>} />
               <Route path="/supplier" component={() => <ProtectedRoute role="supplier"><SupplierDashboard /></ProtectedRoute>} />
               <Route path="/supplier/inventory" component={() => <ProtectedRoute role="supplier"><SupplierInventory /></ProtectedRoute>} />
               <Route path="/supplier/orders" component={() => <ProtectedRoute role="supplier"><SupplierOrders /></ProtectedRoute>} />

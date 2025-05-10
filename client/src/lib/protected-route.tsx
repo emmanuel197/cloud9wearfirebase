@@ -5,8 +5,8 @@ import { ReactNode } from "react";
 
 type ProtectedRouteProps = {
   children: ReactNode;
-  roles?: string[];
   role?: string;
+  roles?: string[];
 };
 
 export function ProtectedRoute({ children, roles }: ProtectedRouteProps) {
