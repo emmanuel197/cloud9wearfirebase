@@ -10,7 +10,53 @@ const translations = {
     adminDashboard: "Panel de Administrador",
     supplierDashboard: "Panel de Proveedor",
     mobileMenuDescription: "Menú de navegación",
-    language: "Idioma"
+    language: "Idioma",
+    trackOrder: "Seguir Pedido"
+  },
+  
+  customer: {
+    trackOrder: {
+      title: "Seguimiento de Tu Pedido",
+      description: "Ingresa tu número de pedido o código de seguimiento para verificar el estado de tu pedido.",
+      byOrderId: "Por Número de Pedido",
+      byTracking: "Por Código de Seguimiento",
+      orderIdPlaceholder: "Ingresa tu número de pedido",
+      trackingCodePlaceholder: "Ingresa tu código de seguimiento",
+      search: "Buscar",
+      notFound: "Pedido No Encontrado",
+      notFoundDesc: "No pudimos encontrar ningún pedido que coincida con la información proporcionada. Por favor, verifica e intenta nuevamente.",
+      yourOrders: "Tus Pedidos",
+      noOrders: "No Se Encontraron Pedidos",
+      noOrdersDesc: "Aún no has realizado ningún pedido.",
+      shopNow: "Comprar Ahora"
+    },
+    order: {
+      details: "Detalles del Pedido",
+      orderDate: "Pedido el {date}",
+      timeline: "Línea de Tiempo del Pedido",
+      cancelled: "Pedido Cancelado",
+      cancelledDesc: "Este pedido ha sido cancelado. Por favor, contacta con atención al cliente si tienes alguna pregunta.",
+      shippingInfo: "Información de Envío",
+      paymentInfo: "Información de Pago",
+      items: "Artículos del Pedido",
+      size: "Talla",
+      color: "Color",
+      quantity: "Cant",
+      total: "Total",
+      trackingCode: "Código de Seguimiento",
+      estimatedDelivery: "Entrega Estimada",
+      statuses: {
+        pending: "Pendiente",
+        processing: "Procesando",
+        shipped: "Enviado",
+        delivered: "Entregado",
+        cancelled: "Cancelado"
+      },
+      paymentStatus: {
+        paid: "Pagado",
+        pending: "Pago Pendiente"
+      }
+    }
   },
   
   hero: {

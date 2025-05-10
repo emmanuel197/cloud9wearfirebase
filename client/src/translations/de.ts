@@ -10,7 +10,53 @@ const translations = {
     adminDashboard: "Admin-Dashboard",
     supplierDashboard: "Lieferanten-Dashboard",
     mobileMenuDescription: "Navigationsmenü",
-    language: "Sprache"
+    language: "Sprache",
+    trackOrder: "Bestellung verfolgen"
+  },
+  
+  customer: {
+    trackOrder: {
+      title: "Ihre Bestellung verfolgen",
+      description: "Geben Sie Ihre Bestellnummer oder Ihren Tracking-Code ein, um den Status Ihrer Bestellung zu überprüfen.",
+      byOrderId: "Nach Bestellnummer",
+      byTracking: "Nach Tracking-Code",
+      orderIdPlaceholder: "Geben Sie Ihre Bestellnummer ein",
+      trackingCodePlaceholder: "Geben Sie Ihren Tracking-Code ein",
+      search: "Suchen",
+      notFound: "Bestellung nicht gefunden",
+      notFoundDesc: "Wir konnten keine Bestellung finden, die den angegebenen Informationen entspricht. Bitte überprüfen Sie Ihre Eingabe und versuchen Sie es erneut.",
+      yourOrders: "Ihre Bestellungen",
+      noOrders: "Keine Bestellungen gefunden",
+      noOrdersDesc: "Sie haben noch keine Bestellungen aufgegeben.",
+      shopNow: "Jetzt einkaufen"
+    },
+    order: {
+      details: "Bestelldetails",
+      orderDate: "Bestellt am {date}",
+      timeline: "Bestellverlauf",
+      cancelled: "Bestellung storniert",
+      cancelledDesc: "Diese Bestellung wurde storniert. Bitte kontaktieren Sie den Kundenservice, wenn Sie Fragen haben.",
+      shippingInfo: "Versandinformationen",
+      paymentInfo: "Zahlungsinformationen",
+      items: "Bestellte Artikel",
+      size: "Größe",
+      color: "Farbe",
+      quantity: "Menge",
+      total: "Gesamt",
+      trackingCode: "Tracking-Code",
+      estimatedDelivery: "Geschätzte Lieferung",
+      statuses: {
+        pending: "Ausstehend",
+        processing: "In Bearbeitung",
+        shipped: "Versendet",
+        delivered: "Zugestellt",
+        cancelled: "Storniert"
+      },
+      paymentStatus: {
+        paid: "Bezahlt",
+        pending: "Zahlung ausstehend"
+      }
+    }
   },
   
   hero: {
