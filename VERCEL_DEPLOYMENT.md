@@ -96,11 +96,11 @@ The project uses Vercel's standard deployment approach with separate builders fo
    - Provides relaxed TypeScript configuration for the build process
    - Lets the build continue even if there are TypeScript errors
 
-2. **Separate Builders**: The configuration uses specific builders for different parts:
+2. **Build Process**: The configuration uses:
    - `@vercel/node` for the server-side code
-   - `@vercel/static-build` for the frontend code
+   - npm's build script for the frontend (via buildCommand)
 
-3. **vercel.json**: The configuration specifies both backend and frontend builds:
+3. **vercel.json**: The configuration specifies the backend build and the build command handles frontend:
    ```json
    {
      "version": 2,
@@ -110,13 +110,6 @@ The project uses Vercel's standard deployment approach with separate builders fo
        {
          "src": "server/index.ts",
          "use": "@vercel/node"
-       },
-       {
-         "src": "client/package.json",
-         "use": "@vercel/static-build",
-         "config": {
-           "distDir": "dist/public"
-         }
        }
      ]
    }
