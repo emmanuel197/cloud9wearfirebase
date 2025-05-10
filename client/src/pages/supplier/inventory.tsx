@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import SupplierSidebar from "@/components/supplier/sidebar";
 import { useLanguage } from "@/hooks/use-language";
@@ -33,6 +33,19 @@ export default function SupplierInventoryPage() {
       const url = new URL("/api/products", window.location.origin);
       url.searchParams.append("supplierId", user?.id.toString() || "0");
       return fetch(url.toString()).then(res => res.json());
+    }
+  });
+  
+  // Create inventory items for any products that don't have them
+  const updateInventoryMissingItems = useMutation({
+    mutationFn: async (productId: number) => {
+      // Add product to inventory with default stock of 0
+      const res = await apiRequest("PUT", `/api/inventory/${productId}`, { stock: 0 });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
+      refetchInventory();
     }
   });
   
@@ -79,6 +92,24 @@ export default function SupplierInventoryPage() {
       updateInventoryMutation.mutate({ productId, stock: newStock });
     }
   };
+  
+  // Check if there are products without inventory entries and add them
+  useEffect(() => {
+    if (products && inventory && user?.id) {
+      // Get all product IDs
+      const productIds = products.map(product => product.id);
+      // Get all inventory item product IDs
+      const inventoryProductIds = inventory.map(item => item.productId);
+      
+      // Find products that don't have an inventory entry
+      const missingProducts = productIds.filter(id => !inventoryProductIds.includes(id));
+      
+      // Add these products to inventory
+      missingProducts.forEach(productId => {
+        updateInventoryMissingItems.mutate(productId);
+      });
+    }
+  }, [products, inventory, user?.id]);
   
   // Filter inventory based on search term
   const filteredInventory = inventory?.filter(item => {

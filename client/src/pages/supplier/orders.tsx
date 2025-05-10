@@ -43,9 +43,19 @@ export default function SupplierOrders() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);
 
   // Fetch all orders
-  const { data: orders = [], isLoading } = useQuery<any[]>({
+  const { data: orders = [], isLoading, refetch: refetchOrders } = useQuery<any[]>({
     queryKey: ["/api/orders"],
   });
+  
+  // Setup a polling mechanism to check for new orders every 30 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetchOrders();
+    }, 30000); // 30 seconds
+    
+    // Clean up on unmount
+    return () => clearInterval(interval);
+  }, [refetchOrders]);
 
   // Function to fetch a specific order
   const handleViewOrder = async (orderId: number) => {
