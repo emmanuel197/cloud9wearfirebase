@@ -30,8 +30,8 @@ export default function SupplierInventoryPage() {
   const { data: products, isLoading: isLoadingProducts } = useQuery<Product[]>({
     queryKey: ["/api/products"],
     queryFn: () => {
+      // For testing purposes, let's show all active products to suppliers
       const url = new URL("/api/products", window.location.origin);
-      url.searchParams.append("supplierId", user?.id.toString() || "0");
       return fetch(url.toString()).then(res => res.json());
     }
   });

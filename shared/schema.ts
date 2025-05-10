@@ -92,7 +92,7 @@ export const insertCartSchema = createInsertSchema(carts).omit({
 export const supplierInventory = pgTable("supplier_inventory", {
   id: serial("id").primaryKey(),
   supplierId: integer("supplier_id").notNull(),
-  productId: integer("product_id").notNull().unique(),
+  productId: integer("product_id").notNull(),
   availableStock: integer("available_stock").notNull(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
