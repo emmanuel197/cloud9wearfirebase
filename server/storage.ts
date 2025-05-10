@@ -828,32 +828,69 @@ export class DatabaseStorage implements IStorage {
   }
 
   async updateInventory(supplierId: number, productId: number, stock: number): Promise<SupplierInventory | undefined> {
-    const [existingInventory] = await db
-      .select()
-      .from(supplierInventory)
-      .where(
-        and(
-          eq(supplierInventory.supplierId, supplierId),
-          eq(supplierInventory.productId, productId)
-        )
-      );
+    try {
+      console.log(`Attempting to update inventory: supplier=${supplierId}, product=${productId}, stock=${stock}`);
+      
+      // First, check if this product already has any inventory record
+      const [existingAnyInventory] = await db
+        .select()
+        .from(supplierInventory)
+        .where(eq(supplierInventory.productId, productId));
 
-    if (!existingInventory) {
-      const [newInventory] = await db
-        .insert(supplierInventory)
-        .values({
+      // If another supplier already has inventory for this product
+      if (existingAnyInventory && existingAnyInventory.supplierId !== supplierId) {
+        console.log(`Product ${productId} already has inventory managed by supplier ${existingAnyInventory.supplierId}`);
+        
+        // For now, update the product stock directly only
+        await this.updateProduct(productId, { stock });
+        
+        // Return a constructed inventory object even though we can't store it
+        return {
+          id: -1, // Placeholder ID
           supplierId,
           productId,
           availableStock: stock,
           updatedAt: new Date()
-        })
-        .returning();
+        };
+      }
+      
+      // Check if this supplier already has inventory for this product
+      const [existingInventory] = await db
+        .select()
+        .from(supplierInventory)
+        .where(
+          and(
+            eq(supplierInventory.supplierId, supplierId),
+            eq(supplierInventory.productId, productId)
+          )
+        );
 
-      // Update product stock
-      await this.updateProduct(productId, { stock });
+      if (!existingInventory) {
+        console.log(`Creating new inventory entry for supplier=${supplierId}, product=${productId}`);
+        
+        // Only insert if there's no existing inventory for this product
+        if (!existingAnyInventory) {
+          const [newInventory] = await db
+            .insert(supplierInventory)
+            .values({
+              supplierId,
+              productId,
+              availableStock: stock,
+              updatedAt: new Date()
+            })
+            .returning();
 
-      return newInventory;
-    } else {
+          // Update product stock
+          await this.updateProduct(productId, { stock });
+          return newInventory;
+        } else {
+          // Just update the product stock
+          await this.updateProduct(productId, { stock });
+          return existingAnyInventory;
+        }
+      }
+
+      console.log(`Updating existing inventory entry for supplier=${supplierId}, product=${productId}`);
       const [updatedInventory] = await db
         .update(supplierInventory)
         .set({
@@ -870,8 +907,10 @@ export class DatabaseStorage implements IStorage {
 
       // Update product stock
       await this.updateProduct(productId, { stock });
-
       return updatedInventory || undefined;
+    } catch (error) {
+      console.error("Error in updateInventory:", error);
+      throw error;
     }
   }
 
