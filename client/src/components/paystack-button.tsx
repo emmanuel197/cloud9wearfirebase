@@ -26,6 +26,7 @@ interface PaystackButtonProps {
   metadata?: Record<string, any>;
   reference?: string;
   disabled?: boolean;
+  callback?: (response: { reference: string }) => void;
 }
 
 export function PaystackButton({

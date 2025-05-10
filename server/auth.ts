@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
+import express, { type Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
@@ -35,7 +35,7 @@ async function comparePasswords(supplied: string, stored: string) {
   }
 }
 
-export function setupAuth(app: Express) {
+export function setupAuth(app: express.Express) {
   const sessionSettings: session.SessionOptions = {
     secret: process.env.SESSION_SECRET || "print-on-demand-session-secret",
     resave: false,
@@ -56,15 +56,15 @@ export function setupAuth(app: Express) {
       try {
         console.log(`Login attempt for username: ${username}`);
         const user = await dbStorage.getUserByUsername(username);
-        
+
         if (!user) {
           console.log(`User not found: ${username}`);
           return done(null, false);
         }
-        
+
         const passwordMatches = await comparePasswords(password, user.password);
         console.log(`Password comparison result for ${username}: ${passwordMatches}`);
-        
+
         if (!passwordMatches) {
           return done(null, false);
         } else {
@@ -88,7 +88,7 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/register", async (req, res, next) => {
+  app.post("/api/register", async (req: Request, res: Response, next: NextFunction) => {
     try {
       const existingUser = await dbStorage.getUserByUsername(req.body.username);
       if (existingUser) {
@@ -112,7 +112,7 @@ export function setupAuth(app: Express) {
     }
   });
 
-  app.post("/api/login", (req, res, next) => {
+  app.post("/api/login", (req: Request, res: Response, next: NextFunction) => {
     passport.authenticate("local", (err: Error, user: Express.User) => {
       if (err) {
         return next(err);
@@ -131,16 +131,16 @@ export function setupAuth(app: Express) {
     })(req, res, next);
   });
 
-  app.post("/api/logout", (req, res, next) => {
+  app.post("/api/logout", (req: Request, res: Response, next: NextFunction) => {
     req.logout((err) => {
       if (err) return next(err);
       res.sendStatus(200);
     });
   });
 
-  app.get("/api/user", (req, res) => {
+  app.get("/api/user", (req: Request, res: Response) => {
     if (!req.isAuthenticated()) return res.sendStatus(401);
-    
+
     // Remove password from response
     const { password, ...userWithoutPassword } = req.user;
     res.json(userWithoutPassword);
@@ -148,21 +148,21 @@ export function setupAuth(app: Express) {
 
   // Role-based route guard middleware
   const requireRole = (role: string[]) => {
-    return (req: Express.Request, res: Express.Response, next: Express.NextFunction) => {
+    return (req: Request, res: Response, next: NextFunction) => {
       if (!req.isAuthenticated()) {
         return res.status(401).json({ message: "Unauthorized" });
       }
-      
+
       if (!role.includes(req.user.role)) {
         return res.status(403).json({ message: "Forbidden" });
       }
-      
+
       next();
     };
   };
 
   // Export the requireRole middleware
-  app.use((req, res, next) => {
+  app.use((req: Request, res: Response, next: NextFunction) => {
     req.requireRole = requireRole;
     next();
   });
