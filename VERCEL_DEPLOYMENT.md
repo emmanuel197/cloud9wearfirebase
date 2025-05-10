@@ -133,6 +133,39 @@ If you encounter TypeScript errors during the Vercel build process:
 
 3. Run the deployment with our custom `vercel-build.js` script which should fix most common errors
 
+### Missing Frontend Files
+
+If the deployment succeeds but you don't see any frontend files or get a 404 error:
+
+1. Check that the `vercel-build.js` script ran successfully
+2. Verify the Vercel build logs to ensure the frontend build process completed
+3. Make sure the routes in `vercel.json` are correctly configured:
+   ```json
+   "routes": [
+     {
+       "src": "/uploads/(.*)",
+       "dest": "/uploads/$1"
+     },
+     {
+       "src": "/api/(.*)",
+       "dest": "server/index.ts"
+     },
+     {
+       "src": "/assets/(.*)",
+       "dest": "/dist/public/assets/$1"
+     },
+     {
+       "src": "/(.*)\\.(.+)$",
+       "dest": "/dist/public/$1.$2"
+     },
+     {
+       "src": "/(.*)",
+       "dest": "/dist/public/index.html"
+     }
+   ]
+   ```
+4. Try manually triggering a redeploy from the Vercel dashboard
+
 ## Demo Credentials
 
 For testing purposes, you can use the following demo credentials:
