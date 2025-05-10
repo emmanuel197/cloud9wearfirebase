@@ -23,17 +23,36 @@ export default function ComingSoonPage() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
+  // Check if the mock product should be hidden
+  const hideMockProduct = document.cookie.includes('hideMockComingSoonProduct=true');
+  
   const { data: comingSoonProducts, isLoading, isError } = useQuery<Product[]>({
-    queryKey: ["/api/coming-soon-products"],
+    queryKey: ["/api/coming-soon-products", hideMockProduct],
+    queryFn: async ({ queryKey }) => {
+      // If mockProduct should be hidden, add query parameter
+      const showMock = !hideMockProduct;
+      const response = await fetch(`/api/coming-soon-products${showMock ? '' : '?includeMock=false'}`);
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch coming soon products');
+      }
+      
+      return response.json();
+    },
     throwOnError: false,
   });
   
   const deleteProductMutation = useMutation({
     mutationFn: async (productId: number) => {
       await apiRequest("DELETE", `/api/coming-soon-products/${productId}`);
+      return productId;
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/coming-soon-products"] });
+    onSuccess: (productId) => {
+      // When deleting the mock product (id 9999), we need to use the latest query key
+      // that includes the updated hideMockProduct value
+      queryClient.invalidateQueries({ 
+        queryKey: ["/api/coming-soon-products", productId === 9999 ? true : hideMockProduct] 
+      });
       setIsDeleteModalOpen(false);
       setSelectedProduct(null);
       toast({
