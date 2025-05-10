@@ -50,27 +50,33 @@ export default function Navbar() {
     const commonLinks = [
       { href: "/", label: t("navigation.home"), icon: <Home className="h-4 w-4 mr-2" /> },
       { href: "/products", label: t("navigation.products"), icon: <Search className="h-4 w-4 mr-2" /> },
-      { href: "/order-tracking", label: t("navigation.trackOrder"), icon: <Package className="h-4 w-4 mr-2" /> },
     ];
+    
+    const trackOrderLink = { 
+      href: "/order-tracking", 
+      label: t("navigation.trackOrder"), 
+      icon: <Package className="h-4 w-4 mr-2" /> 
+    };
 
     if (user) {
       // Add role-specific links
       if (user.role === "admin") {
         return [
           ...commonLinks,
-          { href: "/admin", label: t("nav.dashboard"), icon: <User className="h-4 w-4 mr-2" /> },
+          { href: "/admin", label: t("navigation.adminDashboard"), icon: <User className="h-4 w-4 mr-2" /> },
         ];
       } else if (user.role === "supplier") {
         return [
           ...commonLinks,
-          { href: "/supplier", label: t("nav.dashboard"), icon: <User className="h-4 w-4 mr-2" /> },
+          { href: "/supplier", label: t("navigation.supplierDashboard"), icon: <User className="h-4 w-4 mr-2" /> },
         ];
       } else {
         // Customer links
+        // Always show trackOrder for logged-in customers
         return [
           ...commonLinks,
-          { href: "/cart", label: t("nav.cart"), icon: <ShoppingCart className="h-4 w-4 mr-2" /> },
-          { href: "/profile", label: t("nav.profile"), icon: <User className="h-4 w-4 mr-2" /> },
+          trackOrderLink,
+          { href: "/cart", label: t("navigation.cart"), icon: <ShoppingCart className="h-4 w-4 mr-2" /> },
         ];
       }
     }
