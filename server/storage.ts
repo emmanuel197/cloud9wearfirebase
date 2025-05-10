@@ -919,7 +919,7 @@ export class DatabaseStorage implements Partial<IStorage> {
   async deleteReview(id: number): Promise<boolean> {
     try {
       const [deleted] = await db
-        .delete(reviews)```text
+        .delete(reviews)
         .where(eq(reviews.id, id))
         .returning();
       return !!deleted;
