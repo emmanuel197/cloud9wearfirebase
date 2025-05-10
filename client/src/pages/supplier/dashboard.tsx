@@ -15,13 +15,13 @@ export default function SupplierDashboard() {
   const { t } = useLanguage();
   const { user } = useAuth();
   
-  // Fetch supplier inventory
-  const { data: inventory, isLoading: isLoadingInventory } = useQuery({
+  // Fetch supplier inventory with proper TypeScript typing
+  const { data: inventory = [], isLoading: isLoadingInventory } = useQuery<any[]>({
     queryKey: ["/api/inventory"],
   });
   
-  // Get low stock items
-  const lowStockItems = inventory?.filter(item => item.availableStock < 10) || [];
+  // Get low stock items - safely handle potentially undefined items
+  const lowStockItems = inventory.filter(item => item && item.availableStock < 10);
   
   if (!user || user.role !== "supplier") {
     return null; // Protected by ProtectedRoute component
@@ -91,7 +91,7 @@ export default function SupplierDashboard() {
             <>
               <StatCard 
                 title={t("supplier.dashboard.stats.totalProducts")}
-                value={inventory?.length.toString() || "0"}
+                value={inventory.length.toString()}
                 icon={<BoxIcon className="h-8 w-8 text-primary" />}
               />
               <StatCard 
@@ -102,7 +102,7 @@ export default function SupplierDashboard() {
               />
               <StatCard 
                 title={t("supplier.dashboard.stats.totalStock")}
-                value={inventory?.reduce((sum, item) => sum + item.availableStock, 0).toString() || "0"}
+                value={inventory.reduce((sum: number, item: any) => sum + (item?.availableStock || 0), 0).toString()}
                 icon={<TrendingUp className="h-8 w-8 text-green-500" />}
               />
             </>
