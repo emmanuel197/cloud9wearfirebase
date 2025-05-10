@@ -38,7 +38,7 @@ export default function InventoryItem({
   const isLowStock = stockValue < 10;
 
   return (
-    <div className="flex flex-col md:flex-row justify-between p-4 border rounded-lg">
+    <div className="flex flex-col md:flex-row justify-between p-4 border rounded-lg bg-gray-800">
       <div className="flex items-center mb-4 md:mb-0">
         <div className="h-16 w-16 overflow-hidden rounded-md border flex-shrink-0 mr-4">
           <img
@@ -50,7 +50,7 @@ export default function InventoryItem({
         
         <div>
           <div className="flex items-center">
-            <h3 className="font-medium">{product.name}</h3>
+            <h3 className="font-medium text-on-dark">{product.name}</h3>
             <Badge 
               variant="outline" 
               className="ml-2"
@@ -59,16 +59,16 @@ export default function InventoryItem({
             </Badge>
           </div>
           
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-subtle-on-dark mt-1">
             {t("supplier.inventory.id")}: {product.id}
           </p>
           
           <div className="flex items-center mt-1">
-            <p className="text-sm">
+            <p className="text-sm text-on-dark">
               {t("supplier.inventory.availableSizes")}: {product.availableSizes.join(", ")}
             </p>
             <span className="mx-2 text-gray-300">|</span>
-            <p className="text-sm">
+            <p className="text-sm text-on-dark">
               {t("supplier.inventory.availableColors")}: {product.availableColors.join(", ")}
             </p>
           </div>
@@ -77,7 +77,7 @@ export default function InventoryItem({
       
       <div className="flex items-center space-x-4">
         <div>
-          <label className="block text-sm font-medium mb-1 text-gray-500">
+          <label className="block text-sm font-medium mb-1 text-subtle-on-dark">
             {t("supplier.inventory.stock")}
           </label>
           <div className="flex items-center">
@@ -86,7 +86,7 @@ export default function InventoryItem({
               min="0"
               value={stockInputValue}
               onChange={handleStockChange}
-              className="w-24"
+              className="w-24 bg-gray-700 text-white border-gray-600"
             />
             
             {isLowStock && (

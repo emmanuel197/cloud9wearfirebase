@@ -59,21 +59,21 @@ export default function SupplierDashboard() {
       <div className="flex-1 p-8">
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-3xl font-bold">{t("supplier.dashboard.title")}</h1>
-          <span className="text-sm text-gray-500">
+          <span className="text-sm text-gray-600">
             {new Date().toLocaleDateString()} | {user.fullName}
           </span>
         </div>
         
         {/* Welcome Card */}
-        <Card className="mb-8">
+        <Card className="mb-8 dark-mode-card">
           <CardContent className="p-6">
             <div className="flex items-center space-x-4">
               <div className="bg-blue-100 p-3 rounded-full">
                 <PackageIcon className="h-8 w-8 text-primary" />
               </div>
               <div>
-                <h2 className="text-2xl font-semibold">{t("supplier.dashboard.welcome", { name: user.fullName })}</h2>
-                <p className="text-gray-500">{t("supplier.dashboard.welcomeMessage")}</p>
+                <h2 className="text-2xl font-semibold text-on-dark">{t("supplier.dashboard.welcome", { name: user.fullName })}</h2>
+                <p className="text-subtle-on-dark">{t("supplier.dashboard.welcomeMessage")}</p>
               </div>
             </div>
           </CardContent>
@@ -110,10 +110,10 @@ export default function SupplierDashboard() {
         </div>
         
         {/* Low Stock Alert */}
-        <Card className="mb-8">
+        <Card className="mb-8 dark-mode-card">
           <CardHeader className="pb-3">
-            <CardTitle>{t("supplier.dashboard.lowStockTitle")}</CardTitle>
-            <CardDescription>{t("supplier.dashboard.lowStockDesc")}</CardDescription>
+            <CardTitle className="text-on-dark">{t("supplier.dashboard.lowStockTitle")}</CardTitle>
+            <CardDescription className="text-subtle-on-dark">{t("supplier.dashboard.lowStockDesc")}</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoadingInventory ? (
@@ -123,14 +123,16 @@ export default function SupplierDashboard() {
                 <Skeleton className="h-10 w-full" />
               </div>
             ) : lowStockItems.length > 0 ? (
-              <DataTable columns={lowStockColumns} data={lowStockItems} />
+              <div className="text-on-dark">
+                <DataTable columns={lowStockColumns} data={lowStockItems} />
+              </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-6 text-center">
                 <div className="rounded-full bg-green-100 p-3 mb-4">
                   <PackageIcon className="h-6 w-6 text-green-600" />
                 </div>
-                <h3 className="text-lg font-medium text-green-700">{t("supplier.dashboard.allStocked")}</h3>
-                <p className="text-gray-500 mt-1">{t("supplier.dashboard.allStockedDesc")}</p>
+                <h3 className="text-lg font-medium text-on-dark">{t("supplier.dashboard.allStocked")}</h3>
+                <p className="text-subtle-on-dark mt-1">{t("supplier.dashboard.allStockedDesc")}</p>
               </div>
             )}
           </CardContent>
@@ -138,9 +140,9 @@ export default function SupplierDashboard() {
         
         {/* Quick Action Card */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
+          <Card className="dark-mode-card">
             <CardHeader>
-              <CardTitle>{t("supplier.dashboard.quickActions")}</CardTitle>
+              <CardTitle className="text-on-dark">{t("supplier.dashboard.quickActions")}</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <Link href="/supplier/inventory">
@@ -152,12 +154,12 @@ export default function SupplierDashboard() {
             </CardContent>
           </Card>
           
-          <Card>
+          <Card className="dark-mode-card">
             <CardHeader>
-              <CardTitle>{t("supplier.dashboard.tips")}</CardTitle>
+              <CardTitle className="text-on-dark">{t("supplier.dashboard.tips")}</CardTitle>
             </CardHeader>
             <CardContent>
-              <ul className="space-y-2 list-disc list-inside text-gray-700">
+              <ul className="space-y-2 list-disc list-inside text-on-dark">
                 <li>{t("supplier.dashboard.tip1")}</li>
                 <li>{t("supplier.dashboard.tip2")}</li>
                 <li>{t("supplier.dashboard.tip3")}</li>

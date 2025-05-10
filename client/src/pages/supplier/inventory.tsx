@@ -159,10 +159,10 @@ export default function SupplierInventoryPage() {
           </div>
         </div>
         
-        <Card>
+        <Card className="dark-mode-card">
           <CardHeader>
-            <CardTitle>{t("supplier.inventory.title")}</CardTitle>
-            <CardDescription>{t("supplier.inventory.description")}</CardDescription>
+            <CardTitle className="text-on-dark">{t("supplier.inventory.title")}</CardTitle>
+            <CardDescription className="text-subtle-on-dark">{t("supplier.inventory.description")}</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -202,8 +202,8 @@ export default function SupplierInventoryPage() {
             ) : (
               <div className="flex flex-col items-center justify-center py-10 text-center">
                 <AlertTriangle className="h-10 w-10 text-amber-500 mb-4" />
-                <h3 className="text-lg font-medium">{t("supplier.inventory.noProducts")}</h3>
-                <p className="text-gray-500 mt-1">{t("supplier.inventory.noProductsDesc")}</p>
+                <h3 className="text-lg font-medium text-on-dark">{t("supplier.inventory.noProducts")}</h3>
+                <p className="text-subtle-on-dark mt-1">{t("supplier.inventory.noProductsDesc")}</p>
               </div>
             )}
           </CardContent>
