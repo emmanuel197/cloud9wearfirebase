@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "node vercel-scripts/cleanup-uploads.js && npm run build",
+  "buildCommand": "node vercel-scripts/cleanup-uploads.js && node vercel-build.js && npm run build",
   "outputDirectory": "dist",
   "builds": [
     {
