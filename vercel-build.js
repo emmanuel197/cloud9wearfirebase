@@ -91,10 +91,57 @@ if (!fs.existsSync(publicDir)) {
   fs.mkdirSync(publicDir, { recursive: true });
 }
 
+// Try to run frontend build explicitly if it wasn't run before
+try {
+  console.log('Explicitly running frontend build to ensure it completes...');
+  execSync('npx vite build', { stdio: 'inherit' });
+  console.log('Frontend build completed successfully');
+  
+  // Check if we need to copy files to match vercel.json route config
+  const publicOutputDir = path.join(__dirname, 'dist', 'public');
+  const distDir = path.join(__dirname, 'dist');
+  
+  if (fs.existsSync(publicOutputDir)) {
+    console.log('Copying built files from dist/public to dist to match vercel.json routes');
+    // Copy assets directory
+    const publicAssetsDir = path.join(publicOutputDir, 'assets');
+    const distAssetsDir = path.join(distDir, 'assets');
+    
+    if (fs.existsSync(publicAssetsDir)) {
+      if (!fs.existsSync(distAssetsDir)) {
+        fs.mkdirSync(distAssetsDir, { recursive: true });
+      }
+      
+      // Copy all files from public/assets to dist/assets
+      const assetFiles = fs.readdirSync(publicAssetsDir);
+      for (const file of assetFiles) {
+        const sourcePath = path.join(publicAssetsDir, file);
+        const destPath = path.join(distAssetsDir, file);
+        
+        if (fs.statSync(sourcePath).isFile()) {
+          fs.copyFileSync(sourcePath, destPath);
+        }
+      }
+      console.log('Assets copied successfully');
+    }
+    
+    // Copy index.html
+    const publicIndexPath = path.join(publicOutputDir, 'index.html');
+    const distIndexPath = path.join(distDir, 'index.html');
+    
+    if (fs.existsSync(publicIndexPath)) {
+      fs.copyFileSync(publicIndexPath, distIndexPath);
+      console.log('index.html copied successfully');
+    }
+  }
+} catch (error) {
+  console.error('Frontend build failed, will use fallback page:', error);
+}
+
 // Create a simple index.html if frontend build isn't handled properly
-const indexPath = path.join(publicDir, 'index.html');
+const indexPath = path.join(distDir, 'index.html');
 if (!fs.existsSync(indexPath)) {
-  console.log('Creating a placeholder index.html just in case');
+  console.log('Creating a placeholder index.html since build output was not found');
   const fallbackHtml = `
 <!DOCTYPE html>
 <html lang="en">
