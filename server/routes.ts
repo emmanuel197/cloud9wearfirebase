@@ -449,7 +449,54 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // No restrictions for testing purposes
       }
 
-      const updatedOrder = await dbStorage.updateOrder(orderId, { status: req.body.status });
+      // Extra handling for shipped status to make sure it has tracking info
+      const updateData: any = { status: req.body.status };
+      
+      // If shipped status but no tracking code was provided, use existing code or generate one
+      if (req.body.status === "shipped") {
+        if (req.body.deliveryTrackingCode) {
+          updateData.deliveryTrackingCode = req.body.deliveryTrackingCode;
+        } else if (!order.deliveryTrackingCode) {
+          // Generate a random tracking code if none exists
+          updateData.deliveryTrackingCode = `KSA-${Math.floor(100000 + Math.random() * 900000)}`;
+        }
+        
+        // Set estimated delivery date to 7 days from now if not provided
+        if (req.body.estimatedDeliveryDate) {
+          updateData.estimatedDeliveryDate = new Date(req.body.estimatedDeliveryDate);
+        } else if (!order.estimatedDeliveryDate) {
+          const deliveryDate = new Date();
+          deliveryDate.setDate(deliveryDate.getDate() + 7);
+          updateData.estimatedDeliveryDate = deliveryDate;
+        }
+      }
+
+      // Update the order with the new status and any additional data
+      const updatedOrder = await dbStorage.updateOrder(orderId, updateData);
+      
+      // Send email notification if status changed
+      if (updatedOrder && order.status !== updatedOrder.status) {
+        try {
+          // Import here to avoid circular dependencies
+          const { sendOrderStatusChangeEmail } = await import('./email-service');
+          
+          // Get customer email
+          const customer = await dbStorage.getUser(order.customerId);
+          if (customer && customer.email) {
+            console.log(`Sending order status update email to ${customer.email} for order ${orderId}`);
+            await sendOrderStatusChangeEmail(
+              customer.email,
+              orderId,
+              updatedOrder.status as any,
+              updatedOrder.deliveryTrackingCode
+            );
+          }
+        } catch (err) {
+          console.error("Failed to send order status email:", err);
+          // Continue with the response even if email fails
+        }
+      }
+      
       res.json(updatedOrder);
     } catch (error) {
       console.error("Error updating order status:", error);
@@ -1073,6 +1120,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
   
   // Serve uploaded files statically
   app.use('/uploads', express.static('./uploads'));
+
+  // Order tracking endpoint for customers and guests - accessible without authentication
+  app.get("/api/orders/track/:trackingCode", async (req, res) => {
+    try {
+      const { trackingCode } = req.params;
+      if (!trackingCode) {
+        return res.status(400).json({ message: "Tracking code is required" });
+      }
+      
+      // Find orders with matching tracking code
+      const orders = await dbStorage.getOrders();
+      const order = orders.find(o => o.deliveryTrackingCode === trackingCode);
+      
+      if (!order) {
+        return res.status(404).json({ message: "Order not found with this tracking code" });
+      }
+      
+      // Get order items with product details
+      const orderItems = await dbStorage.getOrderItems(order.id);
+      const itemsWithProducts = await Promise.all(
+        orderItems.map(async (item) => {
+          const product = await dbStorage.getProduct(item.productId);
+          return { ...item, product };
+        })
+      );
+      
+      res.json({ ...order, items: itemsWithProducts });
+    } catch (error) {
+      console.error("Error tracking order:", error);
+      res.status(500).json({ message: "Failed to track order" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

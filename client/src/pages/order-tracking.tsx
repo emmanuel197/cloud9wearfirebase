@@ -3,8 +3,8 @@ import { useQuery } from "@tanstack/react-query";
 import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/use-auth";
 import { useToast } from "@/hooks/use-toast";
-import Navbar from "@/components/navbar";
-import Footer from "@/components/footer";
+import Header from "@/components/layout/header";
+import Footer from "@/components/layout/footer";
 import {
   Card,
   CardContent,
@@ -328,7 +328,7 @@ export default function OrderTracking() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Navbar />
+      <Header />
       
       <div className="container py-10 flex-1">
         <h1 className="text-3xl font-bold mb-2">{t("customer.trackOrder.title")}</h1>
@@ -451,7 +451,9 @@ export default function OrderTracking() {
         )}
       </div>
       
-      <Footer />
+      <div className="w-full">
+        <Footer />
+      </div>
     </div>
   );
 }

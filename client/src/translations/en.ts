@@ -10,7 +10,53 @@ const translations = {
     adminDashboard: "Admin Dashboard",
     supplierDashboard: "Supplier Dashboard",
     mobileMenuDescription: "Navigation menu",
-    language: "Language"
+    language: "Language",
+    trackOrder: "Track Order"
+  },
+  
+  customer: {
+    trackOrder: {
+      title: "Track Your Order",
+      description: "Enter your order ID or tracking code to check the status of your order.",
+      byOrderId: "By Order ID",
+      byTracking: "By Tracking Code",
+      orderIdPlaceholder: "Enter your order ID",
+      trackingCodePlaceholder: "Enter your tracking code",
+      search: "Search",
+      notFound: "Order Not Found",
+      notFoundDesc: "We couldn't find any order matching the information provided. Please check and try again.",
+      yourOrders: "Your Orders",
+      noOrders: "No Orders Found",
+      noOrdersDesc: "You haven't placed any orders yet.",
+      shopNow: "Shop Now"
+    },
+    order: {
+      details: "Order Details",
+      orderDate: "Ordered on {date}",
+      timeline: "Order Timeline",
+      cancelled: "Order Cancelled",
+      cancelledDesc: "This order has been cancelled. Please contact customer support if you have any questions.",
+      shippingInfo: "Shipping Information",
+      paymentInfo: "Payment Information",
+      items: "Order Items",
+      size: "Size",
+      color: "Color",
+      quantity: "Qty",
+      total: "Total",
+      trackingCode: "Tracking Code",
+      estimatedDelivery: "Estimated Delivery",
+      statuses: {
+        pending: "Pending",
+        processing: "Processing",
+        shipped: "Shipped",
+        delivered: "Delivered",
+        cancelled: "Cancelled"
+      },
+      paymentStatus: {
+        paid: "Paid",
+        pending: "Pending Payment"
+      }
+    }
   },
   
   hero: {
