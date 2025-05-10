@@ -133,7 +133,12 @@ export class MemStorage implements IStorage {
   async createUser(insertUser: InsertUser): Promise<User> {
     const id = this.userIdCounter++;
     const createdAt = new Date();
-    const user: User = { ...insertUser, id, createdAt };
+    const user: User = { 
+      ...insertUser, 
+      id, 
+      createdAt,
+      role: insertUser.role || 'customer'  // Ensure role is never undefined
+    };
     this.users.set(id, user);
     return user;
   }
@@ -169,12 +174,29 @@ export class MemStorage implements IStorage {
       }
     }
 
-    return products;
+    // Ensure all products have the required properties with correct types
+    return products.map(product => ({
+      ...product,
+      stock: product.stock ?? 0,
+      discount: product.discount ?? 0,
+      isActive: product.isActive ?? true,
+      comingSoon: product.comingSoon ?? false,
+      releaseDate: product.releaseDate ?? null
+    }));
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
     const id = this.productIdCounter++;
-    const newProduct: Product = { ...product, id };
+    // Ensure required properties are set with correct types
+    const newProduct: Product = { 
+      ...product, 
+      id,
+      stock: product.stock ?? 0,
+      discount: product.discount ?? 0,
+      isActive: product.isActive ?? true,
+      comingSoon: product.comingSoon ?? false,
+      releaseDate: product.releaseDate ?? null
+    };
     this.products.set(id, newProduct);
     return newProduct;
   }
@@ -218,7 +240,18 @@ export class MemStorage implements IStorage {
   async createOrder(order: InsertOrder): Promise<Order> {
     const id = this.orderIdCounter++;
     const orderDate = new Date();
-    const newOrder: Order = { ...order, id, orderDate };
+    
+    // Ensure all required fields are set with correct types
+    const newOrder: Order = { 
+      ...order, 
+      id, 
+      orderDate,
+      status: order.status || 'pending',
+      paymentStatus: order.paymentStatus || 'pending',
+      deliveryTrackingCode: order.deliveryTrackingCode || null,
+      estimatedDeliveryDate: order.estimatedDeliveryDate || null
+    };
+    
     this.orders.set(id, newOrder);
     return newOrder;
   }
@@ -351,9 +384,11 @@ export class MemStorage implements IStorage {
     }
 
     // Sort by newest first
-    return reviews.sort((a, b) => 
-      new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-    );
+    return reviews.sort((a, b) => {
+      const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+      const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+      return dateB.getTime() - dateA.getTime();
+    });
   }
 
   async getTopReviews(limit: number = 5): Promise<Review[]> {
@@ -596,21 +631,8 @@ export class DatabaseStorage implements IStorage {
     isActive?: boolean;
     comingSoon?: boolean;
   }): Promise<Product[]> {
-    // Explicitly select only the columns we know exist in the database
-    let query = db.select({
-      id: products.id,
-      name: products.name,
-      description: products.description,
-      price: products.price,
-      category: products.category,
-      imageUrls: products.imageUrls,
-      availableSizes: products.availableSizes,
-      availableColors: products.availableColors,
-      supplierId: products.supplierId,
-      stock: products.stock,
-      discount: products.discount,
-      isActive: products.isActive
-    }).from(products);
+    // Select all fields from the products table
+    let query = db.select().from(products);
 
     if (filters) {
       if (filters.category) {
@@ -622,44 +644,43 @@ export class DatabaseStorage implements IStorage {
       if (filters.isActive !== undefined) {
         query = query.where(eq(products.isActive, filters.isActive));
       }
-      // Skip comingSoon filter for database implementation as the column doesn't exist yet
-      // We'll handle this in memory for now
+      if (filters.comingSoon !== undefined) {
+        query = query.where(eq(products.comingSoon, filters.comingSoon));
+      }
     }
 
-    let productList = await query;
+    const productList = await query;
 
-    // Add comingSoon property to each product
-    productList = productList.map(product => ({
+    // Ensure all products have the required properties with correct types
+    return productList.map(product => ({
       ...product,
-      comingSoon: false, // Default value
-      releaseDate: null
+      stock: product.stock ?? 0,
+      discount: product.discount ?? 0,
+      isActive: product.isActive ?? true,
+      comingSoon: product.comingSoon ?? false,
+      releaseDate: product.releaseDate ?? null
     }));
-
-    // If comingSoon filter is specified, manually filter results in memory
-    if (filters?.comingSoon !== undefined) {
-      // For now, we have a dummy implementation until the DB schema is updated
-      // We'll return an empty array for comingSoon=true as no products have been set as coming soon
-      // When we have real data, we'll need to remove this
-      return filters.comingSoon ? [] : productList;
-    }
-
-    return productList;
   }
 
   async createProduct(product: InsertProduct): Promise<Product> {
-    // Remove comingSoon and releaseDate fields for database insertion since they don't exist in the schema yet
-    const { comingSoon, releaseDate, ...dbProduct } = product as any;
-
+    // Now we can directly insert all fields as the schema has been updated
     const [newProduct] = await db
       .insert(products)
-      .values(dbProduct)
+      .values({
+        ...product,
+        comingSoon: product.comingSoon ?? false,
+        releaseDate: product.releaseDate ?? null
+      })
       .returning();
 
-    // Add the comingSoon property back to the returned object
-    return { 
-      ...newProduct, 
-      comingSoon: comingSoon || false,
-      releaseDate: releaseDate || null
+    // Ensure all fields have proper types and defaults
+    return {
+      ...newProduct,
+      stock: newProduct.stock ?? 0,
+      discount: newProduct.discount ?? 0,
+      isActive: newProduct.isActive ?? true,
+      comingSoon: newProduct.comingSoon ?? false,
+      releaseDate: newProduct.releaseDate ?? null
     };
   }
 
@@ -729,7 +750,18 @@ export class DatabaseStorage implements IStorage {
   // Order management
   async getOrder(id: number): Promise<Order | undefined> {
     const [order] = await db.select().from(orders).where(eq(orders.id, id));
-    return order || undefined;
+    
+    if (!order) return undefined;
+    
+    // Ensure the order has all required properties with correct types
+    return {
+      ...order,
+      status: order.status || 'pending',
+      paymentStatus: order.paymentStatus || 'pending',
+      orderDate: order.orderDate || null,
+      deliveryTrackingCode: order.deliveryTrackingCode || null,
+      estimatedDeliveryDate: order.estimatedDeliveryDate || null
+    };
   }
 
   async getOrders(filters?: {
@@ -747,7 +779,17 @@ export class DatabaseStorage implements IStorage {
       }
     }
 
-    return await query;
+    const orderResults = await query;
+    
+    // Ensure all orders have the required properties with correct types
+    return orderResults.map(order => ({
+      ...order,
+      status: order.status || 'pending',
+      paymentStatus: order.paymentStatus || 'pending',
+      orderDate: order.orderDate || null,
+      deliveryTrackingCode: order.deliveryTrackingCode || null,
+      estimatedDeliveryDate: order.estimatedDeliveryDate || null
+    }));
   }
 
   async createOrder(order: InsertOrder): Promise<Order> {
@@ -903,17 +945,31 @@ export class DatabaseStorage implements IStorage {
       query = query.where(eq(reviews.productId, productId));
     }
 
-    // Order by most recent
-    return await query.orderBy(desc(reviews.createdAt));
+    // Get reviews ordered by most recent
+    const reviewResults = await query.orderBy(desc(reviews.createdAt));
+    
+    // Ensure all reviews have the required properties with correct types
+    return reviewResults.map(review => ({
+      ...review,
+      customerId: review.customerId ?? null,
+      createdAt: review.createdAt ?? new Date()
+    }));
   }
 
   async getTopReviews(limit: number = 5): Promise<Review[]> {
     // Get highest rated reviews
-    return await db
+    const topReviews = await db
       .select()
       .from(reviews)
       .orderBy(desc(reviews.rating))
       .limit(limit);
+      
+    // Ensure all reviews have the required properties with correct types
+    return topReviews.map(review => ({
+      ...review,
+      customerId: review.customerId ?? null,
+      createdAt: review.createdAt ?? new Date()
+    }));
   }
 
   async deleteReview(id: number): Promise<boolean> {
@@ -929,33 +985,91 @@ export class DatabaseStorage implements IStorage {
     }
   }
 
+  // Product recommendations
+  async getTrendingProducts(limit: number = 4): Promise<Product[]> {
+    // In a real implementation, this would be based on view counts, recent orders, etc.
+    // For now, we'll return the newest products
+    const result = await db
+      .select()
+      .from(products)
+      .where(eq(products.isActive, true))
+      .orderBy(desc(products.id))
+      .limit(limit);
+      
+    // Make sure we return fully typed products with all the expected properties
+    return result.map(product => ({
+      ...product,
+      comingSoon: product.comingSoon ?? false,
+      releaseDate: product.releaseDate ?? null
+    }));
+  }
+
+  async getTopSellingProducts(limit: number = 4): Promise<Product[]> {
+    // In a real implementation, this would be based on actual sales data
+    // For now, we'll return products with the highest discount as a proxy for popularity
+    const result = await db
+      .select()
+      .from(products)
+      .where(eq(products.isActive, true))
+      .orderBy(desc(products.discount))
+      .limit(limit);
+      
+    // Make sure we return fully typed products with all the expected properties
+    return result.map(product => ({
+      ...product,
+      comingSoon: product.comingSoon ?? false,
+      releaseDate: product.releaseDate ?? null
+    }));
+  }
 
   // Initialize demo data for development
   async initializeDemoData() {
-    // Create demo users
-    await this.createUser({
-      username: "admin",
-      password: "password123", // Will be hashed in auth.ts
-      email: "admin@example.com",
-      fullName: "Admin User",
-      role: "admin"
-    });
-
-    await this.createUser({
-      username: "supplier",
-      password: "password123", // Will be hashed in auth.ts
-      email: "supplier@example.com",
-      fullName: "Supplier User",
-      role: "supplier"
-    });
-
-    await this.createUser({
-      username: "customer",
-      password: "password123", // Will be hashed in auth.ts
-      email: "customer@example.com",
-      fullName: "Customer User",
-      role: "customer"
-    });
+    // First check if any products exist already, if so, skip initialization
+    const existingProducts = await db.select().from(products).limit(1);
+    if (existingProducts.length > 0) {
+      console.log("Demo data already exists, skipping initialization");
+      return;
+    }
+    
+    try {
+      // Check if users already exist
+      const adminExists = await this.getUserByUsername("admin");
+      const supplierExists = await this.getUserByUsername("supplier");
+      const customerExists = await this.getUserByUsername("customer");
+      
+      // Create demo users only if they don't exist
+      if (!adminExists) {
+        await this.createUser({
+          username: "admin",
+          password: "password123", // Will be hashed in auth.ts
+          email: "admin@example.com",
+          fullName: "Admin User",
+          role: "admin"
+        });
+      }
+      
+      if (!supplierExists) {
+        await this.createUser({
+          username: "supplier",
+          password: "password123", // Will be hashed in auth.ts
+          email: "supplier@example.com",
+          fullName: "Supplier User",
+          role: "supplier"
+        });
+      }
+      
+      if (!customerExists) {
+        await this.createUser({
+          username: "customer",
+          password: "password123", // Will be hashed in auth.ts
+          email: "customer@example.com",
+          fullName: "Customer User",
+          role: "customer"
+        });
+      }
+    } catch (error) {
+      console.error("Error checking existing users:", error);
+    }
 
     // Create initial products with discounts
     const tShirt1 = await this.createProduct({

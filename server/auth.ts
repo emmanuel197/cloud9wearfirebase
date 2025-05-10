@@ -147,14 +147,17 @@ export function setupAuth(app: express.Express) {
   });
 
   // Role-based route guard middleware
-  const requireRole = (role: string[]) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+  const requireRole = (roles: string[]) => {
+    return (req: Request, res: Response, next: NextFunction): void => {
       if (!req.isAuthenticated()) {
-        return res.status(401).json({ message: "Unauthorized" });
+        res.status(401).json({ message: "Unauthorized" });
+        return;
       }
 
-      if (!role.includes(req.user.role)) {
-        return res.status(403).json({ message: "Forbidden" });
+      const userRole = req.user?.role;
+      if (!userRole || !roles.includes(userRole)) {
+        res.status(403).json({ message: "Forbidden: Insufficient permissions" });
+        return;
       }
 
       next();
