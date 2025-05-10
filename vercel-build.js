@@ -76,85 +76,8 @@ try {
   console.log('TypeScript had errors but we\'re continuing with the build');
 }
 
-// Ensure frontend builds correctly regardless of TypeScript errors
-try {
-  console.log('Building the frontend application...');
-  // Create a simple build script that bypasses TypeScript errors
-  const buildScriptPath = path.join(__dirname, 'frontend-build.js');
-  fs.writeFileSync(buildScriptPath, `
-    const { execSync } = require('child_process');
-    const path = require('path');
-    const fs = require('fs');
-    
-    // Ensure the dist directory exists
-    const distDir = path.join(__dirname, 'dist');
-    const publicDir = path.join(distDir, 'public');
-    
-    if (!fs.existsSync(distDir)) {
-      fs.mkdirSync(distDir, { recursive: true });
-    }
-    
-    if (!fs.existsSync(publicDir)) {
-      fs.mkdirSync(publicDir, { recursive: true });
-    }
-    
-    try {
-      // Run Vite build directly
-      console.log('Running Vite build...');
-      execSync('npx vite build', { stdio: 'inherit' });
-    } catch (error) {
-      console.error('Error during Vite build:', error);
-      
-      // If build fails, create a fallback index.html
-      console.log('Creating fallback index.html...');
-      const fallbackHtml = \`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Cloud9Wear</title>
-          <style>
-            body {
-              font-family: Arial, sans-serif;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-              margin: 0;
-              background-color: #f5f5f5;
-            }
-            .message {
-              text-align: center;
-              max-width: 600px;
-              padding: 20px;
-            }
-            h1 {
-              color: #333;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="message">
-            <h1>Cloud9Wear</h1>
-            <p>Our print-on-demand clothing store is currently under maintenance. Please check back soon!</p>
-            <p>If you're seeing this page, it means there was an issue with the deployment. Please contact support for assistance.</p>
-          </div>
-        </body>
-        </html>
-      \`;
-      
-      fs.writeFileSync(path.join(publicDir, 'index.html'), fallbackHtml);
-    }
-  `);
-  
-  // Execute the frontend build script
-  execSync('node frontend-build.js', { stdio: 'inherit' });
-  console.log('Frontend build process completed');
-} catch (error) {
-  console.error('Error executing frontend build script:', error);
-}
+// We'll let the Vercel build system handle the frontend build
+console.log('TypeScript build completed; Vercel will handle frontend building with @vercel/static-build');
 
 // Ensure all necessary directories exist for file uploads
 const uploadsDir = path.join(__dirname, 'uploads', 'products');

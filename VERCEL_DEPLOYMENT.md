@@ -87,20 +87,40 @@ After deployment, you'll need to set up your database schema:
    - Image uploads
    - Payment processing
 
-## TypeScript Build Issues and Solutions
+## Deployment Approach
 
-The project includes several fixes for TypeScript errors that might appear during the Vercel build process:
+The project uses Vercel's standard deployment approach with separate builders for backend and frontend:
 
-1. **Custom Build Script**: We've added a `vercel-build.js` script that creates type definition shims for problematic dependencies:
-   - Vite: Fixed the `allowedHosts` type to accept string values
-   - Drizzle ORM: Added missing properties to the `PgSelectBase` interface
+1. **Custom TypeScript Build Script**: The `vercel-build.js` script helps with TypeScript errors:
+   - Creates custom type definitions to fix TypeScript errors
+   - Provides relaxed TypeScript configuration for the build process
+   - Lets the build continue even if there are TypeScript errors
 
-2. **Modified tsconfig**: The TypeScript configuration has been updated to:
-   - Skip type checking for external libraries with `skipLibCheck: true`
-   - Use custom type definitions with `typeRoots`
-   - Allow the build to proceed even with TypeScript errors
+2. **Separate Builders**: The configuration uses specific builders for different parts:
+   - `@vercel/node` for the server-side code
+   - `@vercel/static-build` for the frontend code
 
-3. **vercel.json**: The build command has been updated to include our custom build script
+3. **vercel.json**: The configuration specifies both backend and frontend builds:
+   ```json
+   {
+     "version": 2,
+     "buildCommand": "node vercel-scripts/cleanup-uploads.js && node vercel-build.js && npm run build",
+     "outputDirectory": "dist",
+     "builds": [
+       {
+         "src": "server/index.ts",
+         "use": "@vercel/node"
+       },
+       {
+         "src": "client/package.json",
+         "use": "@vercel/static-build",
+         "config": {
+           "distDir": "dist/public"
+         }
+       }
+     ]
+   }
+   ```
 
 ## Troubleshooting
 
