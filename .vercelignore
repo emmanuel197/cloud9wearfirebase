@@ -1,0 +1,30 @@
+# Development files
+.git
+.github
+node_modules
+npm-debug.log
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Build artifacts that will be generated during deployment
+.next
+dist
+build
+
+# Editor directories and files
+.idea
+.vscode
+*.swp
+*.swo
+
+# Drizzle
+drizzle
+*.sql
+
+# Other unnecessary files
+*.log
+*.md
+.DS_Store

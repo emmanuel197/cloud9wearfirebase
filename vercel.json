@@ -1,20 +1,28 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist",
-  "installCommand": "npm install",
-  "framework": null,
-  "functions": {
-    "api/*.js": {
-      "memory": 1024,
-      "maxDuration": 10
+  "buildCommand": "node vercel-build.js",
+  "builds": [
+    {
+      "src": "server/index.js",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["**/*.js", "**/*.jsx", "shared/**/*", "client/**/*"],
+        "excludeFiles": ["**/*.ts", "**/*.tsx"]
+      }
     }
-  },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/" }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "server/index.js"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "server/index.js"
+    }
   ],
   "env": {
     "NODE_ENV": "production"
-  }
+  },
+  "ignoreCommand": "find . -name \"*.tsx\" -o -name \"*.ts\" | grep -v \"node_modules\" | xargs rm -f || true"
 }

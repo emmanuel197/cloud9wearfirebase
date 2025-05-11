@@ -2,10 +2,22 @@ import express from "express";
 import fs from "fs";
 import path from "path";
 import { createServer as createViteServer, createLogger } from "vite";
-import viteConfig from "../vite.config.js";
 import { nanoid } from "nanoid";
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+
+// Dynamically import vite config to handle both .js and .ts extensions
+let viteConfig;
+try {
+  viteConfig = (await import("../vite.config.js")).default;
+} catch (jsError) {
+  try {
+    viteConfig = (await import("../vite.config.ts")).default;
+  } catch (tsError) {
+    console.error("Could not import vite.config.js or vite.config.ts");
+    viteConfig = {};
+  }
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

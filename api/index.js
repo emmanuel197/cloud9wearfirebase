@@ -1,24 +1,18 @@
 // Special Vercel deployment entry point
 // This file is specifically for Vercel Functions
 
-import { createRequire } from 'module';
-import { fileURLToPath } from 'url';
-import { dirname, resolve } from 'path';
+import { app } from '../server/index.js';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-const require = createRequire(import.meta.url);
-
-// Adjust path to find the server's entry point
-const serverPath = resolve(__dirname, '../server/index.js');
-
-// Import and execute the server code
-export default async (req, res) => {
-  try {
-    const { app } = await import(serverPath);
-    return app(req, res);
-  } catch (error) {
-    console.error('Error in Vercel Function:', error);
-    res.status(500).send('Server Error');
-  }
-};
+// Create a serverless handler that processes all incoming requests
+export default async function handler(req, res) {
+  // For vercel serverless, we need to manually invoke the Express app
+  return new Promise((resolve, reject) => {
+    app(req, res, (err) => {
+      if (err) {
+        console.error('Express middleware error:', err);
+        return reject(err);
+      }
+      return resolve();
+    });
+  });
+}
