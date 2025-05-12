@@ -1,31 +1,19 @@
+// This is a TypeScript adapter that simply imports and re-exports the JavaScript implementation
+// This allows us to keep the package.json scripts unchanged while using JavaScript under the hood
 
-import express from 'express';
-import { registerRoutes } from './routes';
-import path from 'path';
 import { fileURLToPath } from 'url';
+import { dirname, resolve } from 'path';
+import { createRequire } from 'module';
 
 const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
 
-const app = express();
-const port = process.env.PORT || 5000;
+// Import the JavaScript implementation
+const indexJsPath = resolve(__dirname, 'index.js');
 
-// Add health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
-});
-
-// Serve static files from the React app
-app.use(express.static(path.join(__dirname, '../client/dist')));
-
-// Register API routes
-const server = await registerRoutes(app);
-
-// Handle React routing, return all requests to React app
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../client/dist/index.html'));
-});
-
-server.listen(port, '0.0.0.0', () => {
-  console.log(`Server running at http://0.0.0.0:${port}`);
+// This will execute the JavaScript file
+import(indexJsPath).catch(error => {
+  console.error('Error importing JavaScript implementation:', error);
+  process.exit(1);
 });
