@@ -129,101 +129,21 @@ export default function Navbar() {
         <div className="hidden md:flex items-center space-x-6">
           <NavigationMenu>
             <NavigationMenuList>
-              {/* Home and Products links */}
-              <NavigationMenuItem>
-                <Link href="/">
-                  <NavigationMenuLink
-                    className={`${navigationMenuTriggerStyle()} ${
-                      location === "/"
-                        ? "bg-primary/10 text-primary"
-                        : ""
-                    }`}
-                  >
-                    {t("navigation.home")}
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              
-              <NavigationMenuItem>
-                <Link href="/products">
-                  <NavigationMenuLink
-                    className={`${navigationMenuTriggerStyle()} ${
-                      location === "/products"
-                        ? "bg-primary/10 text-primary"
-                        : ""
-                    }`}
-                  >
-                    {t("navigation.products")}
-                  </NavigationMenuLink>
-                </Link>
-              </NavigationMenuItem>
-              
-              {/* Order Tracking Link - Only for authenticated customers or admin */}
-              {user && (user.role === "customer" || user.role === "admin") && (
-                <NavigationMenuItem>
-                  <Link href="/order-tracking">
+              {links.map((link) => (
+                <NavigationMenuItem key={link.href}>
+                  <Link href={link.href}>
                     <NavigationMenuLink
                       className={`${navigationMenuTriggerStyle()} ${
-                        location === "/order-tracking"
+                        location === link.href
                           ? "bg-primary/10 text-primary"
                           : ""
                       }`}
                     >
-                      {t("navigation.trackOrder")}
+                      {link.label}
                     </NavigationMenuLink>
                   </Link>
                 </NavigationMenuItem>
-              )}
-              
-              {/* Cart Link - Only for customers */}
-              {user && user.role === "customer" && (
-                <NavigationMenuItem>
-                  <Link href="/cart">
-                    <NavigationMenuLink 
-                      className={`${navigationMenuTriggerStyle()} ${
-                        location === "/cart"
-                          ? "bg-primary/10 text-primary"
-                          : ""
-                      }`}
-                    >
-                      {t("navigation.cart")}
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              )}
-              
-              {/* Admin/Supplier Dashboard Links */}
-              {user && user.role === "admin" && (
-                <NavigationMenuItem>
-                  <Link href="/admin">
-                    <NavigationMenuLink 
-                      className={`${navigationMenuTriggerStyle()} ${
-                        location === "/admin"
-                          ? "bg-primary/10 text-primary"
-                          : ""
-                      }`}
-                    >
-                      {t("navigation.adminDashboard")}
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              )}
-              
-              {user && user.role === "supplier" && (
-                <NavigationMenuItem>
-                  <Link href="/supplier">
-                    <NavigationMenuLink 
-                      className={`${navigationMenuTriggerStyle()} ${
-                        location === "/supplier"
-                          ? "bg-primary/10 text-primary"
-                          : ""
-                      }`}
-                    >
-                      {t("navigation.supplierDashboard")}
-                    </NavigationMenuLink>
-                  </Link>
-                </NavigationMenuItem>
-              )}
+              ))}
             </NavigationMenuList>
           </NavigationMenu>
 
@@ -263,109 +183,22 @@ export default function Navbar() {
                 <SheetTitle className="text-2xl font-bold">KASA</SheetTitle>
               </SheetHeader>
               <div className="py-6 flex flex-col space-y-4">
-                {/* Home link */}
-                <SheetClose asChild>
-                  <Link href="/">
-                    <a
-                      className={`flex items-center py-3 px-4 rounded-md ${
-                        location === "/"
-                          ? "bg-primary/10 text-primary"
-                          : "hover:bg-accent"
-                      }`}
-                    >
-                      <Home className="h-4 w-4 mr-2" />
-                      {t("navigation.home")}
-                    </a>
-                  </Link>
-                </SheetClose>
-                
-                {/* Products link */}
-                <SheetClose asChild>
-                  <Link href="/products">
-                    <a
-                      className={`flex items-center py-3 px-4 rounded-md ${
-                        location === "/products"
-                          ? "bg-primary/10 text-primary"
-                          : "hover:bg-accent"
-                      }`}
-                    >
-                      <Search className="h-4 w-4 mr-2" />
-                      {t("navigation.products")}
-                    </a>
-                  </Link>
-                </SheetClose>
-                
-                {/* Order Tracking Link - Only for authenticated customers or admin */}
-                {user && (user.role === "customer" || user.role === "admin") && (
-                  <SheetClose asChild>
-                    <Link href="/order-tracking">
+                {links.map((link) => (
+                  <SheetClose asChild key={link.href}>
+                    <Link href={link.href}>
                       <a
                         className={`flex items-center py-3 px-4 rounded-md ${
-                          location === "/order-tracking"
+                          location === link.href
                             ? "bg-primary/10 text-primary"
                             : "hover:bg-accent"
                         }`}
                       >
-                        <Package className="h-4 w-4 mr-2" />
-                        {t("navigation.trackOrder")}
+                        {link.icon}
+                        {link.label}
                       </a>
                     </Link>
                   </SheetClose>
-                )}
-                
-                {/* Cart link - Only for customers */}
-                {user && user.role === "customer" && (
-                  <SheetClose asChild>
-                    <Link href="/cart">
-                      <a
-                        className={`flex items-center py-3 px-4 rounded-md ${
-                          location === "/cart"
-                            ? "bg-primary/10 text-primary"
-                            : "hover:bg-accent"
-                        }`}
-                      >
-                        <ShoppingCart className="h-4 w-4 mr-2" />
-                        {t("navigation.cart")}
-                      </a>
-                    </Link>
-                  </SheetClose>
-                )}
-                
-                {/* Admin Dashboard Link */}
-                {user && user.role === "admin" && (
-                  <SheetClose asChild>
-                    <Link href="/admin">
-                      <a
-                        className={`flex items-center py-3 px-4 rounded-md ${
-                          location === "/admin"
-                            ? "bg-primary/10 text-primary"
-                            : "hover:bg-accent"
-                        }`}
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        {t("navigation.adminDashboard")}
-                      </a>
-                    </Link>
-                  </SheetClose>
-                )}
-                
-                {/* Supplier Dashboard Link */}
-                {user && user.role === "supplier" && (
-                  <SheetClose asChild>
-                    <Link href="/supplier">
-                      <a
-                        className={`flex items-center py-3 px-4 rounded-md ${
-                          location === "/supplier"
-                            ? "bg-primary/10 text-primary"
-                            : "hover:bg-accent"
-                        }`}
-                      >
-                        <User className="h-4 w-4 mr-2" />
-                        {t("navigation.supplierDashboard")}
-                      </a>
-                    </Link>
-                  </SheetClose>
-                )}
+                ))}
 
                 <div className="pt-4 border-t border-border">
                   <LanguageSwitcher />

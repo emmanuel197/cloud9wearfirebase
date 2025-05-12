@@ -117,14 +117,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Endpoint to get coming soon products
   app.get("/api/coming-soon-products", async (req, res) => {
     try {
-      // Get request query parameter (used for checking if we should show mock data)
-      const includeMock = req.query.includeMock !== 'false';
-      
       const comingSoonProducts = await dbStorage.getProducts({ comingSoon: true });
       
-      // If no coming soon products in the database and includeMock is true,
-      // return the mock product for demo purposes
-      if (comingSoonProducts.length === 0 && includeMock) {
+      // If no coming soon products in the database, return the mock product for demo purposes
+      if (comingSoonProducts.length === 0) {
         const mockComingSoonProduct = {
           id: 9999, // Using an ID that won't conflict with existing products
           name: "Limited Edition Collection 2025",
@@ -149,45 +145,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error fetching coming soon products:", error);
       res.status(500).json({ message: "Failed to fetch coming soon products" });
-    }
-  });
-  
-  // Endpoint to delete a coming soon product
-  app.delete("/api/coming-soon-products/:id", requireRole(["admin"]), async (req, res) => {
-    try {
-      const productId = parseInt(req.params.id);
-      
-      // Special handling for mock product (ID 9999)
-      if (productId === 9999) {
-        // Return success but set a cookie that tells the frontend not to show the mock product
-        res.cookie('hideMockComingSoonProduct', 'true', {
-          maxAge: 1000 * 60 * 60 * 24 * 30, // 30 days
-          httpOnly: false
-        });
-        return res.status(204).send();
-      }
-      
-      // Verify it's a coming soon product first
-      const product = await dbStorage.getProduct(productId);
-      
-      if (!product) {
-        return res.status(404).json({ message: "Product not found" });
-      }
-      
-      if (!product.comingSoon) {
-        return res.status(400).json({ message: "This is not a coming soon product" });
-      }
-      
-      const deleted = await dbStorage.deleteProduct(productId);
-
-      if (!deleted) {
-        return res.status(404).json({ message: "Failed to delete product" });
-      }
-
-      res.status(204).send();
-    } catch (error) {
-      console.error("Error deleting coming soon product:", error);
-      res.status(500).json({ message: "Failed to delete coming soon product" });
     }
   });
   

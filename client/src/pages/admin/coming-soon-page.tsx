@@ -1,73 +1,26 @@
 import { useState } from "react";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Helmet } from "react-helmet";
 import { useLanguage } from "@/hooks/use-language";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
-import { Calendar, Clock, Plus, Pencil, Eye, Trash2, AlertTriangle } from "lucide-react";
+import { Calendar, Clock, Plus, Pencil, Eye } from "lucide-react";
 import ComingSoonForm from "@/components/admin/coming-soon-form";
 import Loader from "@/components/ui/loader";
 import { Product } from "@shared/schema";
-import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 
 export default function ComingSoonPage() {
   const { t } = useLanguage();
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   
-  // Check if the mock product should be hidden
-  const hideMockProduct = document.cookie.includes('hideMockComingSoonProduct=true');
-  
   const { data: comingSoonProducts, isLoading, isError } = useQuery<Product[]>({
-    queryKey: ["/api/coming-soon-products", hideMockProduct],
-    queryFn: async ({ queryKey }) => {
-      // If mockProduct should be hidden, add query parameter
-      const showMock = !hideMockProduct;
-      const response = await fetch(`/api/coming-soon-products${showMock ? '' : '?includeMock=false'}`);
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch coming soon products');
-      }
-      
-      return response.json();
-    },
+    queryKey: ["/api/coming-soon-products"],
     throwOnError: false,
-  });
-  
-  const deleteProductMutation = useMutation({
-    mutationFn: async (productId: number) => {
-      await apiRequest("DELETE", `/api/coming-soon-products/${productId}`);
-      return productId;
-    },
-    onSuccess: (productId) => {
-      // When deleting the mock product (id 9999), we need to use the latest query key
-      // that includes the updated hideMockProduct value
-      queryClient.invalidateQueries({ 
-        queryKey: ["/api/coming-soon-products", productId === 9999 ? true : hideMockProduct] 
-      });
-      setIsDeleteModalOpen(false);
-      setSelectedProduct(null);
-      toast({
-        title: "Product deleted",
-        description: "The coming soon product has been successfully deleted.",
-        variant: "default",
-      });
-    },
-    onError: (error) => {
-      toast({
-        title: "Error deleting product",
-        description: error instanceof Error ? error.message : "Failed to delete product",
-        variant: "destructive",
-      });
-    }
   });
   
   const handleCreateSuccess = () => {
@@ -82,17 +35,6 @@ export default function ComingSoonPage() {
   const handleEditClick = (product: Product) => {
     setSelectedProduct(product);
     setIsEditModalOpen(true);
-  };
-  
-  const handleDeleteClick = (product: Product) => {
-    setSelectedProduct(product);
-    setIsDeleteModalOpen(true);
-  };
-  
-  const confirmDelete = () => {
-    if (selectedProduct) {
-      deleteProductMutation.mutate(selectedProduct.id);
-    }
   };
   
   if (isLoading) return <Loader />;
@@ -242,15 +184,6 @@ export default function ComingSoonPage() {
                                 >
                                   <Eye className="h-4 w-4" />
                                 </Button>
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="h-8 w-8 p-0 text-gray-600 hover:text-[#ef0c11]"
-                                  title="Delete product"
-                                  onClick={() => handleDeleteClick(product)}
-                                >
-                                  <Trash2 className="h-4 w-4" />
-                                </Button>
                               </div>
                             </td>
                           </tr>
@@ -318,15 +251,6 @@ export default function ComingSoonPage() {
                               <Eye className="h-4 w-4 mr-1" />
                               View
                             </Button>
-                            <Button 
-                              variant="ghost" 
-                              size="sm" 
-                              className="h-8 p-0 px-2 text-gray-600 hover:text-[#ef0c11]"
-                              onClick={() => handleDeleteClick(product)}
-                            >
-                              <Trash2 className="h-4 w-4 mr-1" />
-                              Delete
-                            </Button>
                           </div>
                         </CardContent>
                       </Card>
@@ -349,61 +273,6 @@ export default function ComingSoonPage() {
             </Tabs>
           </CardContent>
         </Card>
-        {/* Delete Confirmation Modal */}
-        <Dialog open={isDeleteModalOpen} onOpenChange={setIsDeleteModalOpen}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5 text-[#ef0c11]" />
-                Confirm Deletion
-              </DialogTitle>
-              <DialogDescription>
-                Are you sure you want to delete this coming soon product? This action cannot be undone.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="my-4">
-              {selectedProduct && (
-                <div className="flex items-center gap-3 p-3 rounded-md bg-gray-50">
-                  <img 
-                    src={selectedProduct.imageUrls[0]} 
-                    alt={selectedProduct.name} 
-                    className="w-14 h-14 object-cover rounded"
-                  />
-                  <div>
-                    <div className="font-medium">{selectedProduct.name}</div>
-                    <div className="text-sm text-gray-500">{selectedProduct.category}</div>
-                  </div>
-                </div>
-              )}
-            </div>
-            <DialogFooter>
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setIsDeleteModalOpen(false);
-                  setSelectedProduct(null);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button 
-                variant="destructive" 
-                className="bg-[#ef0c11] hover:bg-[#d00a0f]"
-                onClick={confirmDelete}
-                disabled={deleteProductMutation.isPending}
-              >
-                {deleteProductMutation.isPending ? (
-                  <span className="flex items-center gap-2">
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    Deleting...
-                  </span>
-                ) : (
-                  "Delete Product"
-                )}
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     </>
   );
