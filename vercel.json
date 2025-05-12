@@ -1,28 +1,25 @@
 {
   "version": 2,
-  "buildCommand": "node vercel-build.js",
   "builds": [
     {
-      "src": "server/index.js",
+      "src": "server/index.ts",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["**/*.js", "**/*.jsx", "shared/**/*", "client/**/*"],
-        "excludeFiles": ["**/*.ts", "**/*.tsx"]
+        "includeFiles": ["**/*.ts", "**/*.tsx", "shared/**/*", "client/**/*"]
       }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "server/index.js"
+      "dest": "server/index.ts"
     },
     {
       "src": "/(.*)",
-      "dest": "server/index.js"
+      "dest": "server/index.ts"
     }
   ],
   "env": {
     "NODE_ENV": "production"
-  },
-  "ignoreCommand": "find . -name \"*.tsx\" -o -name \"*.ts\" | grep -v \"node_modules\" | xargs rm -f || true"
+  }
 }
