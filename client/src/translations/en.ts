@@ -643,7 +643,8 @@ const translations = {
         stock: "Stock",
         status: "Status",
         actions: "Actions"
-      }
+      },
+      totalStock: "Total Stock"
     },
     
     reviews: {
