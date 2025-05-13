@@ -8,7 +8,8 @@ import {
   insertOrderItemSchema,
   loginSchema,
   CartItem,
-  insertReviewSchema // Added import for review schema
+  insertReviewSchema, // Added import for review schema
+  OrderStatus
 } from "@shared/schema";
 import { ZodError } from "zod";
 import Paystack from "paystack-node";
@@ -444,12 +445,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Send email notification if payment status has changed
       if (order.paymentStatus !== paymentStatus) {
         try {
-          await sendOrderStatusChangeEmail(
-            order.customerId,
-            orderId,
-            order.status,
-            order.deliveryTrackingCode
-          );
+          // Get customer information
+          const customer = await dbStorage.getUser(order.customerId);
+          if (customer && customer.email) {
+            // For now, we'll use the standard order status email with the current order status
+            // In a future update, we'll implement a specific payment status email template
+            await sendOrderStatusChangeEmail(
+              customer.email,
+              orderId,
+              order.status as OrderStatus, // Cast string to OrderStatus enum
+              order.deliveryTrackingCode
+            );
+            console.log(`Payment status change email would be sent to ${customer.email}`);
+          } else {
+            console.warn("Could not send payment status email: customer email not found");
+          }
         } catch (emailError) {
           console.error("Failed to send payment status change email:", emailError);
         }

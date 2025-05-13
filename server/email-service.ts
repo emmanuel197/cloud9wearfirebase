@@ -1,5 +1,5 @@
 import { MailService } from '@sendgrid/mail';
-import { OrderStatus } from '@shared/schema';
+import { OrderStatus, PaymentStatus } from '@shared/schema';
 
 // Initialize SendGrid
 if (!process.env.SENDGRID_API_KEY) {
@@ -61,6 +61,8 @@ export async function sendOrderStatusChangeEmail(
     html
   });
 }
+
+// Remove this function temporarily until we implement getPaymentStatusEmailContent
 
 function getOrderStatusEmailContent(orderId: number, status: OrderStatus, trackingCode?: string | null) {
   const formattedDate = new Date().toLocaleDateString('en-US', {
