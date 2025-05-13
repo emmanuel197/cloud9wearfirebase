@@ -43,6 +43,7 @@ const translations = {
       color: "Couleur",
       quantity: "Qté",
       total: "Total",
+      amountPaid: "Montant Payé",
       trackingCode: "Code de Suivi",
       estimatedDelivery: "Livraison Estimée",
       noItems: "Aucun article dans cette commande",
