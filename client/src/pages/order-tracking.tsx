@@ -338,6 +338,34 @@ export default function OrderTrackingPage() {
                   <span className="text-gray-500">{t("customer.order.items")}</span>
                   <span className="font-medium">{order.items?.length || 0}</span>
                 </div>
+                
+                {/* Display order items summary */}
+                <div className="mb-3 border-t border-b py-2 mt-2">
+                  {order.items && order.items.length > 0 ? (
+                    <div className="space-y-2 max-h-32 overflow-y-auto pr-1">
+                      {order.items.map((item: any, index: number) => (
+                        <div key={index} className="flex justify-between text-sm py-1">
+                          <div className="flex items-center gap-2">
+                            <span className="font-medium truncate max-w-[180px]">
+                              {item.product?.name || "Product"} 
+                              <span className="text-gray-500">
+                                {" × "}{item.quantity}
+                              </span>
+                            </span>
+                          </div>
+                          <span className="font-medium">
+                            ₵{((item.product?.price || 0) * item.quantity).toFixed(2)}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-sm text-gray-500 text-center py-2">
+                      {t("customer.order.noItems")}
+                    </div>
+                  )}
+                </div>
+                
                 <div className="flex justify-between text-sm mb-4">
                   <span className="text-gray-500">{t("customer.order.total")}</span>
                   <span className="font-medium">₵{parseFloat(order.amount).toFixed(2)}</span>
@@ -349,7 +377,7 @@ export default function OrderTrackingPage() {
                   className="w-full mt-2"
                 >
                   <Link href={`/order-tracking/${order.id}`}>
-                    {t("customer.trackOrder.search")}
+                    {t("customer.trackOrder.viewDetails")}
                   </Link>
                 </Button>
               </div>

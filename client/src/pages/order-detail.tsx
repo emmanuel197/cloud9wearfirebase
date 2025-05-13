@@ -76,7 +76,7 @@ export default function OrderDetailPage() {
     );
   }
 
-  // Create a simplified version of order details for this page
+  // Create a comprehensive version of order details for this page
   const renderOrderDetails = () => {
     return (
       <div className="space-y-6">
@@ -119,6 +119,12 @@ export default function OrderDetailPage() {
                   <span className="font-medium capitalize">{order.paymentMethod?.replace("_", " ")}</span>
                 </div>
                 <div className="flex justify-between">
+                  <span className="text-gray-500">{t("customer.order.paymentStatus")}:</span>
+                  <Badge variant="outline" className={order.paymentStatus === "paid" ? "bg-green-50 text-green-700 border-green-200" : ""}>
+                    {t(`customer.order.paymentStatus.${order.paymentStatus}`)}
+                  </Badge>
+                </div>
+                <div className="flex justify-between pt-2 mt-2 border-t">
                   <span className="text-gray-500">{t("checkout.total")}:</span>
                   <span className="font-bold">₵{parseFloat(order.amount).toFixed(2)}</span>
                 </div>
@@ -126,6 +132,61 @@ export default function OrderDetailPage() {
             </CardContent>
           </Card>
         </div>
+        
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">{t("customer.order.items")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="divide-y">
+              {order.items && order.items.length > 0 ? (
+                order.items.map((item: any, index: number) => (
+                  <div key={index} className="py-3 flex justify-between items-center gap-4">
+                    <div className="flex items-center gap-3">
+                      {item.product?.images?.[0] ? (
+                        <img
+                          src={item.product.images[0]}
+                          alt={item.product.name}
+                          className="w-16 h-16 object-cover rounded-md"
+                        />
+                      ) : (
+                        <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
+                          <Package className="h-6 w-6 text-gray-400" />
+                        </div>
+                      )}
+                      
+                      <div>
+                        <h4 className="font-medium">{item.product?.name || "Product"}</h4>
+                        <div className="text-sm text-gray-500 mt-1">
+                          <span>{t("customer.order.size")}: {item.size}</span>
+                          <span className="mx-2">•</span>
+                          <span>{t("customer.order.color")}: {item.color}</span>
+                          <span className="mx-2">•</span>
+                          <span>{t("customer.order.quantity")}: {item.quantity}</span>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="font-medium">
+                      ₵{((item.product?.price || 0) * item.quantity).toFixed(2)}
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-6 text-center text-gray-500">
+                  {t("customer.order.noItems")}
+                </div>
+              )}
+            </div>
+            
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex justify-between items-center">
+                <span className="font-medium">{t("customer.order.total")}</span>
+                <span className="text-xl font-bold">₵{parseFloat(order.amount).toFixed(2)}</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     );
   };
