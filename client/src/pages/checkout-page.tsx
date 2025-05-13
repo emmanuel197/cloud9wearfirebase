@@ -210,23 +210,23 @@ export default function CheckoutPage() {
   if (paymentInitialized && !orderComplete) {
     return (
       <div className="container mx-auto px-4 py-16 max-w-4xl">
-        <Card>
+        <Card className="bg-white text-black">
           <CardHeader>
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-2xl text-black">
               {t("Checkout")}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-700">
               {t("Complete Your Payment")}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="mb-6 p-4 bg-gray-50 rounded-md">
-              <h3 className="font-semibold mb-2">
+            <div className="mb-6 p-4 bg-gray-50 rounded-md text-black">
+              <h3 className="font-semibold mb-2 text-black">
                 {t("checkout.orderSummary")}
               </h3>
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-2 text-gray-800">
                 <span>{t("checkout.subtotal")}</span>
-                <PriceDisplay amount={total} />
+                <PriceDisplay amount={total} className="text-black" />
               </div>
               {/* Show savings from discounts if applicable */}
               {cart.items.some(item => item.product.discount && item.product.discount > 0) && (
@@ -239,18 +239,18 @@ export default function CheckoutPage() {
                   }, 0).toFixed(2)} GHS</span>
                 </div>
               )}
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-2 text-gray-800">
                 <span>{t("checkout.shipping")}</span>
-                <PriceDisplay amount={shippingCost} />
+                <PriceDisplay amount={shippingCost} className="text-black" />
               </div>
-              <div className="flex justify-between mb-2">
+              <div className="flex justify-between mb-2 text-gray-800">
                 <span>{t("checkout.tax")}</span>
-                <PriceDisplay amount={taxAmount} />
+                <PriceDisplay amount={taxAmount} className="text-black" />
               </div>
               <Separator className="my-2" />
-              <div className="flex justify-between font-semibold">
+              <div className="flex justify-between font-semibold text-black">
                 <span>{t("checkout.total")}</span>
-                <PriceDisplay amount={grandTotal} className="text-lg" />
+                <PriceDisplay amount={grandTotal} className="text-lg text-black" />
               </div>
             </div>
 
@@ -271,7 +271,7 @@ export default function CheckoutPage() {
                 <Button
                   variant="outline"
                   onClick={() => setPaymentInitialized(false)}
-                  className="mt-4"
+                  className="mt-4 text-black border-gray-300 hover:bg-gray-100"
                 >
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   {t("Back To Checkout")}
@@ -288,29 +288,29 @@ export default function CheckoutPage() {
   if (orderComplete) {
     return (
       <div className="container mx-auto px-4 py-16 max-w-4xl">
-        <Card className="text-center">
+        <Card className="text-center bg-white text-black">
           <CardHeader>
             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <CheckCircle2 className="h-6 w-6 text-green-600" />
             </div>
-            <CardTitle className="text-2xl">
+            <CardTitle className="text-2xl text-black">
               {t("checkout.orderSuccess.title")}
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-gray-700">
               {t("checkout.orderSuccess.description")}
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="mb-4">
+            <p className="mb-4 text-gray-800">
               {t("checkout.orderSuccess.orderNumber")}:{" "}
-              <span className="font-semibold">#{orderId}</span>
+              <span className="font-semibold text-black">#{orderId}</span>
             </p>
-            <p className="mb-6">
+            <p className="mb-6 text-gray-800">
               {t("checkout.orderSuccess.confirmationEmail")}
             </p>
             <div className="flex justify-center space-x-4">
               <Link href="/">
-                <Button variant="outline">
+                <Button variant="outline" className="text-black border-gray-300 hover:bg-gray-100">
                   {t("checkout.orderSuccess.continueShopping")}
                 </Button>
               </Link>
@@ -330,9 +330,9 @@ export default function CheckoutPage() {
         <div className="lg:col-span-2">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <Card>
+              <Card className="bg-white">
                 <CardHeader>
-                  <CardTitle>{t("Customer Details")}</CardTitle>
+                  <CardTitle className="text-black">{t("Customer Details")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -340,15 +340,16 @@ export default function CheckoutPage() {
                     name="customerEmail"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("Email")}</FormLabel>
+                        <FormLabel className="text-gray-800">{t("Email")}</FormLabel>
                         <FormControl>
                           <Input
                             type="email"
                             placeholder={t("Email Placeholder")}
                             {...field}
+                            className="text-black placeholder:text-gray-500"
                           />
                         </FormControl>
-                        <FormDescription>
+                        <FormDescription className="text-gray-600">
                           {t("Email Description")}
                         </FormDescription>
                         <FormMessage />
@@ -358,9 +359,9 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-white">
                 <CardHeader>
-                  <CardTitle>{t("checkout.shippingDetails")}</CardTitle>
+                  <CardTitle className="text-black">{t("checkout.shippingDetails")}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <FormField
@@ -368,11 +369,12 @@ export default function CheckoutPage() {
                     name="shippingAddress"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("checkout.form.address")}</FormLabel>
+                        <FormLabel className="text-gray-800">{t("checkout.form.address")}</FormLabel>
                         <FormControl>
                           <Textarea
                             placeholder={t("checkout.form.addressPlaceholder")}
                             {...field}
+                            className="text-black placeholder:text-gray-500"
                           />
                         </FormControl>
                         <FormMessage />
@@ -385,11 +387,12 @@ export default function CheckoutPage() {
                     name="contactPhone"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>{t("checkout.form.phone")}</FormLabel>
+                        <FormLabel className="text-gray-800">{t("checkout.form.phone")}</FormLabel>
                         <FormControl>
                           <Input
                             placeholder={t("checkout.form.phonePlaceholder")}
                             {...field}
+                            className="text-black placeholder:text-gray-500"
                           />
                         </FormControl>
                         <FormMessage />
@@ -399,9 +402,9 @@ export default function CheckoutPage() {
                 </CardContent>
               </Card>
 
-              <Card>
+              <Card className="bg-white">
                 <CardHeader>
-                  <CardTitle>{t("checkout.paymentMethod")}</CardTitle>
+                  <CardTitle className="text-black">{t("checkout.paymentMethod")}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <FormField
@@ -424,7 +427,7 @@ export default function CheckoutPage() {
 
               <div className="flex justify-between">
                 <Link href="/cart">
-                  <Button variant="outline" type="button">
+                  <Button variant="outline" type="button" className="text-black border-gray-300 hover:bg-gray-100">
                     <ArrowLeft className="mr-2 h-4 w-4" />
                     {t("checkout.backToCart")}
                   </Button>
