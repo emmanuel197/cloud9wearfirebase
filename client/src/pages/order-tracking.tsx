@@ -1,209 +1,145 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { useLanguage } from "@/hooks/use-language";
 import { useAuth } from "@/hooks/use-auth";
-import { useToast } from "@/hooks/use-toast";
-import Header from "@/components/layout/header";
-import Footer from "@/components/layout/footer";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { useLanguage } from "@/hooks/use-language";
+import { Helmet } from "react-helmet";
+import { 
+  Package, 
+  CheckCircle2, 
+  Clock, 
+  Truck, 
+  AlertTriangle,
+  Search,
+  ShoppingBag
+} from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Separator } from "@/components/ui/separator";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import {
-  Package,
-  Truck,
-  CheckCircle2,
-  Clock,
-  Search,
-  AlertCircle,
-  Home,
-  Phone,
-  CreditCard,
-  ShoppingBag,
-} from "lucide-react";
-import PriceDisplay from "@/components/price-display";
+import { Badge } from "@/components/ui/badge";
+import { format } from "date-fns";
+import { Link } from "wouter";
+import { cn } from "@/lib/utils";
 
-export default function OrderTracking() {
+export default function OrderTrackingPage() {
   const { t } = useLanguage();
   const { user } = useAuth();
-  const { toast } = useToast();
-  const [orderIdInput, setOrderIdInput] = useState("");
-  const [trackingCode, setTrackingCode] = useState("");
-  const [activeTab, setActiveTab] = useState("byOrderId");
+  const [searchType, setSearchType] = useState<"orderId" | "tracking">("orderId");
+  const [searchValue, setSearchValue] = useState("");
+  const [searchSubmitted, setSearchSubmitted] = useState(false);
 
-  // Fetch customer orders if logged in
-  const {
-    data: customerOrders = [],
-    isLoading: isLoadingOrders,
-  } = useQuery({
-    queryKey: ["/api/orders"],
-    queryFn: () => {
-      if (!user) return Promise.resolve([]);
-      return fetch("/api/orders").then((res) => res.json());
+  // Fetch customer's orders if logged in
+  const { data: userOrders, isLoading: isLoadingOrders } = useQuery({
+    queryKey: ["/api/orders", user?.id],
+    queryFn: async () => {
+      if (!user) return [];
+      const res = await fetch(`/api/orders?customerId=${user.id}`);
+      if (!res.ok) return [];
+      return await res.json();
     },
     enabled: !!user,
   });
 
-  // Fetch single order by ID or tracking code
-  const {
-    data: searchedOrder,
-    isLoading: isLoadingSearch,
-    refetch: refetchOrder,
-    error,
-  } = useQuery({
-    queryKey: ["/api/orders/track", orderIdInput || trackingCode],
+  // Query for searching an order
+  const { data: searchedOrder, isLoading: isSearchingOrder } = useQuery({
+    queryKey: ["/api/orders/search", searchType, searchValue],
     queryFn: async () => {
-      if (!orderIdInput && !trackingCode) return null;
-
-      let url;
-      if (activeTab === "byOrderId" && orderIdInput) {
-        url = `/api/orders/${orderIdInput}`;
-      } else if (activeTab === "byTracking" && trackingCode) {
-        url = `/api/orders/track/${trackingCode}`;
-      } else {
-        return null;
-      }
-
-      const res = await fetch(url);
-      if (!res.ok) {
-        throw new Error("Order not found");
-      }
-      return res.json();
+      if (!searchValue || !searchSubmitted) return null;
+      
+      const endpoint = searchType === "orderId" 
+        ? `/api/orders/${searchValue}` 
+        : `/api/orders/tracking/${searchValue}`;
+      
+      const res = await fetch(endpoint);
+      if (!res.ok) return null;
+      return await res.json();
     },
-    enabled: false,
+    enabled: searchSubmitted && !!searchValue,
   });
 
-  const handleSearch = () => {
-    refetchOrder();
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchSubmitted(true);
   };
 
-  // Get status icon and color
-  const getStatusDetails = (status: string) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case "pending":
-        return {
-          icon: <Clock className="h-5 w-5" />,
-          color: "bg-yellow-100 text-yellow-800",
-          label: t("customer.order.statuses.pending"),
-        };
+        return <Clock className="h-6 w-6 text-yellow-500" />;
       case "processing":
-        return {
-          icon: <Package className="h-5 w-5" />,
-          color: "bg-blue-100 text-blue-800",
-          label: t("customer.order.statuses.processing"),
-        };
+        return <Package className="h-6 w-6 text-blue-500" />;
       case "shipped":
-        return {
-          icon: <Truck className="h-5 w-5" />,
-          color: "bg-purple-100 text-purple-800",
-          label: t("customer.order.statuses.shipped"),
-        };
+        return <Truck className="h-6 w-6 text-purple-500" />;
       case "delivered":
-        return {
-          icon: <CheckCircle2 className="h-5 w-5" />,
-          color: "bg-green-100 text-green-800",
-          label: t("customer.order.statuses.delivered"),
-        };
+        return <CheckCircle2 className="h-6 w-6 text-green-500" />;
       case "cancelled":
-        return {
-          icon: <AlertCircle className="h-5 w-5" />,
-          color: "bg-red-100 text-red-800",
-          label: t("customer.order.statuses.cancelled"),
-        };
+        return <AlertTriangle className="h-6 w-6 text-red-500" />;
       default:
-        return {
-          icon: <Clock className="h-5 w-5" />,
-          color: "bg-gray-100 text-gray-800",
-          label: status,
-        };
+        return <Clock className="h-6 w-6 text-yellow-500" />;
     }
   };
 
-  // Order status timeline component
-  const OrderTimeline = ({ order }: { order: any }) => {
-    const steps = [
-      { status: "pending", label: t("customer.order.statuses.pending") },
-      { status: "processing", label: t("customer.order.statuses.processing") },
-      { status: "shipped", label: t("customer.order.statuses.shipped") },
-      { status: "delivered", label: t("customer.order.statuses.delivered") },
-    ];
-
-    // Get current step index
-    const getCurrentStepIndex = () => {
-      if (order.status === "cancelled") return -1;
-      return steps.findIndex((step) => step.status === order.status);
-    };
-
-    const currentStep = getCurrentStepIndex();
-
+  const renderOrderTimeline = (order: any) => {
+    const statuses = ["pending", "processing", "shipped", "delivered"];
+    const currentStatusIndex = statuses.indexOf(order.status);
+    
     return (
-      <div className="my-8">
+      <div className="mt-6">
         <h3 className="text-lg font-medium mb-4">{t("customer.order.timeline")}</h3>
         
         {order.status === "cancelled" ? (
-          <Alert variant="destructive" className="mb-4">
-            <AlertCircle className="h-5 w-5" />
-            <AlertTitle>{t("customer.order.cancelled")}</AlertTitle>
-            <AlertDescription>
-              {t("customer.order.cancelledDesc")}
-            </AlertDescription>
-          </Alert>
+          <div className="bg-red-50 p-4 rounded-md border border-red-100">
+            <div className="flex items-center gap-3">
+              <AlertTriangle className="h-6 w-6 text-red-500" />
+              <div>
+                <h4 className="font-medium text-red-700">{t("customer.order.cancelled")}</h4>
+                <p className="text-sm text-red-600">{t("customer.order.cancelledDesc")}</p>
+              </div>
+            </div>
+          </div>
         ) : (
           <div className="relative">
-            {/* Progress line */}
-            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200" />
+            <div className="absolute left-4 top-0 bottom-0 w-0.5 bg-gray-200"></div>
             
-            {steps.map((step, index) => {
-              const isCompleted = index <= currentStep;
-              const isCurrent = index === currentStep;
+            {statuses.map((status, index) => {
+              const isCompleted = index <= currentStatusIndex;
+              const isCurrent = index === currentStatusIndex;
               
               return (
-                <div key={step.status} className="relative flex items-start mb-8 last:mb-0">
-                  <div className={`z-10 flex items-center justify-center w-8 h-8 rounded-full border-2 ${
-                    isCompleted 
-                      ? "bg-primary border-primary text-white" 
-                      : "bg-white border-gray-300"
-                  }`}>
+                <div key={status} className={`relative pl-10 pb-8 ${index === statuses.length - 1 ? 'pb-0' : ''}`}>
+                  <div className={cn(
+                    "absolute left-0 rounded-full p-2 flex items-center justify-center",
+                    isCompleted ? "bg-primary text-white" : "bg-gray-200"
+                  )}>
                     {isCompleted ? (
-                      index === currentStep ? (
-                        <div className="w-2 h-2 bg-white rounded-full" />
+                      index === currentStatusIndex ? (
+                        getStatusIcon(status)
                       ) : (
-                        <CheckCircle2 className="h-4 w-4" />
+                        <CheckCircle2 className="h-5 w-5" />
                       )
                     ) : (
-                      <div className="w-2 h-2 bg-gray-300 rounded-full" />
+                      <div className="h-5 w-5 rounded-full bg-gray-300" />
                     )}
                   </div>
                   
-                  <div className="ml-4">
-                    <p className={`font-medium ${isCurrent ? "text-primary" : isCompleted ? "text-gray-900" : "text-gray-500"}`}>
-                      {step.label}
-                    </p>
+                  <div className={cn("ml-2", isCurrent && "font-medium")}>
+                    <h4 className={cn(
+                      "text-base capitalize",
+                      isCompleted ? "text-gray-900" : "text-gray-500"
+                    )}>
+                      {t(`customer.order.statuses.${status}`)}
+                    </h4>
                     
-                    {isCurrent && step.status === "shipped" && order.deliveryTrackingCode && (
-                      <div className="mt-1 text-sm">
+                    {isCurrent && order.status === "shipped" && order.trackingCode && (
+                      <div className="mt-2 text-sm">
                         <p>
-                          {t("customer.order.trackingCode")}: <span className="font-medium">{order.deliveryTrackingCode}</span>
+                          <span className="font-medium">{t("customer.order.trackingCode")}: </span>
+                          {order.trackingCode}
                         </p>
-                        {order.estimatedDeliveryDate && (
-                          <p className="text-gray-600 mt-1">
-                            {t("customer.order.estimatedDelivery")}: {new Date(order.estimatedDeliveryDate).toLocaleDateString()}
+                        {order.estimatedDelivery && (
+                          <p>
+                            <span className="font-medium">{t("customer.order.estimatedDelivery")}: </span>
+                            {order.estimatedDelivery}
                           </p>
                         )}
                       </div>
@@ -218,241 +154,279 @@ export default function OrderTracking() {
     );
   };
 
-  // Order details component
-  const OrderDetails = ({ order }: { order: any }) => {
-    const statusDetails = getStatusDetails(order.status);
+  const renderOrderDetails = (order: any) => {
+    if (!order) return null;
     
     return (
-      <Card className="mt-8 dark-mode-card">
-        <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="text-on-dark">{t("customer.order.details")}</CardTitle>
-              <CardDescription className="text-subtle-on-dark">
-                {t("customer.order.orderDate", { date: new Date(order.orderDate).toLocaleDateString() })}
-              </CardDescription>
-            </div>
-            <Badge className={statusDetails.color}>
-              <span className="flex items-center gap-1">
-                {statusDetails.icon}
-                {statusDetails.label}
-              </span>
-            </Badge>
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h2 className="text-2xl font-bold">{t("customer.order.details")}</h2>
+            <p className="text-gray-500">
+              {t("customer.order.orderDate", { date: format(new Date(order.orderDate), "PPP") })}
+            </p>
           </div>
-        </CardHeader>
+          
+          <Badge className="text-sm capitalize">
+            {getStatusIcon(order.status)}
+            <span className="ml-1">{t(`customer.order.statuses.${order.status}`)}</span>
+          </Badge>
+        </div>
         
-        <CardContent className="space-y-6 text-on-dark">
-          <OrderTimeline order={order} />
+        {renderOrderTimeline(order)}
+        
+        <div className="grid md:grid-cols-2 gap-6 mt-8">
+          {order.address && (
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-lg">{t("customer.order.shippingInfo")}</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="whitespace-pre-line">{order.address}</p>
+                {order.phone && <p className="mt-2">{order.phone}</p>}
+              </CardContent>
+            </Card>
+          )}
           
-          <Separator />
-          
-          <div>
-            <h3 className="font-medium mb-2">{t("customer.order.shippingInfo")}</h3>
-            <div className="flex items-start gap-2">
-              <Home className="h-4 w-4 mt-1 text-gray-400" />
-              <p>{order.shippingAddress}</p>
-            </div>
-            <div className="flex items-center gap-2 mt-2">
-              <Phone className="h-4 w-4 text-gray-400" />
-              <p>{order.contactPhone}</p>
-            </div>
-          </div>
-          
-          <Separator />
-          
-          <div>
-            <h3 className="font-medium mb-2">{t("customer.order.paymentInfo")}</h3>
-            <div className="flex items-center gap-2">
-              <CreditCard className="h-4 w-4 text-gray-400" />
-              <p>{order.paymentMethod}</p>
-            </div>
-            <Badge variant="outline" className="mt-2">
-              {order.paymentStatus === "paid" ? (
-                <span className="text-green-600">{t("customer.order.paymentStatus.paid")}</span>
-              ) : (
-                <span className="text-yellow-600">{t("customer.order.paymentStatus.pending")}</span>
-              )}
-            </Badge>
-          </div>
-          
-          <Separator />
-          
-          <div>
-            <h3 className="font-medium mb-3">{t("customer.order.items")}</h3>
-            
-            <div className="space-y-4">
-              {order.items && order.items.map((item: any) => (
-                <div key={item.id} className="flex items-start gap-4 pb-3 border-b border-border">
-                  {item.product?.imageUrls && item.product.imageUrls.length > 0 ? (
-                    <div className="w-16 h-16 bg-gray-100 rounded overflow-hidden">
+          <Card>
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg">{t("customer.order.paymentInfo")}</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-1">
+                <div className="flex justify-between">
+                  <span className="text-gray-500">{t("checkout.paymentMethod")}:</span>
+                  <span className="font-medium capitalize">{order.paymentMethod?.replace("_", " ")}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-gray-500">{t("customer.order.paymentStatus")}:</span>
+                  <Badge variant="outline" className={order.paymentStatus === "paid" ? "bg-green-50 text-green-700 border-green-200" : ""}>
+                    {t(`customer.order.paymentStatus.${order.paymentStatus}`)}
+                  </Badge>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+        
+        <Card className="mt-8">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">{t("customer.order.items")}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="divide-y">
+              {order.items?.map((item: any) => (
+                <div key={item.id} className="py-3 flex justify-between items-center gap-4">
+                  <div className="flex items-center gap-3">
+                    {item.product?.images?.[0] ? (
                       <img
-                        src={item.product.imageUrls[0]}
+                        src={item.product.images[0]}
                         alt={item.product.name}
-                        className="w-full h-full object-cover"
+                        className="w-16 h-16 object-cover rounded-md"
                       />
+                    ) : (
+                      <div className="w-16 h-16 bg-gray-100 rounded-md flex items-center justify-center">
+                        <Package className="h-6 w-6 text-gray-400" />
+                      </div>
+                    )}
+                    
+                    <div>
+                      <h4 className="font-medium">{item.product?.name}</h4>
+                      <div className="text-sm text-gray-500 mt-1">
+                        <span>{t("customer.order.size")}: {item.size}</span>
+                        <span className="mx-2">•</span>
+                        <span>{t("customer.order.color")}: {item.color}</span>
+                        <span className="mx-2">•</span>
+                        <span>{t("customer.order.quantity")}: {item.quantity}</span>
+                      </div>
                     </div>
-                  ) : (
-                    <div className="w-16 h-16 bg-gray-100 rounded flex items-center justify-center">
-                      <ShoppingBag className="h-8 w-8 text-gray-400" />
-                    </div>
-                  )}
+                  </div>
                   
-                  <div className="flex-1">
-                    <p className="font-medium">
-                      {item.product?.name || `Product ID: ${item.productId}`}
-                    </p>
-                    <div className="mt-1 text-sm text-gray-500 flex items-center gap-2">
-                      <span>{t("customer.order.size")}: {item.size}</span>
-                      <span>•</span>
-                      <span>{t("customer.order.color")}: {item.color}</span>
-                      <span>•</span>
-                      <span>{t("customer.order.quantity")}: {item.quantity}</span>
-                    </div>
-                    <p className="mt-1 font-medium">
-                      <PriceDisplay amount={item.priceAtPurchase * item.quantity} />
-                    </p>
+                  <div className="font-medium">
+                    ₵{((item.product?.price || 0) * item.quantity).toFixed(2)}
                   </div>
                 </div>
               ))}
             </div>
             
-            <div className="mt-4 flex justify-between items-center font-medium text-lg">
-              <span>{t("customer.order.total")}</span>
-              <PriceDisplay amount={order.totalAmount} />
+            <div className="mt-4 pt-4 border-t">
+              <div className="flex justify-between items-center">
+                <span className="font-medium">{t("customer.order.total")}</span>
+                <span className="text-xl font-bold">₵{parseFloat(order.amount).toFixed(2)}</span>
+              </div>
             </div>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  };
+
+  const renderSearchResults = () => {
+    if (!searchSubmitted) return null;
+    
+    if (isSearchingOrder) {
+      return (
+        <div className="flex justify-center my-8">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      );
+    }
+    
+    if (!searchedOrder) {
+      return (
+        <div className="text-center my-12">
+          <AlertTriangle className="h-12 w-12 text-yellow-500 mx-auto mb-4" />
+          <h3 className="text-xl font-bold">{t("customer.trackOrder.notFound")}</h3>
+          <p className="text-gray-500 mt-2 max-w-md mx-auto">
+            {t("customer.trackOrder.notFoundDesc")}
+          </p>
+        </div>
+      );
+    }
+    
+    return renderOrderDetails(searchedOrder);
+  };
+
+  const renderCustomerOrders = () => {
+    if (isLoadingOrders) {
+      return (
+        <div className="flex justify-center my-8">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
+        </div>
+      );
+    }
+    
+    if (!userOrders || userOrders.length === 0) {
+      return (
+        <div className="text-center my-12">
+          <ShoppingBag className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+          <h3 className="text-xl font-bold">{t("customer.trackOrder.noOrders")}</h3>
+          <p className="text-gray-500 mt-2 max-w-md mx-auto">
+            {t("customer.trackOrder.noOrdersDesc")}
+          </p>
+          <Button asChild className="mt-6">
+            <Link href="/products">
+              {t("customer.trackOrder.shopNow")}
+            </Link>
+          </Button>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {userOrders.map((order: any) => (
+          <Card key={order.id} className="overflow-hidden">
+            <CardHeader className="pb-2">
+              <div className="flex justify-between items-start">
+                <div>
+                  <CardTitle className="flex items-center gap-1">
+                    Order #{order.id}
+                  </CardTitle>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {format(new Date(order.orderDate), "PPP")}
+                  </p>
+                </div>
+                <Badge className="capitalize">
+                  {t(`customer.order.statuses.${order.status}`)}
+                </Badge>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="mt-1">
+                <div className="flex justify-between text-sm mb-2">
+                  <span className="text-gray-500">{t("customer.order.items")}</span>
+                  <span className="font-medium">{order.items?.length || 0}</span>
+                </div>
+                <div className="flex justify-between text-sm mb-4">
+                  <span className="text-gray-500">{t("customer.order.total")}</span>
+                  <span className="font-medium">₵{parseFloat(order.amount).toFixed(2)}</span>
+                </div>
+                
+                <Button 
+                  asChild 
+                  variant="outline" 
+                  className="w-full mt-2"
+                >
+                  <Link href={`/order-tracking/${order.id}`}>
+                    {t("customer.trackOrder.search")}
+                  </Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
     );
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
+    <div className="container py-12">
+      <Helmet>
+        <title>Order Tracking | Cloud9wear</title>
+        <meta name="description" content="Track your Cloud9wear orders and check their current status." />
+      </Helmet>
       
-      <div className="container py-10 flex-1">
-        <h1 className="text-3xl font-bold mb-2">{t("customer.trackOrder.title")}</h1>
-        <p className="text-gray-600 mb-8">{t("customer.trackOrder.description")}</p>
-        
-        <Tabs defaultValue="byOrderId" onValueChange={setActiveTab} className="mb-8">
-          <TabsList className="grid w-full max-w-md grid-cols-2">
-            <TabsTrigger value="byOrderId">{t("customer.trackOrder.byOrderId")}</TabsTrigger>
-            <TabsTrigger value="byTracking">{t("customer.trackOrder.byTracking")}</TabsTrigger>
-          </TabsList>
-          
-          <TabsContent value="byOrderId" className="mt-4">
-            <div className="flex max-w-md gap-2">
-              <Input
-                placeholder={t("customer.trackOrder.orderIdPlaceholder")}
-                value={orderIdInput}
-                onChange={(e) => setOrderIdInput(e.target.value)}
-              />
-              <Button onClick={handleSearch} disabled={!orderIdInput || isLoadingSearch}>
-                {isLoadingSearch ? (
-                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                ) : (
+      <h1 className="text-3xl font-bold mb-2">{t("customer.trackOrder.title")}</h1>
+      <p className="text-gray-500 mb-8 max-w-2xl">
+        {t("customer.trackOrder.description")}
+      </p>
+      
+      <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
+        <Card>
+          <CardContent className="pt-6">
+            <Tabs defaultValue="orderId" onValueChange={(v) => setSearchType(v as any)}>
+              <TabsList className="grid grid-cols-2 mb-6">
+                <TabsTrigger value="orderId">
+                  {t("customer.trackOrder.byOrderId")}
+                </TabsTrigger>
+                <TabsTrigger value="tracking">
+                  {t("customer.trackOrder.byTracking")}
+                </TabsTrigger>
+              </TabsList>
+              
+              <form onSubmit={handleSearch} className="space-y-4">
+                <TabsContent value="orderId">
+                  <Input
+                    type="text"
+                    placeholder={t("customer.trackOrder.orderIdPlaceholder")}
+                    value={searchValue}
+                    onChange={(e) => {
+                      setSearchValue(e.target.value);
+                      setSearchSubmitted(false);
+                    }}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="tracking">
+                  <Input
+                    type="text"
+                    placeholder={t("customer.trackOrder.trackingCodePlaceholder")}
+                    value={searchValue}
+                    onChange={(e) => {
+                      setSearchValue(e.target.value);
+                      setSearchSubmitted(false);
+                    }}
+                  />
+                </TabsContent>
+                
+                <Button type="submit" className="w-full">
                   <Search className="h-4 w-4 mr-2" />
-                )}
-                {t("customer.trackOrder.search")}
-              </Button>
-            </div>
-          </TabsContent>
-          
-          <TabsContent value="byTracking" className="mt-4">
-            <div className="flex max-w-md gap-2">
-              <Input
-                placeholder={t("customer.trackOrder.trackingCodePlaceholder")}
-                value={trackingCode}
-                onChange={(e) => setTrackingCode(e.target.value)}
-              />
-              <Button onClick={handleSearch} disabled={!trackingCode || isLoadingSearch}>
-                {isLoadingSearch ? (
-                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
-                ) : (
-                  <Search className="h-4 w-4 mr-2" />
-                )}
-                {t("customer.trackOrder.search")}
-              </Button>
-            </div>
-          </TabsContent>
-        </Tabs>
-        
-        {error ? (
-          <Alert variant="destructive" className="mb-8 max-w-3xl">
-            <AlertCircle className="h-4 w-4" />
-            <AlertTitle>{t("customer.trackOrder.notFound")}</AlertTitle>
-            <AlertDescription>
-              {t("customer.trackOrder.notFoundDesc")}
-            </AlertDescription>
-          </Alert>
-        ) : searchedOrder ? (
-          <OrderDetails order={searchedOrder} />
-        ) : null}
+                  {t("customer.trackOrder.search")}
+                </Button>
+              </form>
+            </Tabs>
+            
+            {renderSearchResults()}
+          </CardContent>
+        </Card>
         
         {user && (
-          <div className="mt-12">
-            <h2 className="text-2xl font-semibold mb-4">{t("customer.trackOrder.yourOrders")}</h2>
-            
-            {isLoadingOrders ? (
-              <div className="flex justify-center my-8">
-                <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full" />
-              </div>
-            ) : customerOrders.length > 0 ? (
-              <div className="space-y-4">
-                <Accordion type="single" collapsible className="max-w-3xl">
-                  {customerOrders.map((order: any) => {
-                    const statusDetails = getStatusDetails(order.status);
-                    
-                    return (
-                      <AccordionItem key={order.id} value={order.id.toString()}>
-                        <AccordionTrigger className="px-4 hover:no-underline">
-                          <div className="flex items-center justify-between w-full pr-4">
-                            <div className="flex items-center">
-                              <Badge className={statusDetails.color}>
-                                <span className="flex items-center gap-1">
-                                  {statusDetails.icon}
-                                  {statusDetails.label}
-                                </span>
-                              </Badge>
-                              <span className="ml-4 text-sm">Order #{order.id}</span>
-                            </div>
-                            <div className="flex items-center gap-4">
-                              <span className="text-sm text-gray-500">
-                                {new Date(order.orderDate).toLocaleDateString()}
-                              </span>
-                              <PriceDisplay amount={order.totalAmount} />
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        
-                        <AccordionContent>
-                          <OrderDetails order={order} />
-                        </AccordionContent>
-                      </AccordionItem>
-                    );
-                  })}
-                </Accordion>
-              </div>
-            ) : (
-              <Card className="max-w-3xl">
-                <CardContent className="flex flex-col items-center justify-center py-10 text-center">
-                  <ShoppingBag className="h-12 w-12 text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium mb-1">{t("customer.trackOrder.noOrders")}</h3>
-                  <p className="text-gray-500 mb-4">
-                    {t("customer.trackOrder.noOrdersDesc")}
-                  </p>
-                  <Button variant="outline" asChild>
-                    <a href="/">{t("customer.trackOrder.shopNow")}</a>
-                  </Button>
-                </CardContent>
-              </Card>
-            )}
+          <div>
+            <h2 className="text-xl font-bold mb-4">{t("customer.trackOrder.yourOrders")}</h2>
+            {renderCustomerOrders()}
           </div>
         )}
-      </div>
-      
-      <div className="w-full">
-        <Footer />
       </div>
     </div>
   );
