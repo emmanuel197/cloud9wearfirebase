@@ -547,6 +547,7 @@ const translations = {
       clearSuccess: "Orders cleared successfully",
       clearSuccessDescription: "All orders have been removed from the system",
       clearError: "Failed to clear orders",
+      processingByAnotherSupplier: "This order is already being processed by another supplier",
       
       statuses: {
         pending: "Pending",

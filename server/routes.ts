@@ -427,13 +427,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.put("/api/orders/:id", requireRole(["admin"]), async (req, res) => {
+  app.put("/api/orders/:id", requireRole(["admin", "supplier"]), async (req, res) => {
     try {
       const orderId = parseInt(req.params.id);
       const order = await dbStorage.getOrder(orderId);
 
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
+      }
+      
+      // Check permissions based on role
+      if (req.user.role === 'supplier') {
+        // Suppliers can only update orders in 'pending' status or orders they're already processing
+        if (order.status === 'processing' && order.processingSupplierID !== null && order.processingSupplierID !== req.user.id) {
+          return res.status(403).json({ 
+            message: "processingByAnotherSupplier"
+          });
+        }
+        
+        // If supplier is setting order to 'processing', assign it to them
+        if (req.body.status === 'processing') {
+          req.body.processingSupplierID = req.user.id;
+        }
+        
+        // Suppliers can only update certain fields
+        const allowedFields = ['status', 'deliveryTrackingCode', 'estimatedDeliveryDate'];
+        Object.keys(req.body).forEach(key => {
+          if (!allowedFields.includes(key)) {
+            delete req.body[key];
+          }
+        });
       }
 
       // Process date fields properly
