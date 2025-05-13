@@ -204,6 +204,19 @@ export default function OrderTrackingPage() {
                     {t(`customer.order.paymentStatus.${order.paymentStatus}`)}
                   </Badge>
                 </div>
+                
+                {order.paymentStatus === "paid" && (
+                  <div className="flex justify-between mt-2 pt-2 border-t border-green-200">
+                    <span className="text-gray-500">{t("customer.order.amountPaid")}:</span>
+                    <span className="font-bold text-green-600">
+                      ₵{order.totalAmount && !isNaN(parseFloat(order.totalAmount)) 
+                        ? parseFloat(order.totalAmount).toFixed(2)
+                        : (order.amount && !isNaN(parseFloat(order.amount)) 
+                           ? parseFloat(order.amount).toFixed(2) 
+                           : '0.00')}
+                    </span>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
