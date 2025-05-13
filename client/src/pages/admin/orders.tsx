@@ -357,9 +357,10 @@ export default function AdminOrders() {
                           <Select 
                             defaultValue={selectedOrder.paymentStatus}
                             onValueChange={(value) => {
-                              updatePaymentStatusMutation.mutate({ 
-                                id: selectedOrder.id, 
-                                paymentStatus: value,
+                              // Just store the value, don't mutate immediately
+                              setSelectedOrder({
+                                ...selectedOrder,
+                                paymentStatus: value
                               });
                             }}
                           >
@@ -367,8 +368,8 @@ export default function AdminOrders() {
                               <SelectValue placeholder="Select payment status" />
                             </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="pending">{t("customer.order.paymentStatus.pending")}</SelectItem>
-                              <SelectItem value="paid">{t("customer.order.paymentStatus.paid")}</SelectItem>
+                              <SelectItem value="pending">{t("customer.order.paymentStatus.pending") || "Pending"}</SelectItem>
+                              <SelectItem value="paid">{t("customer.order.paymentStatus.paid") || "Paid"}</SelectItem>
                               <SelectItem value="failed">Failed</SelectItem>
                               <SelectItem value="refunded">Refunded</SelectItem>
                             </SelectContent>
@@ -377,6 +378,7 @@ export default function AdminOrders() {
                           <Button
                             disabled={updatePaymentStatusMutation.isPending}
                             onClick={() => {
+                              // Now trigger the mutation with the selected status
                               updatePaymentStatusMutation.mutate({ 
                                 id: selectedOrder.id, 
                                 paymentStatus: selectedOrder.paymentStatus,
