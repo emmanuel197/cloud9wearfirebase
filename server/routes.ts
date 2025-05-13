@@ -1403,15 +1403,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const supplierInventory = await dbStorage.getInventory(req.user.id);
       console.log(`Found ${supplierInventory.length} inventory entries for supplier ${req.user.id}`);
       
-      // For products not in inventory, create a placeholder with stock=0
       const result = [];
       
-      // First add products the supplier has in inventory
+      // Only include products the supplier has explicitly added to their inventory
       for (const inventoryItem of supplierInventory) {
         const product = allProducts.find(p => p.id === inventoryItem.productId);
         console.log(`Processing inventory item: productId=${inventoryItem.productId}, found product: ${product ? 'yes' : 'no'}`);
         
-        // Always include the item, even if the product no longer exists
+        // Include the item, even if the product no longer exists
         result.push({
           id: inventoryItem.id,
           supplierId: req.user.id,
@@ -1420,23 +1419,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
           stock: inventoryItem.availableStock,
           availableSizes: product ? product.availableSizes : [],
           availableColors: product ? product.availableColors : [],
-          availableStock: inventoryItem.availableStock
+          availableStock: inventoryItem.availableStock,
+          productMissing: product ? false : true,
+          productName: product ? product.name : `Deleted Product #${inventoryItem.productId}`
         });
-      }
-      
-      // Then add the rest of the products with negative IDs to indicate they're not in inventory yet
-      for (const product of allProducts) {
-        if (!supplierInventory.some(item => item.productId === product.id)) {
-          result.push({
-            id: -product.id, // Negative ID indicates it's not in inventory yet
-            supplierId: req.user.id,
-            productId: product.id,
-            product: product,
-            stock: 0,
-            availableSizes: product.availableSizes,
-            availableColors: product.availableColors
-          });
-        }
       }
       
       console.log(`Returning ${result.length} inventory items to supplier ${req.user.id}`);
