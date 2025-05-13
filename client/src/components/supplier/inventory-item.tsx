@@ -4,7 +4,7 @@ import { useLanguage } from "@/hooks/use-language";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Save, AlertTriangle } from "lucide-react";
+import { Loader2, Save, AlertTriangle, Trash2 } from "lucide-react";
 
 interface InventoryItemProps {
   product: Product;
@@ -12,7 +12,9 @@ interface InventoryItemProps {
   stockValue: number;
   onStockChange: (value: number) => void;
   onUpdate: () => void;
+  onRemove: () => void;
   isUpdating: boolean;
+  isRemoving?: boolean;
 }
 
 export default function InventoryItem({
@@ -21,7 +23,9 @@ export default function InventoryItem({
   stockValue,
   onStockChange,
   onUpdate,
-  isUpdating
+  onRemove,
+  isUpdating,
+  isRemoving = false
 }: InventoryItemProps) {
   const { t } = useLanguage();
   const [stockInputValue, setStockInputValue] = useState(stockValue.toString());
@@ -100,22 +104,37 @@ export default function InventoryItem({
           </div>
         </div>
         
-        <Button
-          onClick={onUpdate}
-          disabled={
-            isUpdating || 
-            stockValue === inventory.availableStock || 
-            isNaN(stockValue) || 
-            stockValue < 0
-          }
-        >
-          {isUpdating ? (
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-          ) : (
-            <Save className="h-4 w-4 mr-2" />
-          )}
-          {t("supplier.inventory.update")}
-        </Button>
+        <div className="flex space-x-2">
+          <Button
+            onClick={onUpdate}
+            disabled={
+              isUpdating || 
+              stockValue === inventory.availableStock || 
+              isNaN(stockValue) || 
+              stockValue < 0
+            }
+          >
+            {isUpdating ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <Save className="h-4 w-4 mr-2" />
+            )}
+            {t("supplier.inventory.update")}
+          </Button>
+          
+          <Button
+            variant="destructive"
+            onClick={onRemove}
+            disabled={isRemoving || isUpdating}
+          >
+            {isRemoving ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : (
+              <Trash2 className="h-4 w-4 mr-2" />
+            )}
+            {t("supplier.inventory.remove")}
+          </Button>
+        </div>
       </div>
     </div>
   );
