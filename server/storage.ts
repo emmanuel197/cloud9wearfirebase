@@ -311,18 +311,7 @@ export class MemStorage implements IStorage {
 
     // If we're removing the product and it exists, delete it from inventory
     if (removeProduct && inventory) {
-      // Remove the inventory item
       this.supplierInventories.delete(inventory.id);
-      
-      // Recalculate total inventory across all suppliers
-      const totalStock = await this.getProductTotalInventory(productId);
-      
-      // Update the product with the aggregated stock
-      const product = await this.getProduct(productId);
-      if (product) {
-        await this.updateProduct(productId, { stock: totalStock });
-      }
-      
       return undefined;
     }
 
@@ -351,17 +340,10 @@ export class MemStorage implements IStorage {
 
     this.supplierInventories.set(inventory.id, updatedInventory);
 
-    // Only update product stock if we're not removing it
-    // This ensures individual supplier inventory changes don't affect the overall product
-    if (!removeProduct) {
-      // Calculate total stock across all suppliers
-      const totalStock = await this.getProductTotalInventory(productId);
-      
-      // Update product with aggregated stock
-      const product = await this.getProduct(productId);
-      if (product) {
-        await this.updateProduct(productId, { stock: totalStock });
-      }
+    // Update product stock
+    const product = await this.getProduct(productId);
+    if (product) {
+      await this.updateProduct(productId, { stock });
     }
 
     return updatedInventory;
@@ -893,7 +875,6 @@ export class DatabaseStorage implements IStorage {
         
       // If we're removing the product and it exists in inventory, delete it
       if (removeProduct && existingInvRecord) {
-        // First delete the inventory record
         await db
           .delete(supplierInventory)
           .where(
@@ -902,13 +883,6 @@ export class DatabaseStorage implements IStorage {
               eq(supplierInventory.productId, productId)
             )
           );
-          
-        // Then recalculate the total stock across all suppliers
-        const totalInventory = await this.getProductTotalInventory(productId);
-        
-        // Update the product with the recalculated stock
-        await this.updateProduct(productId, { stock: totalInventory });
-        
         return undefined;
       }
       
@@ -961,20 +935,12 @@ export class DatabaseStorage implements IStorage {
             })
             .returning();
 
-          // Calculate total stock across all suppliers after the update
-          const totalInventory = await this.getProductTotalInventory(productId);
-          
-          // Update product with aggregated stock
-          await this.updateProduct(productId, { stock: totalInventory });
-          
+          // Update product stock
+          await this.updateProduct(productId, { stock });
           return newInventory;
         } else {
-          // Calculate total stock across all suppliers
-          const totalInventory = await this.getProductTotalInventory(productId);
-          
-          // Update product with aggregated stock
-          await this.updateProduct(productId, { stock: totalInventory });
-          
+          // Just update the product stock
+          await this.updateProduct(productId, { stock });
           return existingAnyInventory;
         }
       }
@@ -994,12 +960,8 @@ export class DatabaseStorage implements IStorage {
         )
         .returning();
 
-      // Calculate total inventory across all suppliers after the update
-      const totalInventory = await this.getProductTotalInventory(productId);
-      
-      // Update product stock with the total from all suppliers
-      await this.updateProduct(productId, { stock: totalInventory });
-      
+      // Update product stock
+      await this.updateProduct(productId, { stock });
       return updatedInventory || undefined;
     } catch (error) {
       console.error("Error in updateInventory:", error);
