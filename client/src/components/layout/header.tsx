@@ -31,6 +31,7 @@ import {
   LogIn,
   Home,
   Package,
+  PackageSearch,
   ShoppingBag,
   LayoutDashboard,
   Info,
@@ -99,6 +100,11 @@ export default function Header() {
             <Link href="/products">
               <div className={`font-medium ${location === "/products" ? "text-[#ef0c11] font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
                 {t("navigation.products")}
+              </div>
+            </Link>
+            <Link href="/order-tracking">
+              <div className={`font-medium ${location === "/order-tracking" ? "text-[#ef0c11] font-bold" : "text-gray-300 hover:text-[#ef0c11]"} transition-colors cursor-pointer`}>
+                {t("navigation.trackOrder")}
               </div>
             </Link>
             {user?.role === "admin" && (
@@ -234,6 +240,15 @@ export default function Header() {
                         <div className={`flex items-center py-2 px-3 rounded-lg ${location === "/products" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
                           <ShoppingBag className="mr-2 h-4 w-4" />
                           {t("navigation.products")}
+                        </div>
+                      </Link>
+                    </SheetClose>
+
+                    <SheetClose asChild>
+                      <Link href="/order-tracking">
+                        <div className={`flex items-center py-2 px-3 rounded-lg ${location === "/order-tracking" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
+                          <PackageSearch className="mr-2 h-4 w-4" />
+                          {t("navigation.trackOrder")}
                         </div>
                       </Link>
                     </SheetClose>
