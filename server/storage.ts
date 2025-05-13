@@ -304,22 +304,32 @@ export class MemStorage implements IStorage {
     return inventories.reduce((total, item) => total + item.availableStock, 0);
   }
 
-  async updateInventory(supplierId: number, productId: number, stock: number): Promise<SupplierInventory | undefined> {
+  async updateInventory(supplierId: number, productId: number, stock: number, removeProduct: boolean = false): Promise<SupplierInventory | undefined> {
     const inventory = Array.from(this.supplierInventories.values()).find(
       inv => inv.supplierId === supplierId && inv.productId === productId
     );
 
+    // If we're removing the product and it exists, delete it from inventory
+    if (removeProduct && inventory) {
+      this.supplierInventories.delete(inventory.id);
+      return undefined;
+    }
+
     if (!inventory) {
-      const id = this.inventoryIdCounter++;
-      const newInventory: SupplierInventory = {
-        id,
-        supplierId,
-        productId,
-        availableStock: stock,
-        updatedAt: new Date()
-      };
-      this.supplierInventories.set(id, newInventory);
-      return newInventory;
+      // Only create new inventory if we're not trying to remove
+      if (!removeProduct) {
+        const id = this.inventoryIdCounter++;
+        const newInventory: SupplierInventory = {
+          id,
+          supplierId,
+          productId,
+          availableStock: stock,
+          updatedAt: new Date()
+        };
+        this.supplierInventories.set(id, newInventory);
+        return newInventory;
+      }
+      return undefined;
     }
 
     const updatedInventory: SupplierInventory = {
@@ -848,11 +858,35 @@ export class DatabaseStorage implements IStorage {
     return inventories.reduce((total, item) => total + item.availableStock, 0);
   }
 
-  async updateInventory(supplierId: number, productId: number, stock: number): Promise<SupplierInventory | undefined> {
+  async updateInventory(supplierId: number, productId: number, stock: number, removeProduct: boolean = false): Promise<SupplierInventory | undefined> {
     try {
-      console.log(`Attempting to update inventory: supplier=${supplierId}, product=${productId}, stock=${stock}`);
+      console.log(`Attempting to ${removeProduct ? 'remove from' : 'update'} inventory: supplier=${supplierId}, product=${productId}, stock=${stock}`);
       
-      // First, check if this product already has any inventory record
+      // Check if this supplier has this product in their inventory
+      const [existingInvRecord] = await db
+        .select()
+        .from(supplierInventory)
+        .where(
+          and(
+            eq(supplierInventory.supplierId, supplierId),
+            eq(supplierInventory.productId, productId)
+          )
+        );
+        
+      // If we're removing the product and it exists in inventory, delete it
+      if (removeProduct && existingInvRecord) {
+        await db
+          .delete(supplierInventory)
+          .where(
+            and(
+              eq(supplierInventory.supplierId, supplierId),
+              eq(supplierInventory.productId, productId)
+            )
+          );
+        return undefined;
+      }
+      
+      // If we're updating, check if this product has any inventory record anywhere
       const [existingAnyInventory] = await db
         .select()
         .from(supplierInventory)
@@ -876,7 +910,7 @@ export class DatabaseStorage implements IStorage {
       }
       
       // Check if this supplier already has inventory for this product
-      const [existingInventory] = await db
+      const [supplierInventoryRecord] = await db
         .select()
         .from(supplierInventory)
         .where(
@@ -886,7 +920,7 @@ export class DatabaseStorage implements IStorage {
           )
         );
 
-      if (!existingInventory) {
+      if (!existingInvRecord) {
         console.log(`Creating new inventory entry for supplier=${supplierId}, product=${productId}`);
         
         // Only insert if there's no existing inventory for this product

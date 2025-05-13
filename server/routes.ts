@@ -704,9 +704,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put("/api/inventory/:productId", requireRole(["supplier"]), async (req, res) => {
     try {
       const productId = parseInt(req.params.productId);
-      const { stock } = req.body;
-
-      if (typeof stock !== 'number' || stock < 0) {
+      const { stock, remove } = req.body;
+      
+      // When removing a product, stock may not be provided
+      if (!remove && (typeof stock !== 'number' || stock < 0)) {
         return res.status(400).json({ message: "Invalid stock value" });
       }
 
@@ -722,7 +723,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "You must be a supplier or admin to update inventory" });
       }
       
-      // For testing purposes, always update the product stock directly
+      // If we're removing the product from inventory
+      if (remove) {
+        console.log(`Supplier ${req.user.id} removing product ${productId} from inventory`);
+        
+        try {
+          // Update inventory with the remove flag
+          await dbStorage.updateInventory(req.user.id, productId, 0, true);
+          return res.status(200).json({ 
+            message: "Product removed from inventory", 
+            productId,
+            removed: true 
+          });
+        } catch (err) {
+          console.error(`Error removing product from inventory: ${err.message}`);
+          return res.status(500).json({ message: "Failed to remove product from inventory" });
+        }
+      }
+      
+      // For regular stock updates
       console.log(`Supplier ${req.user.id} updating product ${productId} stock to ${stock}`);
       
       // Update product stock first
