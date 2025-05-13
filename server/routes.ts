@@ -15,6 +15,7 @@ import Paystack from "paystack-node";
 import multer from "multer";
 import path from "path";
 import fs from "fs-extra";
+import { sendOrderStatusChangeEmail } from "./email-service";
 
 declare global {
   namespace Express {
@@ -419,6 +420,45 @@ export async function registerRoutes(app: Express): Promise<Server> {
     } catch (error) {
       console.error("Error updating order:", error);
       res.status(500).json({ message: "Failed to update order" });
+    }
+  });
+  
+  // Specific endpoint for updating payment status
+  app.put("/api/orders/:id/payment-status", requireRole(["admin"]), async (req, res) => {
+    try {
+      const orderId = parseInt(req.params.id);
+      const { paymentStatus } = req.body;
+      
+      if (!paymentStatus) {
+        return res.status(400).json({ message: "Payment status is required" });
+      }
+      
+      const order = await dbStorage.getOrder(orderId);
+
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      const updatedOrder = await dbStorage.updateOrder(orderId, { paymentStatus });
+      
+      // Send email notification if payment status has changed
+      if (order.paymentStatus !== paymentStatus) {
+        try {
+          await sendOrderStatusChangeEmail(
+            order.customerId,
+            orderId,
+            order.status,
+            order.deliveryTrackingCode
+          );
+        } catch (emailError) {
+          console.error("Failed to send payment status change email:", emailError);
+        }
+      }
+      
+      res.json(updatedOrder);
+    } catch (error) {
+      console.error("Error updating payment status:", error);
+      res.status(500).json({ message: "Failed to update payment status" });
     }
   });
 

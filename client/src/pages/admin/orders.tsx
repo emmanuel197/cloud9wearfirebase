@@ -93,6 +93,29 @@ export default function AdminOrders() {
     },
   });
   
+  // Update payment status mutation
+  const updatePaymentStatusMutation = useMutation({
+    mutationFn: async ({ id, paymentStatus }: { id: number, paymentStatus: string }) => {
+      const updateData = { paymentStatus };
+      const res = await apiRequest("PUT", `/api/orders/${id}/payment-status`, updateData);
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({
+        title: t("admin.orders.paymentUpdateSuccess") || "Payment status updated successfully",
+      });
+      refetch();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t("admin.orders.paymentUpdateError") || "Failed to update payment status",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+  
   const handleUpdateStatus = (id: number, status: string) => {
     if (status === "shipped" && !trackingCode) {
       toast({
@@ -324,6 +347,46 @@ export default function AdminOrders() {
                             {updateOrderMutation.isPending ? (
                               <Loader2 className="h-4 w-4 animate-spin" />
                             ) : t("admin.orders.update")}
+                          </Button>
+                        </div>
+                      </div>
+                      
+                      <div>
+                        <h3 className="font-medium mb-2">{t("admin.orders.updatePaymentStatus") || "Update Payment Status"}</h3>
+                        <div className="flex space-x-2">
+                          <Select 
+                            defaultValue={selectedOrder.paymentStatus}
+                            onValueChange={(value) => {
+                              updatePaymentStatusMutation.mutate({ 
+                                id: selectedOrder.id, 
+                                paymentStatus: value,
+                              });
+                            }}
+                          >
+                            <SelectTrigger className="w-full">
+                              <SelectValue placeholder="Select payment status" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="pending">{t("customer.order.paymentStatus.pending")}</SelectItem>
+                              <SelectItem value="paid">{t("customer.order.paymentStatus.paid")}</SelectItem>
+                              <SelectItem value="failed">Failed</SelectItem>
+                              <SelectItem value="refunded">Refunded</SelectItem>
+                            </SelectContent>
+                          </Select>
+                          
+                          <Button
+                            disabled={updatePaymentStatusMutation.isPending}
+                            onClick={() => {
+                              updatePaymentStatusMutation.mutate({ 
+                                id: selectedOrder.id, 
+                                paymentStatus: selectedOrder.paymentStatus,
+                              });
+                            }}
+                            variant="secondary"
+                          >
+                            {updatePaymentStatusMutation.isPending ? (
+                              <Loader2 className="h-4 w-4 animate-spin" />
+                            ) : (t("admin.orders.update") || "Update")}
                           </Button>
                         </div>
                       </div>
