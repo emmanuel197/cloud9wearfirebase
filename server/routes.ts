@@ -1535,6 +1535,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to update inventory" });
     }
   });
+  
+  // Remove a product from supplier's inventory
+  app.delete("/api/inventory/:productId", requireRole(["supplier"]), async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const productId = parseInt(req.params.productId);
+      
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+      
+      // Check if product exists
+      const product = await dbStorage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      // Check if this product is in the supplier's inventory
+      const inventory = await dbStorage.getInventory(req.user.id);
+      const productInInventory = inventory.find(item => item.productId === productId);
+      
+      if (!productInInventory) {
+        return res.status(404).json({ message: "Product not found in your inventory" });
+      }
+      
+      // Remove the product from inventory by setting stock to 0 and marking as removed
+      const success = await dbStorage.updateInventory(req.user.id, productId, 0, true);
+      
+      if (!success) {
+        return res.status(500).json({ message: "Failed to remove product from inventory" });
+      }
+      
+      res.json({ success: true, message: "Product removed from inventory" });
+    } catch (error) {
+      console.error("Error removing product from inventory:", error);
+      res.status(500).json({ message: "Failed to remove product from inventory" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;

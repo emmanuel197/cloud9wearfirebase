@@ -52,7 +52,7 @@ export interface IStorage {
   // Supplier inventory management
   getInventory(supplierId: number): Promise<SupplierInventory[]>;
   getProductTotalInventory(productId: number): Promise<number>;
-  updateInventory(supplierId: number, productId: number, stock: number): Promise<SupplierInventory | undefined>;
+  updateInventory(supplierId: number, productId: number, stock: number, removeProduct?: boolean): Promise<SupplierInventory | undefined>;
 
   // Review management
   createReview(review: InsertReview): Promise<Review>;
