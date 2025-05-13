@@ -45,6 +45,8 @@ const translations = {
       total: "Total",
       trackingCode: "Código de Seguimiento",
       estimatedDelivery: "Entrega Estimada",
+      noItems: "No hay artículos en este pedido",
+      viewDetails: "Ver Detalles",
       statuses: {
         pending: "Pendiente",
         processing: "Procesando",
