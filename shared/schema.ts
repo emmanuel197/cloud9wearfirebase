@@ -53,6 +53,7 @@ export const orders = pgTable("orders", {
   orderDate: timestamp("order_date").defaultNow(),
   deliveryTrackingCode: text("delivery_tracking_code"),
   estimatedDeliveryDate: timestamp("estimated_delivery_date"),
+  processingSupplierID: integer("processing_supplier_id"),
 });
 
 export const insertOrderSchema = createInsertSchema(orders).omit({

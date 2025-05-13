@@ -510,14 +510,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Invalid order status" });
       }
 
-      // For suppliers, temporarily allow updating any order for testing
-      if (req.user?.role === "supplier") {
-        console.log(`Supplier ${req.user.id} updating order ${orderId} status to ${req.body.status}`);
-        // No restrictions for testing purposes
-      }
-
-      // Extra handling for shipped status to make sure it has tracking info
+      // Extra handling for shipped status and update data
       const updateData: any = { status: req.body.status };
+      
+      // For suppliers, implement order exclusivity
+      if (req.user?.role === "supplier") {
+        console.log(`Supplier ${req.user.id} attempting to update order ${orderId} status to ${req.body.status}`);
+        
+        // If the order is already being processed by another supplier, prevent changes
+        if (order.status === "processing" && order.processingSupplierID && 
+            order.processingSupplierID !== req.user.id) {
+          return res.status(403).json({ 
+            message: "This order is already being processed by another supplier" 
+          });
+        }
+        
+        // If the supplier is setting status to processing, assign them to the order
+        if (req.body.status === "processing") {
+          updateData.processingSupplierID = req.user.id;
+        }
+      }
       
       // If shipped status but no tracking code was provided, use existing code or generate one
       if (req.body.status === "shipped") {

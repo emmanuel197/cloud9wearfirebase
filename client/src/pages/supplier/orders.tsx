@@ -351,14 +351,24 @@ export default function SupplierOrders() {
                 )}
 
                 {order.status === "processing" && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => updateOrderStatus(order.id, "shipped")}
-                  >
-                    <Truck className="mr-1 h-4 w-4" />
-                    {t("supplier.orders.actions.markShipped")}
-                  </Button>
+                  <>
+                    {/* Check if this supplier is handling this order or if it's being handled by someone else */}
+                    {order.processingSupplierID && order.processingSupplierID !== user?.id ? (
+                      <div className="flex items-center text-amber-600 text-xs ml-2">
+                        <AlertTriangle className="h-3 w-3 mr-1" />
+                        {t("supplier.orders.beingProcessedByOther")}
+                      </div>
+                    ) : (
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => updateOrderStatus(order.id, "shipped")}
+                      >
+                        <Truck className="mr-1 h-4 w-4" />
+                        {t("supplier.orders.actions.markShipped")}
+                      </Button>
+                    )}
+                  </>
                 )}
 
                 {order.status === "shipped" && (
