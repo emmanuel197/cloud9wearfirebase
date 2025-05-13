@@ -778,22 +778,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.get("/api/admin/suppliers", requireRole(["admin"]), async (req, res) => {
     try {
       const suppliers = await dbStorage.getUsersByRole("supplier");
+      
+      // Get all products for product details
+      const allProducts = await dbStorage.getProducts();
 
       // Add metadata like product count and total inventory
       const suppliersWithMetadata = await Promise.all(
         suppliers.map(async (supplier) => {
-          // Get products created by this supplier
-          const supplierProducts = await dbStorage.getProducts({ supplierId: supplier.id });
-          
           // Get inventory items for this supplier
           const supplierInventory = await dbStorage.getInventory(supplier.id);
+          
+          // Get the unique product IDs in the supplier's inventory
+          const productIdsInInventory = [...new Set(supplierInventory.map(item => item.productId))];
           
           // Calculate the total inventory stock this supplier can provide
           const totalInventoryStock = supplierInventory.reduce((total, item) => total + item.availableStock, 0);
           
           return {
             ...supplier,
-            productCount: supplierProducts.length,
+            productCount: productIdsInInventory.length,
             totalInventoryStock: totalInventoryStock,
             inventoryCount: supplierInventory.length
           };
@@ -1208,11 +1211,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Not authorized to view other supplier's inventory" });
       }
       
+      console.log(`Fetching inventory for supplier ${supplierId}`);
+      
       // Get all products from the database
       const allProducts = await dbStorage.getProducts();
+      console.log(`Found ${allProducts.length} total products in the system`);
       
       // Get the supplier's inventory items
       const supplierInventory = await dbStorage.getInventory(supplierId);
+      console.log(`Found ${supplierInventory.length} inventory items for supplier ${supplierId}`);
       
       // Build the result with complete product information
       const result = [];
@@ -1220,7 +1227,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Process actual inventory items first
       for (const item of supplierInventory) {
         const product = allProducts.find(p => p.id === item.productId);
+        console.log(`Processing inventory item: productId=${item.productId}, found product: ${product ? 'yes' : 'no'}`);
+        
         if (product) {
+          console.log(`  Product details: id=${product.id}, name="${product.name}", category="${product.category}"`);
           result.push({
             ...item,
             product: product
@@ -1228,6 +1238,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       }
       
+      console.log(`Returning ${result.length} inventory items with product details`);
       res.json(result);
     } catch (error) {
       console.error("Error fetching supplier inventory:", error);
