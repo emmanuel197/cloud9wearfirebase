@@ -342,10 +342,18 @@ export default function AdminProducts() {
       header: t("admin.products.table.stock"),
       cell: ({ row }: any) => {
         const stock = row.getValue("stock") as number;
+        const totalStock = row.original.totalStock || stock; // Use totalStock if available
         return (
-          <span className={`font-medium ${stock < 10 ? "text-red-500" : ""}`}>
-            {stock}
-          </span>
+          <div className="flex flex-col">
+            <span className={`font-medium ${stock < 10 ? "text-red-500" : ""}`}>
+              {stock}
+            </span>
+            {totalStock !== stock && (
+              <span className="text-xs text-green-600 font-medium">
+                {t("admin.products.totalStock")}: {totalStock}
+              </span>
+            )}
+          </div>
         );
       },
     },
