@@ -1,159 +1,317 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { Check, Plus, AlertCircle } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Search, Plus, Check } from "lucide-react";
 import SupplierLayout from "@/components/supplier/layout";
-import { Badge } from "@/components/ui/badge";
+import { useLanguage } from "@/hooks/use-language";
+import { useToast } from "@/hooks/use-toast";
 import { queryClient, apiRequest } from "@/lib/queryClient";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
+import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function AddProducts() {
+interface Product {
+  id: number;
+  name: string;
+  description: string;
+  price: number;
+  category: string;
+  imageUrls: string[];
+  availableSizes: string[];
+  availableColors: string[];
+  stock: number;
+  isActive: boolean;
+}
+
+interface InventoryItem {
+  id: number;
+  supplierId: number;
+  productId: number;
+  product: Product;
+  stock: number;
+  availableSizes: string[];
+  availableColors: string[];
+}
+
+export default function SupplierAddProducts() {
   const { t } = useLanguage();
   const { toast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  
-  // Get all products (created by admin)
-  const { data: allProducts, isLoading: productsLoading } = useQuery({
-    queryKey: ["/api/products"],
-  });
-  
-  // Get supplier's current inventory
-  const { data: supplierInventory, isLoading: inventoryLoading } = useQuery({
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
+
+  // Fetch supplier's current inventory to know which products they already have
+  const { data: inventoryData, isLoading: isLoadingInventory } = useQuery({
     queryKey: ["/api/inventory"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/inventory");
+      return await res.json();
+    },
   });
-  
+
+  // Fetch all available products (catalog)
+  const { data: productsData, isLoading: isLoadingProducts } = useQuery({
+    queryKey: ["/api/products"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/products");
+      return await res.json();
+    },
+  });
+
   // Mutation to add product to supplier inventory
   const addToInventoryMutation = useMutation({
     mutationFn: async (productId: number) => {
-      const response = await apiRequest("POST", "/api/inventory", {
-        productId,
-        stock: 0 // Start with 0 stock, supplier can update later
-      });
-      return response.json();
+      const res = await apiRequest("POST", "/api/inventory", { productId, stock: 0 });
+      return await res.json();
     },
     onSuccess: () => {
       toast({
-        title: t.supplier.inventory.productAdded,
-        description: t.supplier.inventory.productAddedDesc,
+        title: t("supplier.inventory.productAdded"),
+        description: t("supplier.inventory.productAddedDesc"),
+        variant: "success",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
     },
-    onError: (error: any) => {
+    onError: (error: Error) => {
       toast({
-        title: t.supplier.inventory.addError,
+        title: t("supplier.inventory.addError"),
         description: error.message,
         variant: "destructive",
       });
-    }
+    },
   });
-  
+
+  // Handler for adding a product to inventory
+  const handleAddToInventory = (productId: number) => {
+    addToInventoryMutation.mutate(productId);
+  };
+
+  // Filter and paginate products based on search query
+  const filteredProducts = productsData
+    ? productsData.filter((product: Product) => {
+        const searchLower = searchQuery.toLowerCase();
+        return (
+          product.name.toLowerCase().includes(searchLower) ||
+          product.description.toLowerCase().includes(searchLower) ||
+          product.category.toLowerCase().includes(searchLower)
+        );
+      })
+    : [];
+
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
   // Check if a product is already in supplier's inventory
   const isProductInInventory = (productId: number) => {
-    if (!supplierInventory) return false;
-    return supplierInventory.some((item: any) => item.productId === productId);
+    return inventoryData?.some((item: InventoryItem) => item.productId === productId) || false;
   };
-  
-  // Filter products based on search term
-  const filteredProducts = allProducts?.filter((product: any) => 
-    product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+
+  // Pagination navigation
+  const navigateToPage = (page: number) => {
+    if (page < 1 || page > totalPages) return;
+    setCurrentPage(page);
+  };
 
   return (
     <SupplierLayout>
-      <div className="container mx-auto py-6">
-        <h1 className="text-3xl font-bold mb-6">{t.supplier.inventory.addProducts}</h1>
-        
-        <div className="mb-6">
-          <Input
-            placeholder={t.supplier.inventory.searchProducts}
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="max-w-md"
-          />
-        </div>
-        
-        {productsLoading || inventoryLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((_, index) => (
-              <Card key={index} className="h-[250px]">
-                <CardHeader>
-                  <Skeleton className="h-6 w-3/4 mb-2" />
-                  <Skeleton className="h-4 w-1/2" />
-                </CardHeader>
-                <CardContent>
-                  <Skeleton className="h-20 w-full mb-4" />
-                  <Skeleton className="h-10 w-28" />
-                </CardContent>
-              </Card>
-            ))}
+      <div className="p-6 space-y-6">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+          <div>
+            <h1 className="text-2xl font-bold">{t("supplier.inventory.addProducts")}</h1>
+            <p className="text-gray-500">
+              {t("supplier.inventory.description")}
+            </p>
           </div>
-        ) : (
-          <>
-            {filteredProducts?.length === 0 ? (
-              <div className="text-center py-12">
-                <AlertCircle className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-medium">{t.supplier.inventory.noProductsFound}</h3>
-                <p className="text-muted-foreground mt-2">{t.supplier.inventory.tryDifferentSearch}</p>
+        </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>{t("supplier.inventory.searchProducts")}</CardTitle>
+            <CardDescription>
+              Browse and add products from our catalog to your inventory
+            </CardDescription>
+            <div className="flex items-center mt-2">
+              <Search className="h-4 w-4 mr-2 text-gray-500" />
+              <Input
+                placeholder={t("supplier.inventory.searchProducts")}
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setCurrentPage(1); // Reset to first page on new search
+                }}
+                className="flex-1"
+              />
+            </div>
+          </CardHeader>
+          <CardContent>
+            {isLoadingProducts || isLoadingInventory ? (
+              <div className="space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts?.map((product: any) => {
-                  const alreadyAdded = isProductInInventory(product.id);
-                  
-                  return (
-                    <Card key={product.id} className="overflow-hidden">
-                      <div className="h-48 overflow-hidden">
-                        <img 
-                          src={product.imageUrls[0] || 'https://placehold.co/400x300?text=No+Image'} 
-                          alt={product.name}
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
-                      <CardHeader className="pb-2">
-                        <div className="flex justify-between items-start">
-                          <CardTitle className="text-lg">{product.name}</CardTitle>
-                          <Badge>{product.category}</Badge>
-                        </div>
-                      </CardHeader>
-                      <CardContent>
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                          {product.description}
-                        </p>
-                        <p className="font-medium mb-4">
-                          {t.shop.currency} {product.price.toFixed(2)}
-                        </p>
-                        <Button 
-                          onClick={() => addToInventoryMutation.mutate(product.id)}
-                          disabled={alreadyAdded || addToInventoryMutation.isPending}
-                          className="w-full"
-                          variant={alreadyAdded ? "outline" : "default"}
-                        >
-                          {alreadyAdded ? (
-                            <>
-                              <Check className="mr-2 h-4 w-4" /> 
-                              {t.supplier.inventory.alreadyAdded}
-                            </>
+            ) : paginatedProducts.length > 0 ? (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Image</TableHead>
+                    <TableHead>Product Name</TableHead>
+                    <TableHead>Category</TableHead>
+                    <TableHead>Price</TableHead>
+                    <TableHead>Sizes</TableHead>
+                    <TableHead>Colors</TableHead>
+                    <TableHead>Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {paginatedProducts.map((product: Product) => {
+                    const alreadyInInventory = isProductInInventory(product.id);
+                    return (
+                      <TableRow key={product.id}>
+                        <TableCell>
+                          <div className="h-16 w-16 relative overflow-hidden rounded-md">
+                            {product.imageUrls && product.imageUrls.length > 0 ? (
+                              <img
+                                src={product.imageUrls[0]}
+                                alt={product.name}
+                                className="h-full w-full object-cover"
+                              />
+                            ) : (
+                              <div className="h-full w-full bg-gray-200 flex items-center justify-center text-gray-500">
+                                No image
+                              </div>
+                            )}
+                          </div>
+                        </TableCell>
+                        <TableCell className="font-medium">{product.name}</TableCell>
+                        <TableCell>{product.category}</TableCell>
+                        <TableCell>₵{product.price.toFixed(2)}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {product.availableSizes.map((size, i) => (
+                              <Badge
+                                key={i}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {size}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {product.availableColors.map((color, i) => (
+                              <Badge
+                                key={i}
+                                variant="outline"
+                                className="text-xs"
+                              >
+                                {color}
+                              </Badge>
+                            ))}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          {alreadyInInventory ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              disabled
+                              className="text-green-600"
+                            >
+                              <Check className="h-4 w-4 mr-1" />
+                              {t("supplier.inventory.alreadyAdded")}
+                            </Button>
                           ) : (
-                            <>
-                              <Plus className="mr-2 h-4 w-4" /> 
-                              {t.supplier.inventory.addToInventory}
-                            </>
+                            <Button
+                              variant="default"
+                              size="sm"
+                              onClick={() => handleAddToInventory(product.id)}
+                              disabled={addToInventoryMutation.isPending}
+                            >
+                              <Plus className="h-4 w-4 mr-1" />
+                              {t("supplier.inventory.addToInventory")}
+                            </Button>
                           )}
-                        </Button>
-                      </CardContent>
-                    </Card>
-                  );
-                })}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            ) : (
+              <div className="py-8 text-center">
+                <p className="text-lg font-medium mb-2">
+                  {t("supplier.inventory.noProductsFound")}
+                </p>
+                <p className="text-gray-500">
+                  {t("supplier.inventory.tryDifferentSearch")}
+                </p>
               </div>
             )}
-          </>
-        )}
+          </CardContent>
+          {filteredProducts.length > itemsPerPage && (
+            <CardFooter className="flex justify-center py-4">
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => navigateToPage(currentPage - 1)}
+                      disabled={currentPage === 1}
+                    />
+                  </PaginationItem>
+                  {Array.from({ length: totalPages }).map((_, i) => (
+                    <PaginationItem key={i}>
+                      <PaginationLink
+                        isActive={currentPage === i + 1}
+                        onClick={() => navigateToPage(i + 1)}
+                      >
+                        {i + 1}
+                      </PaginationLink>
+                    </PaginationItem>
+                  ))}
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => navigateToPage(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </CardFooter>
+          )}
+        </Card>
       </div>
     </SupplierLayout>
   );

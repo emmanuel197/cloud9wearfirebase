@@ -27,6 +27,7 @@ import AdminReviews from "@/pages/admin/reviews";
 import SupplierDashboard from "@/pages/supplier/dashboard";
 import SupplierInventory from "@/pages/supplier/inventory";
 import SupplierOrders from "@/pages/supplier/orders";
+import SupplierAddProducts from "@/pages/supplier/add-products";
 import { ProtectedRoute } from "@/lib/protected-route";
 import Header from "@/components/layout/header";
 import Footer from "@/components/layout/footer";
@@ -64,6 +65,7 @@ function App() {
               <Route path="/admin/suppliers" component={() => <ProtectedRoute roles={["admin"]}><AdminSuppliers /></ProtectedRoute>} />
               <Route path="/supplier" component={() => <ProtectedRoute roles={["supplier"]}><SupplierDashboard /></ProtectedRoute>} />
               <Route path="/supplier/inventory" component={() => <ProtectedRoute roles={["supplier"]}><SupplierInventory /></ProtectedRoute>} />
+              <Route path="/supplier/add-products" component={() => <ProtectedRoute roles={["supplier"]}><SupplierAddProducts /></ProtectedRoute>} />
               <Route path="/supplier/orders" component={() => <ProtectedRoute roles={["supplier"]}><SupplierOrders /></ProtectedRoute>} />
               <Route component={NotFound} />
             </Switch>

@@ -1287,6 +1287,141 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.status(500).json({ message: "Failed to track order" });
     }
   });
+  
+  // Supplier inventory management endpoints
+  
+  // Get supplier's inventory
+  app.get("/api/inventory", requireRole(["supplier"]), async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      console.log(`Supplier ${req.user.id} requesting inventory`);
+      
+      // Get all available products
+      const allProducts = await dbStorage.getProducts();
+      console.log(`Found ${allProducts.length} products total in system`);
+      
+      // Get supplier's inventory
+      const supplierInventory = await dbStorage.getInventory(req.user.id);
+      console.log(`Found ${supplierInventory.length} inventory entries for supplier ${req.user.id}`);
+      
+      // For products not in inventory, create a placeholder with stock=0
+      const result = [];
+      
+      // First add products the supplier has in inventory
+      for (const inventoryItem of supplierInventory) {
+        const product = allProducts.find(p => p.id === inventoryItem.productId);
+        if (product) {
+          result.push({
+            id: inventoryItem.id,
+            supplierId: req.user.id,
+            productId: product.id,
+            product: product,
+            stock: inventoryItem.stock,
+            availableSizes: product.availableSizes,
+            availableColors: product.availableColors
+          });
+        }
+      }
+      
+      // Then add the rest of the products with negative IDs to indicate they're not in inventory yet
+      for (const product of allProducts) {
+        if (!supplierInventory.some(item => item.productId === product.id)) {
+          result.push({
+            id: -product.id, // Negative ID indicates it's not in inventory yet
+            supplierId: req.user.id,
+            productId: product.id,
+            product: product,
+            stock: 0,
+            availableSizes: product.availableSizes,
+            availableColors: product.availableColors
+          });
+        }
+      }
+      
+      console.log(`Returning ${result.length} inventory items to supplier ${req.user.id}`);
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching supplier inventory:", error);
+      res.status(500).json({ message: "Failed to fetch inventory" });
+    }
+  });
+  
+  // Add a product to supplier's inventory
+  app.post("/api/inventory", requireRole(["supplier"]), async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const { productId, stock } = req.body;
+      if (!productId) {
+        return res.status(400).json({ message: "Product ID is required" });
+      }
+      
+      // Check if product exists
+      const product = await dbStorage.getProduct(productId);
+      if (!product) {
+        return res.status(404).json({ message: "Product not found" });
+      }
+      
+      // Check if product is already in inventory
+      const existingInventory = await dbStorage.getInventory(req.user.id);
+      if (existingInventory.some(item => item.productId === productId)) {
+        return res.status(400).json({ message: "Product already in inventory" });
+      }
+      
+      // Add product to inventory
+      const updatedInventory = await dbStorage.updateInventory(
+        req.user.id,
+        productId,
+        stock || 0
+      );
+      
+      res.status(201).json(updatedInventory);
+    } catch (error) {
+      console.error("Error adding product to inventory:", error);
+      res.status(500).json({ message: "Failed to add product to inventory" });
+    }
+  });
+  
+  // Update inventory stock
+  app.put("/api/inventory/:productId", requireRole(["supplier"]), async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const productId = parseInt(req.params.productId);
+      const { stock } = req.body;
+      
+      if (isNaN(productId)) {
+        return res.status(400).json({ message: "Invalid product ID" });
+      }
+      
+      if (typeof stock !== 'number' || stock < 0) {
+        return res.status(400).json({ message: "Stock must be a non-negative number" });
+      }
+      
+      // Update inventory
+      const updatedInventory = await dbStorage.updateInventory(
+        req.user.id,
+        productId,
+        stock
+      );
+      
+      if (!updatedInventory) {
+        return res.status(404).json({ message: "Product not found in inventory" });
+      }
+      
+      res.json(updatedInventory);
+    } catch (error) {
+      console.error("Error updating inventory:", error);
+      res.status(500).json({ message: "Failed to update inventory" });
+    }
+  });
 
   const httpServer = createServer(app);
   return httpServer;
