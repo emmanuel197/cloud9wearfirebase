@@ -475,9 +475,11 @@ const translations = {
         name: "Name",
         email: "Email",
         products: "Products",
+        totalStock: "Total Stock",
         joined: "Joined",
         actions: "Actions"
-      }
+      },
+      itemsInStock: "items in stock"
     },
     
     dashboard: {
