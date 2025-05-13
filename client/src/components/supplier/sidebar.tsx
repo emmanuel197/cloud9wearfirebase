@@ -11,7 +11,8 @@ import {
   ShoppingBag,
   Settings,
   LogOut,
-  ChevronRight
+  ChevronRight,
+  PlusCircle
 } from "lucide-react";
 
 export default function SupplierSidebar() {

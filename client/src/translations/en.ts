@@ -745,7 +745,19 @@ const translations = {
       id: "ID",
       availableSizes: "Sizes",
       availableColors: "Colors",
-      stock: "Stock"
+      stock: "Stock",
+      addProducts: "Add Products to Inventory",
+      searchProducts: "Search products by name, description or category",
+      noProductsFound: "No products found",
+      tryDifferentSearch: "Try a different search term",
+      addToInventory: "Add to Inventory",
+      alreadyAdded: "Already Added",
+      productAdded: "Product Added",
+      productAddedDesc: "Product has been added to your inventory. You can now update its stock.",
+      addError: "Failed to add product",
+      stockUpdated: "Stock Updated",
+      stockUpdatedDesc: "Product stock has been updated successfully.",
+      updateStockError: "Failed to update stock"
     },
     
     orders: {
