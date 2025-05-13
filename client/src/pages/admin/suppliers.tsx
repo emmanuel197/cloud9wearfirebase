@@ -46,7 +46,12 @@ export default function AdminSuppliers() {
     queryKey: ["/api/supplier/inventory", selectedSupplier?.id],
     queryFn: () => {
       if (!selectedSupplier) return null;
-      return fetch(`/api/supplier/inventory/${selectedSupplier.id}`).then(res => res.json());
+      return fetch(`/api/supplier/inventory/${selectedSupplier.id}`)
+        .then(res => res.json())
+        .then(data => {
+          console.log("Supplier inventory data:", data);
+          return data;
+        });
     },
     enabled: !!selectedSupplier
   });
