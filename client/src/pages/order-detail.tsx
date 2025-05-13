@@ -127,9 +127,11 @@ export default function OrderDetailPage() {
                 <div className="flex justify-between pt-2 mt-2 border-t">
                   <span className="text-gray-500">{t("checkout.total")}:</span>
                   <span className="font-bold">
-                    ₵{order.amount && !isNaN(parseFloat(order.amount)) 
-                      ? parseFloat(order.amount).toFixed(2)
-                      : '0.00'}
+                    ₵{order.totalAmount && !isNaN(parseFloat(order.totalAmount)) 
+                      ? parseFloat(order.totalAmount).toFixed(2)
+                      : (order.amount && !isNaN(parseFloat(order.amount)) 
+                         ? parseFloat(order.amount).toFixed(2) 
+                         : '0.00')}
                   </span>
                 </div>
               </div>
