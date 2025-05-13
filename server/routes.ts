@@ -202,8 +202,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (!product) {
         return res.status(404).json({ message: "Product not found" });
       }
-
-      res.json(product);
+      
+      // Get the total stock from all suppliers for this product
+      const totalStock = await dbStorage.getProductTotalInventory(productId);
+      
+      // Add total stock to the product response
+      res.json({
+        ...product,
+        totalStock
+      });
     } catch (error) {
       console.error("Error fetching product:", error);
       res.status(500).json({ message: "Failed to fetch product" });

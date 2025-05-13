@@ -293,6 +293,16 @@ export class MemStorage implements IStorage {
       inventory => inventory.supplierId === supplierId
     );
   }
+  
+  async getProductTotalInventory(productId: number): Promise<number> {
+    // Calculate the total stock across all suppliers for a specific product
+    const inventories = Array.from(this.supplierInventories.values()).filter(
+      inventory => inventory.productId === productId
+    );
+    
+    // Sum up the available stock
+    return inventories.reduce((total, item) => total + item.availableStock, 0);
+  }
 
   async updateInventory(supplierId: number, productId: number, stock: number): Promise<SupplierInventory | undefined> {
     const inventory = Array.from(this.supplierInventories.values()).find(
@@ -827,6 +837,16 @@ export class DatabaseStorage implements IStorage {
   async getInventory(supplierId: number): Promise<SupplierInventory[]> {
     return await db.select().from(supplierInventory).where(eq(supplierInventory.supplierId, supplierId));
   }
+  
+  async getProductTotalInventory(productId: number): Promise<number> {
+    // Get all inventory records for the specific product
+    const inventories = await db.select()
+      .from(supplierInventory)
+      .where(eq(supplierInventory.productId, productId));
+    
+    // Sum up the available stock
+    return inventories.reduce((total, item) => total + item.availableStock, 0);
+  }
 
   async updateInventory(supplierId: number, productId: number, stock: number): Promise<SupplierInventory | undefined> {
     try {
@@ -953,6 +973,34 @@ export class DatabaseStorage implements IStorage {
     } catch (error) {
       console.error("Error deleting review:", error);
       return false;
+    }
+  }
+  
+  // Product recommendations
+  async getTrendingProducts(limit: number = 4): Promise<Product[]> {
+    try {
+      const allProducts = await this.getProducts({ isActive: true });
+      // Sort products by most recent creation date or by highest rating
+      return allProducts.sort((a, b) => {
+        const dateA = a.releaseDate ? new Date(a.releaseDate).getTime() : 0;
+        const dateB = b.releaseDate ? new Date(b.releaseDate).getTime() : 0;
+        return dateB - dateA;
+      }).slice(0, limit);
+    } catch (error) {
+      console.error("Error getting trending products:", error);
+      return [];
+    }
+  }
+  
+  async getTopSellingProducts(limit: number = 4): Promise<Product[]> {
+    try {
+      // This would typically involve a more complex query joining orders and products
+      // For now, we'll return active products sorted by price as a simple approximation
+      const allProducts = await this.getProducts({ isActive: true });
+      return allProducts.sort((a, b) => b.price - a.price).slice(0, limit);
+    } catch (error) {
+      console.error("Error getting top selling products:", error);
+      return [];
     }
   }
 
