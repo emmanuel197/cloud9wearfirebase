@@ -136,26 +136,26 @@ export default function AdminCustomers() {
                             {getInitials(selectedCustomer.fullName)}
                           </AvatarFallback>
                         </Avatar>
-                        <h3 className="text-xl font-semibold">{selectedCustomer.fullName}</h3>
-                        <p className="text-gray-500">{selectedCustomer.username}</p>
+                        <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{selectedCustomer.fullName}</h3>
+                        <p className="text-gray-500 dark:text-gray-400">{selectedCustomer.username}</p>
                       </div>
                       
                       <div className="space-y-2">
-                        <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
-                          <Mail className="h-4 w-4 text-gray-500" />
-                          <span>{selectedCustomer.email}</span>
+                        <div className="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-md">
+                          <Mail className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                          <span className="text-gray-700 dark:text-gray-300">{selectedCustomer.email}</span>
                         </div>
                         
                         {selectedCustomer.phone && (
-                          <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
-                            <Phone className="h-4 w-4 text-gray-500" />
-                            <span>{selectedCustomer.phone}</span>
+                          <div className="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-md">
+                            <Phone className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                            <span className="text-gray-700 dark:text-gray-300">{selectedCustomer.phone}</span>
                           </div>
                         )}
                         
-                        <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
-                          <Calendar className="h-4 w-4 text-gray-500" />
-                          <span>{new Date(selectedCustomer.createdAt).toLocaleDateString()}</span>
+                        <div className="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-md">
+                          <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                          <span className="text-gray-700 dark:text-gray-300">{new Date(selectedCustomer.createdAt).toLocaleDateString()}</span>
                         </div>
                       </div>
                       
