@@ -112,3 +112,12 @@
 .dark-mode-card .text-gray-700 {
   @apply text-gray-300;
 }
+
+/* Mobile menu navigation styling */
+.mobile-menu-link {
+  @apply text-gray-800 hover:text-red-600 hover:bg-gray-100 flex items-center py-2 px-3 rounded-lg transition-colors;
+}
+
+.mobile-menu-link.active {
+  @apply bg-gray-100 text-red-600 font-medium;
+}
