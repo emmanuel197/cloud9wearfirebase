@@ -126,7 +126,11 @@ export default function OrderDetailPage() {
                 </div>
                 <div className="flex justify-between pt-2 mt-2 border-t">
                   <span className="text-gray-500">{t("checkout.total")}:</span>
-                  <span className="font-bold">₵{parseFloat(order.amount).toFixed(2)}</span>
+                  <span className="font-bold">
+                    ₵{order.amount && !isNaN(parseFloat(order.amount)) 
+                      ? parseFloat(order.amount).toFixed(2)
+                      : '0.00'}
+                  </span>
                 </div>
               </div>
             </CardContent>
@@ -182,7 +186,11 @@ export default function OrderDetailPage() {
             <div className="mt-4 pt-4 border-t">
               <div className="flex justify-between items-center">
                 <span className="font-medium">{t("customer.order.total")}</span>
-                <span className="text-xl font-bold">₵{parseFloat(order.amount).toFixed(2)}</span>
+                <span className="text-xl font-bold">
+                  ₵{order.amount && !isNaN(parseFloat(order.amount)) 
+                    ? parseFloat(order.amount).toFixed(2)
+                    : '0.00'}
+                </span>
               </div>
             </div>
           </CardContent>
