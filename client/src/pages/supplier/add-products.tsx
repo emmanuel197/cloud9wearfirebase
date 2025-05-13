@@ -93,7 +93,7 @@ export default function SupplierAddProducts() {
       toast({
         title: t("supplier.inventory.productAdded"),
         description: t("supplier.inventory.productAddedDesc"),
-        variant: "success",
+        variant: "default",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
     },

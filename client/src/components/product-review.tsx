@@ -148,13 +148,13 @@ export default function ProductReview({ productId, showHeading = false }: Produc
       
       {reviews.length > 0 ? (
         <div className="flex flex-col md:flex-row gap-4 items-start">
-          <div className="w-full md:w-1/3 bg-slate-50 p-6 rounded-lg">
+          <div className="w-full md:w-1/3 bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
             <div className="text-center">
-              <p className="text-4xl font-bold">{averageRating.toFixed(1)}</p>
+              <p className="text-4xl font-bold text-black dark:text-white">{averageRating.toFixed(1)}</p>
               <div className="flex justify-center my-2">
                 {renderStars(averageRating)}
               </div>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-gray-400">
                 {t("reviews.basedOn", { count: reviews.length.toString() })}
               </p>
             </div>
@@ -163,14 +163,14 @@ export default function ProductReview({ productId, showHeading = false }: Produc
           <div className="w-full md:w-2/3">
             {user && user.role === "customer" && (
               <>
-                <div className="mb-6 bg-slate-50 p-4 rounded-lg">
-                  <h3 className="font-medium mb-2">{t("reviews.writeReview")}</h3>
+                <div className="mb-6 bg-white dark:bg-gray-800 p-4 rounded-lg shadow">
+                  <h3 className="font-medium mb-2 text-black dark:text-white">{t("reviews.writeReview")}</h3>
                   <div className="mb-2">{renderRatingSelector()}</div>
                   <Textarea
                     placeholder={t("reviews.placeholder")}
                     value={comment}
                     onChange={(e) => setComment(e.target.value)}
-                    className="mb-2"
+                    className="mb-2 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-black dark:text-white"
                   />
                   <Button 
                     onClick={handleSubmitReview}
@@ -186,18 +186,18 @@ export default function ProductReview({ productId, showHeading = false }: Produc
             
             <div className="space-y-4">
               {reviews.map((review) => (
-                <Card key={review.id} className="overflow-hidden">
+                <Card key={review.id} className="overflow-hidden bg-white dark:bg-gray-800 shadow">
                   <CardContent className="pt-6">
                     <div className="flex justify-between items-start mb-2">
                       <div>
-                        <p className="font-medium">{review.customerId}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="font-medium text-black dark:text-white">{review.customerId}</p>
+                        <p className="text-xs text-gray-500 dark:text-gray-400">
                           {review.createdAt ? new Date(review.createdAt).toLocaleDateString() : ""}
                         </p>
                       </div>
                       {renderStars(review.rating, 16)}
                     </div>
-                    <p className="text-gray-700">{review.comment}</p>
+                    <p className="text-gray-700 dark:text-gray-200">{review.comment}</p>
                   </CardContent>
                 </Card>
               ))}
@@ -205,19 +205,19 @@ export default function ProductReview({ productId, showHeading = false }: Produc
           </div>
         </div>
       ) : (
-        <div className="bg-slate-50 p-6 rounded-lg text-center">
-          <p className="text-lg mb-4">{t("reviews.noReviews")}</p>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow text-center">
+          <p className="text-lg mb-4 text-black dark:text-white">{t("reviews.noReviews")}</p>
           
           {user && user.role === "customer" && (
             <>
-              <p className="mb-4">{t("reviews.noReviews")}</p>
+              <p className="mb-4 text-black dark:text-white">{t("reviews.noReviews")}</p>
               <div className="inline-block text-left">
                 <div className="mb-2">{renderRatingSelector()}</div>
                 <Textarea
                   placeholder={t("reviews.placeholder")}
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
-                  className="mb-2"
+                  className="mb-2 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-black dark:text-white"
                 />
                 <Button 
                   onClick={handleSubmitReview}
