@@ -125,11 +125,19 @@ export default function AdminOrders() {
       return;
     }
     
-    updateOrderMutation.mutate({ 
+    // Prepare data for update
+    const updateData: { id: number; status: string; trackingCode?: string } = { 
       id, 
-      status, 
-      ...(trackingCode ? { trackingCode } : {})
-    });
+      status 
+    };
+    
+    // Only add tracking code if it's provided and shipped status
+    if (status === "shipped" && trackingCode && trackingCode.trim()) {
+      updateData.trackingCode = trackingCode.trim();
+    }
+    
+    // Execute the mutation with clean data
+    updateOrderMutation.mutate(updateData);
   };
   
   const handleViewOrder = async (id: number) => {
@@ -317,9 +325,10 @@ export default function AdminOrders() {
                           <Select 
                             defaultValue={selectedOrder.status}
                             onValueChange={(value) => {
-                              updateOrderMutation.mutate({ 
-                                id: selectedOrder.id, 
-                                status: value,
+                              // Just store the selected value without triggering mutation
+                              setSelectedOrder({
+                                ...selectedOrder,
+                                status: value
                               });
                             }}
                           >
@@ -338,10 +347,19 @@ export default function AdminOrders() {
                           <Button
                             disabled={updateOrderMutation.isPending}
                             onClick={() => {
-                              updateOrderMutation.mutate({ 
-                                id: selectedOrder.id, 
-                                status: selectedOrder.status,
-                              });
+                              // Add tracking code for shipped status if needed
+                              if (selectedOrder.status === "shipped" && !selectedOrder.deliveryTrackingCode && trackingCode) {
+                                updateOrderMutation.mutate({ 
+                                  id: selectedOrder.id, 
+                                  status: selectedOrder.status,
+                                  trackingCode: trackingCode
+                                });
+                              } else {
+                                updateOrderMutation.mutate({ 
+                                  id: selectedOrder.id, 
+                                  status: selectedOrder.status,
+                                });
+                              }
                             }}
                           >
                             {updateOrderMutation.isPending ? (
@@ -404,13 +422,22 @@ export default function AdminOrders() {
                             />
                             <Button 
                               variant="secondary"
-                              disabled={updateOrderMutation.isPending || !trackingCode}
+                              disabled={updateOrderMutation.isPending || !trackingCode || !trackingCode.trim()}
                               onClick={() => {
+                                if (!trackingCode || !trackingCode.trim()) {
+                                  toast({
+                                    title: t("admin.orders.trackingRequired") || "Tracking code is required",
+                                    variant: "destructive",
+                                  });
+                                  return;
+                                }
                                 handleUpdateStatus(selectedOrder.id, "shipped");
                               }}
                             >
                               <Truck className="h-4 w-4 mr-2" />
-                              {t("admin.orders.markShipped")}
+                              {updateOrderMutation.isPending ? (
+                                <Loader2 className="h-4 w-4 animate-spin" />
+                              ) : t("admin.orders.markShipped")}
                             </Button>
                           </div>
                         </div>
