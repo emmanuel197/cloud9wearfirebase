@@ -107,32 +107,31 @@ export default function AdminSidebar() {
         <div className="space-y-1">
           {links.map((link) => (
             <Link key={link.href} href={link.href}>
-              <a>
-                <Button
-                  variant={location === link.href ? "default" : "ghost"}
-                  className={`w-full justify-start ${
-                    location === link.href ? "" : "hover:bg-gray-100"
-                  }`}
-                >
-                  {link.icon}
-                  {link.label}
-                  {location === link.href && (
-                    <ChevronRight className="h-4 w-4 ml-auto" />
-                  )}
-                </Button>
-              </a>
+              <Button
+                variant={location === link.href ? "default" : "ghost"}
+                className={`w-full justify-start text-gray-800 ${
+                  location === link.href ? "bg-black text-white hover:bg-black/90" : "hover:bg-gray-100 hover:text-black"
+                }`}
+              >
+                {link.icon}
+                {link.label}
+                {location === link.href && (
+                  <ChevronRight className="h-4 w-4 ml-auto" />
+                )}
+              </Button>
             </Link>
           ))}
         </div>
 
         <div className="mt-4 pt-4 border-t">
           <Link href="/">
-            <a>
-              <Button variant="ghost" className="w-full justify-start hover:bg-gray-100">
-                <ShoppingBag className="h-5 w-5 mr-2" />
-                {t("admin.sidebar.storefront")}
-              </Button>
-            </a>
+            <Button 
+              variant="ghost" 
+              className="w-full justify-start text-gray-800 hover:bg-gray-100 hover:text-black"
+            >
+              <ShoppingBag className="h-5 w-5 mr-2" />
+              {t("admin.sidebar.storefront")}
+            </Button>
           </Link>
         </div>
       </ScrollArea>
