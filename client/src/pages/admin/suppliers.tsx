@@ -108,6 +108,18 @@ export default function AdminSuppliers() {
       },
     },
     {
+      accessorKey: "totalInventoryStock", 
+      header: t("admin.suppliers.table.totalStock"),
+      cell: ({ row }: any) => {
+        const totalStock = row.getValue("totalInventoryStock") || 0;
+        return (
+          <Badge variant="outline" className="bg-green-50 text-green-700 hover:bg-green-50">
+            {totalStock} {t("admin.suppliers.itemsInStock")}
+          </Badge>
+        );
+      },
+    },
+    {
       accessorKey: "createdAt",
       header: t("admin.suppliers.table.joined"),
       cell: ({ row }: any) => {

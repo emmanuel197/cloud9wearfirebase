@@ -779,13 +779,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const suppliers = await dbStorage.getUsersByRole("supplier");
 
-      // Add metadata like product count
+      // Add metadata like product count and total inventory
       const suppliersWithMetadata = await Promise.all(
         suppliers.map(async (supplier) => {
+          // Get products created by this supplier
           const supplierProducts = await dbStorage.getProducts({ supplierId: supplier.id });
+          
+          // Get inventory items for this supplier
+          const supplierInventory = await dbStorage.getInventory(supplier.id);
+          
+          // Calculate the total inventory stock this supplier can provide
+          const totalInventoryStock = supplierInventory.reduce((total, item) => total + item.availableStock, 0);
+          
           return {
             ...supplier,
             productCount: supplierProducts.length,
+            totalInventoryStock: totalInventoryStock,
+            inventoryCount: supplierInventory.length
           };
         })
       );
