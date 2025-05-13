@@ -224,12 +224,21 @@ export default function AdminSuppliers() {
                                       </div>
                                       <div>
                                         <p className="font-medium text-gray-900 dark:text-gray-100">
-                                          {item.product ? item.product.name : (
-                                            <span className="text-red-500">{t("admin.suppliers.deletedProduct")} #{item.productId}</span>
+                                          {item.product ? (
+                                            item.product.name
+                                          ) : (
+                                            <span className="text-red-500">
+                                              {item.productName || `${t("admin.suppliers.deletedProduct")} #${item.productId}`}
+                                            </span>
                                           )}
                                         </p>
                                         <p className="text-xs text-gray-500 dark:text-gray-400">
                                           {item.product ? item.product.category : t("admin.suppliers.unknownCategory")}
+                                          {!item.product && (
+                                            <span className="ml-2 text-xs text-red-400">
+                                              ({t("admin.suppliers.productNoLongerExists")})
+                                            </span>
+                                          )}
                                         </p>
                                       </div>
                                     </div>

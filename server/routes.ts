@@ -781,6 +781,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Get all products for product details
       const allProducts = await dbStorage.getProducts();
+      console.log(`Fetched ${allProducts.length} active products from database`);
 
       // Add metadata like product count and total inventory
       const suppliersWithMetadata = await Promise.all(
@@ -788,22 +789,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
           // Get inventory items for this supplier
           const supplierInventory = await dbStorage.getInventory(supplier.id);
           
-          // Get the unique product IDs in the supplier's inventory
-          const productIdsInInventory = Array.from(new Set(supplierInventory.map(item => item.productId)));
+          // Filter inventory items to only include products that exist in the database
+          const validInventoryItems = supplierInventory.filter(item => {
+            const productExists = allProducts.some(p => p.id === item.productId);
+            if (!productExists) {
+              console.log(`Warning: Supplier ${supplier.id} has inventory for product ID ${item.productId} which doesn't exist in the products table`);
+            }
+            return productExists;
+          });
           
-          console.log(`Supplier ${supplier.id} (${supplier.username}) has inventory items with product IDs:`, 
+          // Get the unique product IDs in the supplier's inventory (only for valid products)
+          const productIdsInInventory = Array.from(new Set(validInventoryItems.map(item => item.productId)));
+          
+          console.log(`Supplier ${supplier.id} (${supplier.username}) has ${supplierInventory.length} inventory items with product IDs:`, 
                       supplierInventory.map(item => item.productId));
-          console.log(`After unique filtering, supplier ${supplier.id} has ${productIdsInInventory.length} unique products:`, 
+          console.log(`After filtering for valid products, supplier ${supplier.id} has ${validInventoryItems.length} valid inventory items`);
+          console.log(`After unique filtering, supplier ${supplier.id} has ${productIdsInInventory.length} unique valid products:`, 
                       productIdsInInventory);
           
-          // Calculate the total inventory stock this supplier can provide
-          const totalInventoryStock = supplierInventory.reduce((total, item) => total + item.availableStock, 0);
+          // Calculate the total inventory stock this supplier can provide (only for valid products)
+          const totalInventoryStock = validInventoryItems.reduce((total, item) => total + item.availableStock, 0);
           
           return {
             ...supplier,
             productCount: productIdsInInventory.length,
             totalInventoryStock: totalInventoryStock,
-            inventoryCount: supplierInventory.length
+            // Keep inventoryCount as total including invalid products for transparency
+            inventoryCount: supplierInventory.length,
+            invalidProductsCount: supplierInventory.length - validInventoryItems.length
           };
         })
       );
@@ -1237,12 +1250,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         // Always include the item in the result, even if the product doesn't exist
         if (product) {
           console.log(`  Product details: id=${product.id}, name="${product.name}", category="${product.category}"`);
+          result.push({
+            ...item,
+            product: product
+          });
+        } else {
+          console.log(`  Warning: Product with ID ${item.productId} no longer exists in database`);
+          // Still include the item but mark it as deleted/missing
+          result.push({
+            ...item,
+            product: null,
+            productMissing: true,
+            productName: `Deleted Product #${item.productId}`
+          });
         }
-        
-        result.push({
-          ...item,
-          product: product || null
-        });
       }
       
       console.log(`Returning ${result.length} inventory items with product details`);
