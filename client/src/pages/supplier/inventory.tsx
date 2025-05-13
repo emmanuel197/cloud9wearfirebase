@@ -21,6 +21,7 @@ export default function SupplierInventoryPage() {
   
   const [searchTerm, setSearchTerm] = useState("");
   const [updatingStock, setUpdatingStock] = useState<{[key: number]: number}>({});
+  const [removingProduct, setRemovingProduct] = useState<number | null>(null);
   
   // Fetch products and inventory
   const { data: inventory, isLoading: isLoadingInventory, refetch: refetchInventory } = useQuery<SupplierInventory[]>({
@@ -73,6 +74,31 @@ export default function SupplierInventoryPage() {
     },
   });
   
+  // Remove product from inventory mutation
+  const removeProductMutation = useMutation({
+    mutationFn: async (productId: number) => {
+      const res = await apiRequest("PUT", `/api/inventory/${productId}`, { remove: true });
+      return await res.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/products"] });
+      toast({
+        title: t("supplier.inventory.removeSuccess"),
+      });
+      setRemovingProduct(null);
+      refetchInventory();
+    },
+    onError: (error: Error) => {
+      toast({
+        title: t("supplier.inventory.removeError"),
+        description: error.message,
+        variant: "destructive",
+      });
+      setRemovingProduct(null);
+    },
+  });
+  
   // Helper function to find product details by ID
   const getProductDetails = (productId: number) => {
     return products?.find(product => product.id === productId);
@@ -91,6 +117,11 @@ export default function SupplierInventoryPage() {
     if (newStock !== undefined) {
       updateInventoryMutation.mutate({ productId, stock: newStock });
     }
+  };
+  
+  const handleRemoveProduct = (productId: number) => {
+    setRemovingProduct(productId);
+    removeProductMutation.mutate(productId);
   };
   
   // Check if there are products without inventory entries and add them
