@@ -108,8 +108,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (supplierId) filters.supplierId = Number(supplierId);
       if (comingSoon !== undefined) filters.comingSoon = comingSoon === 'true';
 
+      // Get products from database
       const products = await dbStorage.getProducts(filters);
-      res.json(products);
+      
+      // Calculate total stock for each product (sum of stock from all suppliers)
+      const productsWithTotalStock = await Promise.all(
+        products.map(async (product) => {
+          const totalStock = await dbStorage.getProductTotalInventory(product.id);
+          return {
+            ...product,
+            totalStock: totalStock > 0 ? totalStock : product.stock // Fallback to product.stock if no inventory data
+          };
+        })
+      );
+      
+      res.json(productsWithTotalStock);
     } catch (error) {
       console.error("Error fetching products:", error);
       res.status(500).json({ message: "Failed to fetch products" });
