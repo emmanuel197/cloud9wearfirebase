@@ -369,9 +369,11 @@ export default function OrderTrackingPage() {
                 <div className="flex justify-between text-sm mb-4">
                   <span className="text-gray-500">{t("customer.order.total")}</span>
                   <span className="font-medium">
-                    ₵{order.amount && !isNaN(parseFloat(order.amount)) 
-                      ? parseFloat(order.amount).toFixed(2)
-                      : '0.00'}
+                    ₵{order.totalAmount && !isNaN(parseFloat(order.totalAmount)) 
+                      ? parseFloat(order.totalAmount).toFixed(2)
+                      : (order.amount && !isNaN(parseFloat(order.amount)) 
+                         ? parseFloat(order.amount).toFixed(2) 
+                         : '0.00')}
                   </span>
                 </div>
                 
