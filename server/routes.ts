@@ -789,7 +789,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           const supplierInventory = await dbStorage.getInventory(supplier.id);
           
           // Get the unique product IDs in the supplier's inventory
-          const productIdsInInventory = [...new Set(supplierInventory.map(item => item.productId))];
+          const productIdsInInventory = Array.from(new Set(supplierInventory.map(item => item.productId)));
+          
+          console.log(`Supplier ${supplier.id} (${supplier.username}) has inventory items with product IDs:`, 
+                      supplierInventory.map(item => item.productId));
+          console.log(`After unique filtering, supplier ${supplier.id} has ${productIdsInInventory.length} unique products:`, 
+                      productIdsInInventory);
           
           // Calculate the total inventory stock this supplier can provide
           const totalInventoryStock = supplierInventory.reduce((total, item) => total + item.availableStock, 0);
