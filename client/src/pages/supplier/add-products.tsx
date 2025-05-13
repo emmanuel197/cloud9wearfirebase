@@ -74,11 +74,11 @@ export default function SupplierAddProducts() {
     },
   });
 
-  // Fetch all available products (catalog)
+  // Fetch available products that supplier can add to inventory
   const { data: productsData, isLoading: isLoadingProducts } = useQuery({
-    queryKey: ["/api/products"],
+    queryKey: ["/api/available-products"],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/products");
+      const res = await apiRequest("GET", "/api/available-products");
       return await res.json();
     },
   });
@@ -129,7 +129,8 @@ export default function SupplierAddProducts() {
     currentPage * itemsPerPage
   );
 
-  // Check if a product is already in supplier's inventory
+  // Products returned from our API are guaranteed not to be in inventory already
+  // This is just a safety check in case the UI gets out of sync
   const isProductInInventory = (productId: number) => {
     return inventoryData?.some((item: InventoryItem) => item.productId === productId) || false;
   };
@@ -149,6 +150,11 @@ export default function SupplierAddProducts() {
             <p className="text-gray-500">
               {t("supplier.inventory.description")}
             </p>
+          </div>
+          <div>
+            <Badge variant="outline" className="bg-blue-50 text-blue-700">
+              {productsData?.length || 0} {t("supplier.inventory.availableToAdd")}
+            </Badge>
           </div>
         </div>
 

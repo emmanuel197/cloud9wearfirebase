@@ -1471,6 +1471,35 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
+  // Get all available products that a supplier can add to their inventory
+  app.get("/api/available-products", requireRole(["supplier"]), async (req, res) => {
+    try {
+      if (!req.user || !req.user.id) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      // Get all active products
+      const allProducts = await dbStorage.getProducts({ isActive: true });
+      console.log(`Found ${allProducts.length} active products in the system`);
+      
+      // Get supplier's current inventory
+      const supplierInventory = await dbStorage.getInventory(req.user.id);
+      const productIdsInInventory = supplierInventory.map(item => item.productId);
+      console.log(`Supplier has ${supplierInventory.length} products in inventory`);
+      
+      // Filter out products that are already in inventory
+      const availableProducts = allProducts.filter(product => 
+        !productIdsInInventory.includes(product.id)
+      );
+      
+      console.log(`Returning ${availableProducts.length} available products to add`);
+      res.json(availableProducts);
+    } catch (error) {
+      console.error("Error fetching available products:", error);
+      res.status(500).json({ message: "Failed to fetch available products" });
+    }
+  });
+  
   // Update inventory stock
   app.put("/api/inventory/:productId", requireRole(["supplier"]), async (req, res) => {
     try {
