@@ -1188,6 +1188,53 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Admin endpoint to get a specific supplier's inventory
+  app.get("/api/supplier/inventory/:supplierId", requireRole(["admin", "supplier"]), async (req, res) => {
+    try {
+      const supplierId = parseInt(req.params.supplierId);
+      
+      if (isNaN(supplierId)) {
+        return res.status(400).json({ message: "Invalid supplier ID" });
+      }
+      
+      // Make sure the supplier exists
+      const supplier = await dbStorage.getUser(supplierId);
+      if (!supplier || supplier.role !== "supplier") {
+        return res.status(404).json({ message: "Supplier not found" });
+      }
+      
+      // Regular suppliers can only view their own inventory
+      if (req.user.role === "supplier" && req.user.id !== supplierId) {
+        return res.status(403).json({ message: "Not authorized to view other supplier's inventory" });
+      }
+      
+      // Get all products from the database
+      const allProducts = await dbStorage.getProducts();
+      
+      // Get the supplier's inventory items
+      const supplierInventory = await dbStorage.getInventory(supplierId);
+      
+      // Build the result with complete product information
+      const result = [];
+      
+      // Process actual inventory items first
+      for (const item of supplierInventory) {
+        const product = allProducts.find(p => p.id === item.productId);
+        if (product) {
+          result.push({
+            ...item,
+            product: product
+          });
+        }
+      }
+      
+      res.json(result);
+    } catch (error) {
+      console.error("Error fetching supplier inventory:", error);
+      res.status(500).json({ message: "Failed to fetch supplier inventory" });
+    }
+  });
+
   // Admin review endpoints
   app.get("/api/admin/reviews", requireRole(["admin"]), async (req, res) => {
     try {

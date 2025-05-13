@@ -156,8 +156,8 @@ export default function AdminSuppliers() {
                 {selectedSupplier ? (
                   <>
                     <DialogHeader>
-                      <DialogTitle>{t("admin.suppliers.supplierDetails")}</DialogTitle>
-                      <DialogDescription>
+                      <DialogTitle className="text-gray-900 dark:text-gray-100">{t("admin.suppliers.supplierDetails")}</DialogTitle>
+                      <DialogDescription className="text-gray-500 dark:text-gray-400">
                         {t("admin.suppliers.memberSince", { 
                           date: new Date(selectedSupplier.createdAt).toLocaleDateString() 
                         })}
@@ -166,41 +166,41 @@ export default function AdminSuppliers() {
 
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-4">
                       <div className="md:col-span-1">
-                        <div className="flex flex-col items-center p-4 border rounded-lg">
+                        <div className="flex flex-col items-center p-4 border rounded-lg dark:border-gray-700">
                           <Avatar className="h-20 w-20 mb-3">
                             <AvatarFallback className="bg-primary text-primary-foreground text-xl">
                               {getInitials(selectedSupplier.fullName)}
                             </AvatarFallback>
                           </Avatar>
-                          <h3 className="text-xl font-semibold">{selectedSupplier.fullName}</h3>
-                          <p className="text-gray-500">{selectedSupplier.username}</p>
+                          <h3 className="text-xl font-semibold text-gray-900 dark:text-gray-100">{selectedSupplier.fullName}</h3>
+                          <p className="text-gray-500 dark:text-gray-400">{selectedSupplier.username}</p>
 
                           <div className="w-full mt-4 space-y-2">
-                            <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
-                              <Mail className="h-4 w-4 text-gray-500" />
-                              <span className="text-sm">{selectedSupplier.email}</span>
+                            <div className="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-md">
+                              <Mail className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{selectedSupplier.email}</span>
                             </div>
 
                             {selectedSupplier.phone && (
-                              <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
-                                <Phone className="h-4 w-4 text-gray-500" />
-                                <span className="text-sm">{selectedSupplier.phone}</span>
+                              <div className="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-md">
+                                <Phone className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                                <span className="text-sm text-gray-700 dark:text-gray-300">{selectedSupplier.phone}</span>
                               </div>
                             )}
 
-                            <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded-md">
-                              <Calendar className="h-4 w-4 text-gray-500" />
-                              <span className="text-sm">{new Date(selectedSupplier.createdAt).toLocaleDateString()}</span>
+                            <div className="flex items-center space-x-2 p-2 bg-gray-50 dark:bg-gray-800 rounded-md">
+                              <Calendar className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                              <span className="text-sm text-gray-700 dark:text-gray-300">{new Date(selectedSupplier.createdAt).toLocaleDateString()}</span>
                             </div>
                           </div>
                         </div>
                       </div>
 
                       <div className="md:col-span-2">
-                        <Card>
+                        <Card className="dark:border-gray-700">
                           <CardHeader className="pb-2">
-                            <CardTitle className="text-lg">{t("admin.suppliers.inventory")}</CardTitle>
-                            <CardDescription>{t("admin.suppliers.inventoryDescription")}</CardDescription>
+                            <CardTitle className="text-lg text-gray-900 dark:text-gray-100">{t("admin.suppliers.inventory")}</CardTitle>
+                            <CardDescription className="text-gray-500 dark:text-gray-400">{t("admin.suppliers.inventoryDescription")}</CardDescription>
                           </CardHeader>
                           <CardContent>
                             {isLoadingInventory ? (
@@ -212,25 +212,24 @@ export default function AdminSuppliers() {
                             ) : inventory && inventory.length > 0 ? (
                               <div className="space-y-3">
                                 {inventory.map((item: any) => (
-                                  <div key={item.productId} className="flex items-center justify-between p-3 border rounded-md">
+                                  <div key={item.productId} className="flex items-center justify-between p-3 border rounded-md dark:border-gray-700">
                                     <div className="flex items-center space-x-3">
-                                      <div className="p-2 bg-primary/10 rounded-md">
+                                      <div className="p-2 bg-primary/10 rounded-md dark:bg-primary/20">
                                         <Package className="h-5 w-5 text-primary" />
                                       </div>
                                       <div>
-                                        <p className="font-medium">{item.product?.name || `Product #${item.productId}`}</p>
-                                        <p className="text-xs text-gray-500">
-                                          {item.product?.category || t("admin.suppliers.unknownCategory")}
+                                        <p className="font-medium text-gray-900 dark:text-gray-100">
+                                          {item.product ? item.product.name : `Product #${item.productId}`}
+                                        </p>
+                                        <p className="text-xs text-gray-500 dark:text-gray-400">
+                                          {item.product ? item.product.category : t("admin.suppliers.unknownCategory")}
                                         </p>
                                       </div>
                                     </div>
                                     <div className="flex items-center space-x-2">
-                                        <Badge className={item.stock > 10 ? "bg-green-100 text-green-800 hover:bg-green-100" : "bg-amber-100 text-amber-800 hover:bg-amber-100"}>
-                                          {t("admin.suppliers.stock")}: {item.stock}
+                                        <Badge className={item.availableStock > 10 ? "bg-green-100 text-green-800 hover:bg-green-100 dark:bg-green-900 dark:text-green-100 dark:hover:bg-green-900" : "bg-amber-100 text-amber-800 hover:bg-amber-100 dark:bg-amber-900 dark:text-amber-100 dark:hover:bg-amber-900"}>
+                                          {t("admin.suppliers.stock")}: {item.availableStock}
                                         </Badge>
-                                        <span className="text-sm text-gray-500">
-                                          {t("admin.suppliers.availableStock")}: {item.availableStock}
-                                        </span>
                                       </div>
                                   </div>
                                 ))}
