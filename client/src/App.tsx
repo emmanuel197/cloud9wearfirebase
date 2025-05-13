@@ -1,4 +1,5 @@
-import { Switch, Route } from "wouter";
+import { Switch, Route, useLocation } from "wouter";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "next-themes";
@@ -49,20 +50,21 @@ function App() {
               <Route path="/payment-success" component={PaymentSuccessPage} />
               <Route path="/order-tracking" component={OrderTrackingPage} />
               <Route path="/order-tracking/:id" component={OrderDetailPage} />
+              <Route path="/track-order" component={OrderTrackingPage} />
               <Route path="/about" component={AboutPage} />
               <Route path="/faq" component={FAQPage} />
               <Route path="/contact" component={ContactPage} />
               <Route path="/privacy" component={PrivacyPage} />
-              <Route path="/admin" component={() => <ProtectedRoute role="admin"><AdminDashboard /></ProtectedRoute>} />
-              <Route path="/admin/orders" component={() => <ProtectedRoute role="admin"><AdminOrders /></ProtectedRoute>} />
-              <Route path="/admin/products" component={() => <ProtectedRoute role="admin"><AdminProducts /></ProtectedRoute>} />
-              <Route path="/admin/coming-soon" component={() => <ProtectedRoute role="admin"><AdminComingSoon /></ProtectedRoute>} />
-              <Route path="/admin/reviews" component={() => <ProtectedRoute role="admin"><AdminReviews /></ProtectedRoute>} />
-              <Route path="/admin/customers" component={() => <ProtectedRoute role="admin"><AdminCustomers /></ProtectedRoute>} />
-              <Route path="/admin/suppliers" component={() => <ProtectedRoute role="admin"><AdminSuppliers /></ProtectedRoute>} />
-              <Route path="/supplier" component={() => <ProtectedRoute role="supplier"><SupplierDashboard /></ProtectedRoute>} />
-              <Route path="/supplier/inventory" component={() => <ProtectedRoute role="supplier"><SupplierInventory /></ProtectedRoute>} />
-              <Route path="/supplier/orders" component={() => <ProtectedRoute role="supplier"><SupplierOrders /></ProtectedRoute>} />
+              <Route path="/admin" component={() => <ProtectedRoute roles={["admin"]}><AdminDashboard /></ProtectedRoute>} />
+              <Route path="/admin/orders" component={() => <ProtectedRoute roles={["admin"]}><AdminOrders /></ProtectedRoute>} />
+              <Route path="/admin/products" component={() => <ProtectedRoute roles={["admin"]}><AdminProducts /></ProtectedRoute>} />
+              <Route path="/admin/coming-soon" component={() => <ProtectedRoute roles={["admin"]}><AdminComingSoon /></ProtectedRoute>} />
+              <Route path="/admin/reviews" component={() => <ProtectedRoute roles={["admin"]}><AdminReviews /></ProtectedRoute>} />
+              <Route path="/admin/customers" component={() => <ProtectedRoute roles={["admin"]}><AdminCustomers /></ProtectedRoute>} />
+              <Route path="/admin/suppliers" component={() => <ProtectedRoute roles={["admin"]}><AdminSuppliers /></ProtectedRoute>} />
+              <Route path="/supplier" component={() => <ProtectedRoute roles={["supplier"]}><SupplierDashboard /></ProtectedRoute>} />
+              <Route path="/supplier/inventory" component={() => <ProtectedRoute roles={["supplier"]}><SupplierInventory /></ProtectedRoute>} />
+              <Route path="/supplier/orders" component={() => <ProtectedRoute roles={["supplier"]}><SupplierOrders /></ProtectedRoute>} />
               <Route component={NotFound} />
             </Switch>
           </main>
