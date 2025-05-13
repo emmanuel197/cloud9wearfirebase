@@ -292,26 +292,37 @@ export default function SupplierAddProducts() {
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
-                    <PaginationPrevious
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
                       onClick={() => navigateToPage(currentPage - 1)}
                       disabled={currentPage === 1}
-                    />
+                    >
+                      <span className="sr-only">Previous</span>
+                      &lt;
+                    </Button>
                   </PaginationItem>
                   {Array.from({ length: totalPages }).map((_, i) => (
                     <PaginationItem key={i}>
-                      <PaginationLink
-                        isActive={currentPage === i + 1}
+                      <Button 
+                        variant={currentPage === i + 1 ? "default" : "outline"}
+                        size="sm"
                         onClick={() => navigateToPage(i + 1)}
                       >
                         {i + 1}
-                      </PaginationLink>
+                      </Button>
                     </PaginationItem>
                   ))}
                   <PaginationItem>
-                    <PaginationNext
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
                       onClick={() => navigateToPage(currentPage + 1)}
                       disabled={currentPage === totalPages}
-                    />
+                    >
+                      <span className="sr-only">Next</span>
+                      &gt;
+                    </Button>
                   </PaginationItem>
                 </PaginationContent>
               </Pagination>

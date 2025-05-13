@@ -752,6 +752,7 @@ const translations = {
       searchProducts: "Search products by name, description or category",
       noProductsFound: "No products found",
       tryDifferentSearch: "Try a different search term",
+      availableToAdd: "Products Available to Add",
       addToInventory: "Add to Inventory",
       alreadyAdded: "Already Added",
       productAdded: "Product Added",
