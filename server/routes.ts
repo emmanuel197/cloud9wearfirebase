@@ -1229,13 +1229,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         const product = allProducts.find(p => p.id === item.productId);
         console.log(`Processing inventory item: productId=${item.productId}, found product: ${product ? 'yes' : 'no'}`);
         
+        // Always include the item in the result, even if the product doesn't exist
         if (product) {
           console.log(`  Product details: id=${product.id}, name="${product.name}", category="${product.category}"`);
-          result.push({
-            ...item,
-            product: product
-          });
         }
+        
+        result.push({
+          ...item,
+          product: product || null
+        });
       }
       
       console.log(`Returning ${result.length} inventory items with product details`);
@@ -1381,17 +1383,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // First add products the supplier has in inventory
       for (const inventoryItem of supplierInventory) {
         const product = allProducts.find(p => p.id === inventoryItem.productId);
-        if (product) {
-          result.push({
-            id: inventoryItem.id,
-            supplierId: req.user.id,
-            productId: product.id,
-            product: product,
-            stock: inventoryItem.stock,
-            availableSizes: product.availableSizes,
-            availableColors: product.availableColors
-          });
-        }
+        console.log(`Processing inventory item: productId=${inventoryItem.productId}, found product: ${product ? 'yes' : 'no'}`);
+        
+        // Always include the item, even if the product no longer exists
+        result.push({
+          id: inventoryItem.id,
+          supplierId: req.user.id,
+          productId: inventoryItem.productId,
+          product: product || null,
+          stock: inventoryItem.availableStock,
+          availableSizes: product ? product.availableSizes : [],
+          availableColors: product ? product.availableColors : [],
+          availableStock: inventoryItem.availableStock
+        });
       }
       
       // Then add the rest of the products with negative IDs to indicate they're not in inventory yet
