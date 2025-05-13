@@ -221,7 +221,7 @@ export default function Header() {
                       className="h-[50px] w-[170px] object-cover"
                     />
                   </SheetTitle>
-                  <SheetDescription>
+                  <SheetDescription className="text-gray-700">
                     {t("navigation.mobileMenuDescription")}
                   </SheetDescription>
                 </SheetHeader>
@@ -229,7 +229,7 @@ export default function Header() {
                   <nav className="flex flex-col space-y-4">
                     <SheetClose asChild>
                       <Link href="/">
-                        <div className={`flex items-center py-2 px-3 rounded-lg ${location === "/" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
+                        <div className={`flex items-center py-2 px-3 rounded-lg text-black ${location === "/" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100 hover:text-[#ef0c11]"} cursor-pointer`}>
                           <Home className="mr-2 h-4 w-4" />
                           {t("navigation.home")}
                         </div>
@@ -237,7 +237,7 @@ export default function Header() {
                     </SheetClose>
                     <SheetClose asChild>
                       <Link href="/products">
-                        <div className={`flex items-center py-2 px-3 rounded-lg ${location === "/products" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
+                        <div className={`flex items-center py-2 px-3 rounded-lg text-black ${location === "/products" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100 hover:text-[#ef0c11]"} cursor-pointer`}>
                           <ShoppingBag className="mr-2 h-4 w-4" />
                           {t("navigation.products")}
                         </div>
@@ -246,7 +246,7 @@ export default function Header() {
 
                     <SheetClose asChild>
                       <Link href="/order-tracking">
-                        <div className={`flex items-center py-2 px-3 rounded-lg ${location === "/order-tracking" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
+                        <div className={`flex items-center py-2 px-3 rounded-lg text-black ${location === "/order-tracking" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100 hover:text-[#ef0c11]"} cursor-pointer`}>
                           <PackageSearch className="mr-2 h-4 w-4" />
                           {t("navigation.trackOrder")}
                         </div>
@@ -257,7 +257,7 @@ export default function Header() {
                     {user?.role === "admin" && (
                       <SheetClose asChild>
                         <Link href="/admin">
-                          <div className={`flex items-center py-2 px-3 rounded-lg ${location.startsWith("/admin") ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
+                          <div className={`flex items-center py-2 px-3 rounded-lg text-black ${location.startsWith("/admin") ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100 hover:text-[#ef0c11]"} cursor-pointer`}>
                             <LayoutDashboard className="mr-2 h-4 w-4" />
                             {t("navigation.adminDashboard")}
                           </div>
@@ -267,7 +267,7 @@ export default function Header() {
                     {user?.role === "supplier" && (
                       <SheetClose asChild>
                         <Link href="/supplier">
-                          <div className={`flex items-center py-2 px-3 rounded-lg ${location.startsWith("/supplier") ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
+                          <div className={`flex items-center py-2 px-3 rounded-lg text-black ${location.startsWith("/supplier") ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100 hover:text-[#ef0c11]"} cursor-pointer`}>
                             <Package className="mr-2 h-4 w-4" />
                             {t("navigation.supplierDashboard")}
                           </div>
@@ -277,7 +277,7 @@ export default function Header() {
                     {user?.role === "customer" && (
                       <SheetClose asChild>
                         <Link href="/cart">
-                          <div className={`flex items-center py-2 px-3 rounded-lg ${location === "/cart" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100"} cursor-pointer`}>
+                          <div className={`flex items-center py-2 px-3 rounded-lg text-black ${location === "/cart" ? "bg-gray-100 text-[#ef0c11]" : "hover:bg-gray-100 hover:text-[#ef0c11]"} cursor-pointer`}>
                             <ShoppingCart className="mr-2 h-4 w-4" />
                             {t("navigation.cart")}
                           </div>
@@ -288,7 +288,7 @@ export default function Header() {
                     {/* Auth */}
                     {user ? (
                       <a 
-                        className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer"
+                        className="flex items-center py-2 px-3 rounded-lg text-black hover:bg-gray-100 hover:text-[#ef0c11] cursor-pointer"
                         onClick={() => {
                           handleLogout();
                         }}
@@ -299,7 +299,7 @@ export default function Header() {
                     ) : (
                       <SheetClose asChild>
                         <Link href="/auth">
-                          <div className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 cursor-pointer">
+                          <div className="flex items-center py-2 px-3 rounded-lg text-black hover:bg-gray-100 hover:text-[#ef0c11] cursor-pointer">
                             <LogIn className="mr-2 h-4 w-4" />
                             {t("navigation.login")}
                           </div>
@@ -309,7 +309,7 @@ export default function Header() {
                     
                     {/* Language */}
                     <div className="py-2 px-3">
-                      <p className="text-sm font-medium mb-2">{t("navigation.language")}</p>
+                      <p className="text-sm font-medium mb-2 text-black">{t("navigation.language")}</p>
                       <LanguageSwitcher />
                     </div>
                   </nav>
