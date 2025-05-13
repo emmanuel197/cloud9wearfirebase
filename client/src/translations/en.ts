@@ -763,6 +763,7 @@ const translations = {
       waitingForPayment: "Waiting for payment",
       noActionsAvailable: "No actions available",
       viewAllOrders: "Viewing all orders",
+      beingProcessedByOther: "Being processed by another supplier",
       
       status: {
         pendingOrders: "Pending Orders",

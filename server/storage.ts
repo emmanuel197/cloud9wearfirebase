@@ -51,6 +51,7 @@ export interface IStorage {
 
   // Supplier inventory management
   getInventory(supplierId: number): Promise<SupplierInventory[]>;
+  getProductTotalInventory(productId: number): Promise<number>;
   updateInventory(supplierId: number, productId: number, stock: number): Promise<SupplierInventory | undefined>;
 
   // Review management
