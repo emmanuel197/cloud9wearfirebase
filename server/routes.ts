@@ -416,7 +416,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
 
-      const updatedOrder = await dbStorage.updateOrder(orderId, req.body);
+      // Process date fields properly
+      const updateData: any = { ...req.body };
+      
+      // If estimatedDeliveryDate is a string, convert it to a Date object
+      if (updateData.estimatedDeliveryDate && typeof updateData.estimatedDeliveryDate === 'string') {
+        try {
+          updateData.estimatedDeliveryDate = new Date(updateData.estimatedDeliveryDate);
+        } catch (e) {
+          console.error("Error parsing date:", e);
+          delete updateData.estimatedDeliveryDate;
+        }
+      }
+      
+      const updatedOrder = await dbStorage.updateOrder(orderId, updateData);
       res.json(updatedOrder);
     } catch (error) {
       console.error("Error updating order:", error);
@@ -440,7 +453,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Order not found" });
       }
 
-      const updatedOrder = await dbStorage.updateOrder(orderId, { paymentStatus });
+      // Create a clean update object - only pass the payment status field
+      const updateData = { paymentStatus };
+      
+      // Process the update
+      const updatedOrder = await dbStorage.updateOrder(orderId, updateData);
       
       // Send email notification if payment status has changed
       if (order.paymentStatus !== paymentStatus) {
@@ -513,7 +530,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
         
         // Set estimated delivery date to 7 days from now if not provided
         if (req.body.estimatedDeliveryDate) {
-          updateData.estimatedDeliveryDate = new Date(req.body.estimatedDeliveryDate);
+          try {
+            // Make sure we correctly handle any date string format
+            updateData.estimatedDeliveryDate = new Date(req.body.estimatedDeliveryDate);
+            // Validate that it's a proper date
+            if (isNaN(updateData.estimatedDeliveryDate.getTime())) {
+              throw new Error("Invalid date format");
+            }
+          } catch (e) {
+            console.error("Error parsing date:", e);
+            // Fall back to default 7 days from now
+            const deliveryDate = new Date();
+            deliveryDate.setDate(deliveryDate.getDate() + 7);
+            updateData.estimatedDeliveryDate = deliveryDate;
+          }
         } else if (!order.estimatedDeliveryDate) {
           const deliveryDate = new Date();
           deliveryDate.setDate(deliveryDate.getDate() + 7);
