@@ -225,7 +225,9 @@ export default function SupplierInventoryPage() {
                       stockValue={updatingStock[item.productId] !== undefined ? updatingStock[item.productId] : item.availableStock}
                       onStockChange={(value) => handleStockChange(item.productId, value)}
                       onUpdate={() => handleUpdateStock(item.productId)}
+                      onRemove={() => handleRemoveProduct(item.productId)}
                       isUpdating={updateInventoryMutation.isPending}
+                      isRemoving={removingProduct === item.productId}
                     />
                   );
                 })}
