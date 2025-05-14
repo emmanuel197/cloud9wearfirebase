@@ -1,7 +1,9 @@
+import 'dotenv/config';
 import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
 import { storage } from "./storage";
+import Paystack from 'paystack-node'; // Assuming you are using 'paystack-node' library
 
 const app = express();
 app.use(express.json());
@@ -46,6 +48,27 @@ app.use((req, res, next) => {
     log(`Error initializing demo data: ${error instanceof Error ? error.message : String(error)}`);
   }
   
+  // Debug: Check if Paystack secret key is loaded
+  console.log("Paystack Secret Key:", process.env.PAYSTACK_SECRET_KEY ? "Loaded" : "Not loaded");
+
+  // Initialize Paystack client
+  try {
+    console.log("Attempting to initialize Paystack client...");
+    const paystack = new Paystack(process.env.PAYSTACK_SECRET_KEY as string); // Replace with your actual initialization logic
+    console.log("Paystack client initialized successfully:", paystack); // Log the initialized client
+
+    // Example of how you might use .transaction and log its output
+    // Replace with your actual transaction logic
+    try {
+        console.log("Attempting to use paystack.transaction...");
+        // const transactionResult = await paystack.transaction.initialize({ ... }); // Your transaction call
+        // console.log("Paystack transaction result:", transactionResult); // Log the transaction result
+    } catch (transactionError) {
+        console.error("Failed to perform Paystack transaction:", transactionError); // Log transaction errors
+    }
+  } catch (error) {
+    console.error("Failed to initialize Paystack client properly:", error); // Log the full initialization error
+  }
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

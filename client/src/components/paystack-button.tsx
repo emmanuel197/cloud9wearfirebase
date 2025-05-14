@@ -5,17 +5,6 @@ import { Loader2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useLanguage } from "@/hooks/use-language";
 
-// Define custom Paystack metadata interface
-interface PaystackMetadata {
-  paymentMethod: string;
-  custom_fields?: Array<{
-    display_name: string;
-    variable_name: string;
-    value: string;
-  }>;
-  [key: string]: any;
-}
-
 interface PaystackButtonProps {
   amount: number;
   email: string;
@@ -52,7 +41,7 @@ export function PaystackButton({
   const amountInKobo = Math.floor(amount * 100);
 
   // Create Paystack metadata with required fields
-  const paystackMetadata: PaystackMetadata = {
+  const paystackMetadata = {
     paymentMethod,
     custom_fields: [
       {
