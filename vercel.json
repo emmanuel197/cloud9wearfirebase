@@ -3,24 +3,18 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",
-  "installCommand": "npm install",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/api"
+      "src": "/api/(.*)",
+      "dest": "/api"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "src": "/(.*\\.[a-z0-9]+$)",
+      "dest": "/public/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/index.html"
     }
-  ],
-  "functions": {
-    "api/index.js": {
-      "runtime": "@vercel/node@2.15.10",
-      "maxDuration": 10
-    }
-  },
-  "env": {
-    "NODE_VERSION": "18.x"
-  }
+  ]
 } 
