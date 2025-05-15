@@ -5,9 +5,10 @@
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=development tsx server/index.ts",
-    "build": "vite build && npm run build:api",
-    "build:api": "esbuild api/index.ts --bundle --platform=node --format=esm --outfile=api/index.js --external:express --external:dotenv --external:drizzle-orm --external:@neondatabase/serverless",
-    "copy-server": "cp -r server api/ && cp -r shared api/ && cp package.json api/ && cp tsconfig.json api/",
+    "prebuild:api": "node build.mjs",
+    "build:api": "esbuild api/index.ts --bundle --platform=node --format=esm --outfile=dist/api/index.js --external:express --external:dotenv --external:drizzle-orm --external:@neondatabase/serverless",
+    "build": "vite build && npm run prebuild:api && npm run build:api",
+    "copy-server": "mkdir -p dist/api && cp -r server dist/api/ && cp -r shared dist/api/",
     "start": "NODE_ENV=production node dist/index.js",
     "check": "tsc",
     "db:push": "drizzle-kit push"

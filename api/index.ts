@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import express, { type Request, Response } from "express";
-import { storage } from "../server/storage.js";
-import { registerRoutes } from "../server/routes.js";
+import { storage } from "./server/storage.js";
+import { registerRoutes } from "./server/routes.js";
 
 // Create Express app instance
 const app = express();
