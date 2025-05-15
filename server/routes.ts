@@ -26,6 +26,15 @@ declare global {
   }
 }
 
+// Add type guard for authenticated requests
+interface AuthenticatedRequest extends Request {
+  user: {
+    id: number;
+    username: string;
+    role: string;
+  };
+}
+
 export async function registerRoutes(app: Express): Promise<Server> {
   // Setup authentication
   setupAuth(app);

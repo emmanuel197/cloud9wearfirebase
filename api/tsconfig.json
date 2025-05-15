@@ -11,7 +11,10 @@
     "paths": {
       "@/*": ["client/src/*"],
       "@shared/*": ["shared/*"]
-    }
+    },
+    "typeRoots": ["../node_modules/@types"],
+    "types": ["express", "node"],
+    "skipLibCheck": true
   },
   "include": [
     "**/*.ts",

@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as LocalStrategy } from "passport-local";
-import { Express } from "express";
+import { Express, Request, Response, NextFunction } from "express";
 import session from "express-session";
 import { scrypt, randomBytes, timingSafeEqual } from "crypto";
 import { promisify } from "util";
@@ -167,3 +167,19 @@ export function setupAuth(app: Express) {
     next();
   });
 }
+
+export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user) {
+    res.status(401).json({ message: 'Unauthorized' });
+    return;
+  }
+  next();
+};
+
+export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
+  if (!req.user || req.user.role !== 'admin') {
+    res.status(403).json({ message: 'Forbidden' });
+    return;
+  }
+  next();
+};
