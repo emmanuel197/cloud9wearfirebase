@@ -1,7 +1,7 @@
 {
   "version": 2,
   "buildCommand": "npm run build",
-  "outputDirectory": "dist",
+  "outputDirectory": ".",
   "framework": "vite",
   "installCommand": "npm install",
   "routes": [
@@ -11,11 +11,11 @@
     },
     {
       "src": "/(.*\\.[a-z0-9]+$)",
-      "dest": "public/$1"
+      "dest": "dist/public/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "public/index.html"
+      "dest": "dist/public/index.html"
     }
   ],
   "functions": {
