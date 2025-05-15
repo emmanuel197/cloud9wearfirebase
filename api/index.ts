@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import express, { type Request, Response } from "express";
-import { storage } from "../server/storage";
+import { storage } from "./server/storage";
 
 // Create Express app instance
 const app = express();
@@ -19,7 +19,7 @@ const initializeData = async () => {
 
 // Initialize routes
 const initializeRoutes = async () => {
-  const { registerRoutes } = await import("../server/routes");
+  const { registerRoutes } = await import("./server/routes");
   await registerRoutes(app);
 };
 
@@ -38,6 +38,9 @@ export default async function handler(req: Request, res: Response) {
   if (!req.url?.startsWith('/api')) {
     return res.status(404).json({ error: 'Not found' });
   }
+  
+  // Remove /api prefix for internal routing
+  req.url = req.url.replace(/^\/api/, '');
   
   await initialize();
   return app(req, res);
