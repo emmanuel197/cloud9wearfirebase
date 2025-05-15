@@ -16,7 +16,11 @@
   ],
   "functions": {
     "api/index.js": {
-      "runtime": "@vercel/node@2.15.10"
+      "runtime": "@vercel/node@2.15.10",
+      "maxDuration": 10
     }
+  },
+  "env": {
+    "NODE_VERSION": "18.x"
   }
 } 
